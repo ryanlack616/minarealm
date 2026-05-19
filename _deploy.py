@@ -106,7 +106,11 @@ print("Connected.")
 
 
 def probe(remote: str):
-    """Return (size, mdtm_datetime) or (None, None) if file is missing remotely."""
+    """Return (size, mdtm_datetime_utc) or (None, None) if file is missing remotely.
+
+    MDTM is defined by RFC 3659 to return UTC. We tag it tz-aware so it can be
+    compared against the local mtime (also converted to UTC below).
+    """
     try:
         size = ftp.size(remote)
     except ftplib.error_perm:
@@ -114,7 +118,9 @@ def probe(remote: str):
     try:
         resp = ftp.sendcmd("MDTM " + remote)
         ts = resp.split()[-1]
-        mdtm = datetime.datetime.strptime(ts[:14], "%Y%m%d%H%M%S")
+        mdtm = datetime.datetime.strptime(ts[:14], "%Y%m%d%H%M%S").replace(
+            tzinfo=datetime.timezone.utc
+        )
     except Exception:
         mdtm = None
     return size, mdtm
@@ -127,7 +133,11 @@ for local in targets:
     remote = to_remote(local)
     rsize, rmdtm = probe(remote)
     lsize = local.stat().st_size
-    lmtime = datetime.datetime.fromtimestamp(local.stat().st_mtime)
+    # Local mtime as tz-aware UTC so comparison with MDTM is correct regardless
+    # of the machine's local timezone (e.g. EST/EDT).
+    lmtime = datetime.datetime.fromtimestamp(
+        local.stat().st_mtime, tz=datetime.timezone.utc
+    )
 
     if rsize is None:
         plan.append((local, remote, "upload-new", "remote missing"))
