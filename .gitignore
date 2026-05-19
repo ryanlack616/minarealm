@@ -10,3 +10,7 @@ worker/.wrangler/
 .pass.local
 .live-snapshot/
 
+
+# Large downloadable bundles (regenerate from sources; not committed)
+downloads/tarot/tarot_download_bundle.zip
+downloads/**/*.zip

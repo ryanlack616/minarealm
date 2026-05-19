@@ -246,6 +246,13 @@
   <main>
     <!-- Dashboard pane -->
     <div class="pane active" id="pane-dashboard">
+      <details class="help" style="margin-bottom:14px">
+        <summary>Welcome — what is this page? (read me once)</summary>
+        <p><strong>This is your back‑office for minarealm.shop.</strong> The tabs at the top are the only things you need: <code>Dashboard</code> (today's numbers), <code>Inventory</code> (your products & stock), <code>Orders</code> (web sales + in‑store sales), and <code>Forms</code> (contact / booking messages).</p>
+        <p><strong>Two shops, separate inventory.</strong> Each product belongs to <em>Hartland</em> or <em>Fenton</em>. They are tracked independently. If the same piece exists at both, add it twice (once per location). Inventory and the Sold/Ring‑up flow let you filter / choose which shop.</p>
+        <p><strong>Saving is automatic.</strong> Anything you change saves to the cloud after a short pause. Watch the badge in the top‑right corner: <em>Saving…</em> → <em>Saved ✓</em>. If you ever see a red status, just hit reload.</p>
+        <p><strong>Daily rhythm.</strong> Morning: glance at Dashboard, scan <em>What Needs Attention</em>. Throughout the day: hit the purple <em>Sold</em> button on Inventory rows for in‑person sales. Evening: skim Orders for any new web orders that need fulfilling.</p>
+      </details>
       <div class="summary" id="biz-summary"></div>
       <div class="dashboard-grid">
         <section class="panel">
@@ -302,6 +309,13 @@
 
     <!-- Inventory pane -->
     <div class="pane" id="pane-inventory">
+      <details class="help" style="margin-bottom:14px">
+        <summary>How Inventory works (Hartland vs. Fenton, prices, photos)</summary>
+        <p><strong>Two shops, separate inventory.</strong> Every product has a <em>Location</em>: Hartland or Fenton. They are independent counts — selling a piece at Hartland does <em>not</em> change Fenton stock. Use the <em>Both locations</em> dropdown above the table to filter. The little <span style="font-size:.62rem;font-weight:700;background:#1f3a2a;color:#a8e6c1;padding:1px 5px;border-radius:3px">HRT</span> / <span style="font-size:.62rem;font-weight:700;background:#3a2240;color:#f3c4ff;padding:1px 5px;border-radius:3px">FEN</span> badge next to each name shows where the piece lives.</p>
+        <p><strong>Adding a product.</strong> Click <em>+ Add Product</em>. Required: Name, Category, Slug (auto‑lowercase), Retail Price, Stock, Location. Optional but recommended: Wholesale Cost (unlocks margin tracking), Weight in grams (used at checkout for shipping), and at least one photo (drag onto the dropzone).</p>
+        <p><strong>Editing in place.</strong> Retail, Wholesale, and Stock columns are editable directly in the row. Tab between cells; auto‑save handles the rest. Use the row buttons: <em>Sold</em> (purple) for an in‑store sale, <em>+1 / −1</em> for non‑sale stock adjustments (damage, samples), <em>Edit</em> for the full modal, <em>Delete</em> to remove permanently.</p>
+        <p><strong>Filters.</strong> Search by name or slug; filter by Category, Stock level (in stock / low / out), or Location. Filters stack.</p>
+      </details>
       <div id="approval-box"></div>
       <div id="rollback-box"></div>
       <div class="summary" id="summary"></div>
@@ -314,6 +328,11 @@
           <option value="instock">In stock</option>
           <option value="low">Low (≤ 3)</option>
           <option value="out">Out of stock</option>
+        </select>
+        <select id="filter-location" title="Filter by shop location">
+          <option value="all">Both locations</option>
+          <option value="hartland">Hartland only</option>
+          <option value="fenton">Fenton only</option>
         </select>
         <div class="spacer"></div>
         <span id="count" style="color:var(--text-dim);font-size:.85rem"></span>
@@ -374,6 +393,7 @@
         <summary>How saving &amp; images work</summary>
         <p><strong>Auto-save:</strong> retail price, wholesale cost, stock, and product edits save automatically to the cloud after a brief pause. The status badge in the top-right shows <em>Saving…</em> → <em>Saved ✓</em>.</p>
         <p><strong>Margin tracking:</strong> set both <em>Retail</em> and <em>Wholesale</em> to unlock per-item margin and portfolio gross-profit KPIs in Dashboard.</p>
+        <p><strong>Location:</strong> every product belongs to either <em>Hartland</em> or <em>Fenton</em>. Stock counts are kept separate. If a piece exists at both shops, create two product entries (one per location).</p>
         <p><strong>Images:</strong> drag a photo onto the dropzone (or tap to choose). It uploads to the cloud and the URL is filled in automatically. The first image is the cover; reorder with the ↑ ↓ buttons.</p>
         <p><strong>Orders:</strong> the Orders tab shows incoming customer orders. Mark them <em>Fulfilled</em> when shipped/picked up. New orders also email <code>cynthia@minarealm.org</code>.</p>
       </details>
@@ -381,6 +401,15 @@
 
     <!-- Orders pane -->
     <div class="pane" id="pane-orders">
+      <details class="help" style="margin-bottom:14px">
+        <summary>How Orders work (web orders + in‑store sales)</summary>
+        <p><strong>What lands here.</strong> Two kinds of orders: <em>web orders</em> from minarealm.shop (Stripe‑paid) and <em>in‑store sales</em> you rang up from the Inventory tab. Both decrement stock automatically.</p>
+        <p><strong>Filter.</strong> Default view is <em>New only</em> (anything not yet fulfilled). Switch to <em>All</em> to see history, or <em>Fulfilled</em> / <em>Cancelled</em> for specific status.</p>
+        <p><strong>Fulfilling a web order.</strong> Open the order, print the packing slip, ship or hand off the items, then click <em>Mark Fulfilled</em>. The customer gets an automatic shipping email.</p>
+        <p><strong>Pending invoices.</strong> If you rang up a sale as <em>Pending invoice</em>, the order shows <em>PENDING INVOICE</em>. When the customer pays, open the order and click <em>Mark Paid</em>. That moves the money from “pending” to “collected” on Dashboard.</p>
+        <p><strong>Which shop made the sale?</strong> In‑store sales prepend <code>[Hartland]</code> or <code>[Fenton]</code> to the order note — you can see it in the order detail.</p>
+        <p><strong>Export CSV</strong> is for accounting/tax time.</p>
+      </details>
       <div class="toolbar">
         <select id="orders-filter">
           <option value="new">New only</option>
@@ -398,6 +427,11 @@
 
     <!-- Forms pane -->
     <div class="pane" id="pane-forms">
+      <details class="help" style="margin-bottom:14px">
+        <summary>How Forms work (contact &amp; booking messages)</summary>
+        <p><strong>What lands here.</strong> Anything submitted through the public contact form or booking form on minarealm.shop. Also emails <code>cynthia@minarealm.org</code> so you never miss one.</p>
+        <p><strong>Triage.</strong> Use the filter to focus on <em>Bookings</em> (likely time‑sensitive) or <em>Contact</em>. Click an entry to expand and read the message. Mark it <em>Handled</em> when you've replied.</p>
+      </details>
       <div class="toolbar">
         <select id="forms-filter">
           <option value="all">All submissions</option>
@@ -482,9 +516,18 @@
           <input id="f-wholesale" type="number" step="0.01" min="0" placeholder="0.00">
         </div>
       </div>
-      <div class="field">
-        <label>Stock *</label>
-        <input id="f-stock" type="number" min="0" step="1" required>
+      <div class="field-row">
+        <div class="field">
+          <label>Stock *</label>
+          <input id="f-stock" type="number" min="0" step="1" required>
+        </div>
+        <div class="field">
+          <label>Location * <span style="color:var(--text-dim);font-weight:400;text-transform:none;letter-spacing:0;font-size:.75rem">(which shop this piece lives at)</span></label>
+          <select id="f-location" required>
+            <option value="hartland">Hartland (1218 N Lincoln)</option>
+            <option value="fenton">Fenton</option>
+          </select>
+        </div>
       </div>
       <div class="field">
         <label>Weight (grams) <span style="color:var(--text-dim);text-transform:none;letter-spacing:0;font-size:.75rem">(for shipping — weigh with kitchen scale)</span></label>
@@ -601,12 +644,21 @@
       <button type="button" class="btn" id="sold-add-btn" style="white-space:nowrap">+ Add</button>
     </div>
     <form id="sold-form">
-      <div class="field">
-        <label>Payment</label>
-        <select id="sold-payment">
-          <option value="paid_in_store">Paid now (cash / Square Reader)</option>
-          <option value="invoice">Pending invoice (customer pays later)</option>
-        </select>
+      <div class="field-row">
+        <div class="field">
+          <label>Where</label>
+          <select id="sold-location">
+            <option value="hartland">Hartland</option>
+            <option value="fenton">Fenton</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Payment</label>
+          <select id="sold-payment">
+            <option value="paid_in_store">Paid now (cash / Square Reader)</option>
+            <option value="invoice">Pending invoice (customer pays later)</option>
+          </select>
+        </div>
       </div>
       <div class="field-row">
         <div class="field">
@@ -662,7 +714,7 @@ const state = {
   ordersFilter: 'new',
   formsFilter: 'all',
   activityFilter: '',
-  query: '', cat: 'all', stockFilter: 'all',
+  query: '', cat: 'all', stockFilter: 'all', locationFilter: 'all',
   saveTimer: null, saving: false
 };
 
@@ -1231,6 +1283,8 @@ function getFilteredProducts(){
     if(state.stockFilter === 'instock' && s <= 0) return false;
     if(state.stockFilter === 'low' && !(s > 0 && s <= 3)) return false;
     if(state.stockFilter === 'out' && s > 0) return false;
+    const loc = p.location || 'hartland';
+    if(state.locationFilter !== 'all' && loc !== state.locationFilter) return false;
     return true;
   });
 }
@@ -1383,10 +1437,14 @@ function renderRows(){
     const cover = (Array.isArray(p.images) && p.images[0]) || p.image || '/logo.svg';
     const extra = (Array.isArray(p.images) && p.images.length > 1)
       ? `<div style="color:var(--text-dim);font-size:.7rem;text-align:center;margin-top:2px">+${p.images.length-1}</div>` : '';
+    const loc = p.location === 'fenton' ? 'fenton' : 'hartland';
+    const locBadge = loc === 'fenton'
+      ? '<span title="At Fenton" style="display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.06em;padding:1px 5px;border-radius:3px;background:#3a2240;color:#f3c4ff;margin-left:6px;vertical-align:middle">FEN</span>'
+      : '<span title="At Hartland" style="display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.06em;padding:1px 5px;border-radius:3px;background:#1f3a2a;color:#a8e6c1;margin-left:6px;vertical-align:middle">HRT</span>';
     return `
       <tr data-id="${p.id}" class="${rowClass}">
         <td><img class="thumb" src="${cover}" alt="">${extra}</td>
-        <td><strong>${p.name}</strong><br><span style="color:var(--text-dim);font-size:.75rem">${p.id}</span><br><span style="font-size:.68rem;color:${confColor(retailConf)}">R:${retailConf}</span> · <span style="font-size:.68rem;color:${confColor(wholesaleConf)}">C:${wholesaleConf}</span></td>
+        <td><strong>${p.name}</strong>${locBadge}<br><span style="color:var(--text-dim);font-size:.75rem">${p.id}</span><br><span style="font-size:.68rem;color:${confColor(retailConf)}">R:${retailConf}</span> · <span style="font-size:.68rem;color:${confColor(wholesaleConf)}">C:${wholesaleConf}</span></td>
         <td class="hide-sm">${catName(p.category)}</td>
         <td class="cell-price"><input type="number" step="0.01" min="0" value="${retail}" data-field="retail_price"></td>
         <td class="cell-price hide-sm"><input type="number" step="0.01" min="0" value="${wholesale}" data-field="wholesale_cost"></td>
@@ -1490,6 +1548,8 @@ function sellInStore(p){
     maxStock: stock
   }];
   $('sold-payment').value = 'paid_in_store';
+  const lastLoc = localStorage.getItem('mr_last_location') || 'hartland';
+  $('sold-location').value = lastLoc === 'fenton' ? 'fenton' : 'hartland';
   $('sold-customer-name').value = '';
   $('sold-customer-email').value = '';
   $('sold-note').value = '';
@@ -1601,9 +1661,13 @@ async function submitInStoreSale(e){
   e.preventDefault();
   if(state.cart.length === 0){ toast('Cart is empty'); return; }
   const paymentMethod = $('sold-payment').value;
+  const saleLocation = $('sold-location').value === 'fenton' ? 'fenton' : 'hartland';
+  try { localStorage.setItem('mr_last_location', saleLocation); } catch(_){}
   const customerName = $('sold-customer-name').value.trim();
   const customerEmail = $('sold-customer-email').value.trim();
-  const note = $('sold-note').value.trim();
+  const rawNote = $('sold-note').value.trim();
+  const locTag = '[' + (saleLocation === 'fenton' ? 'Fenton' : 'Hartland') + ']';
+  const note = rawNote ? (locTag + ' ' + rawNote) : locTag;
   // Validate stock once more
   for(const ln of state.cart){
     if(ln.qty > ln.maxStock){ toast(`Only ${ln.maxStock} of ${ln.name} in stock.`); return; }
@@ -1865,6 +1929,9 @@ function openModal(p){
   $('f-supplier').value = isNew ? '' : (p.supplier || '');
   $('f-bundle').value = isNew ? '' : (p.bundle||'');
   $('f-desc').value = isNew ? '' : (p.description||'');
+  $('f-location').value = isNew
+    ? (localStorage.getItem('mr_last_location') || 'hartland')
+    : (p.location === 'fenton' ? 'fenton' : 'hartland');
   const initImgs = isNew ? [] :
     (Array.isArray(p.images) && p.images.length ? p.images.slice() :
       (p.image ? [p.image] : []));
@@ -1967,12 +2034,14 @@ $('product-form').onsubmit = async (e) => {
     supplier: $('f-supplier').value.trim(),
     bundle: $('f-bundle').value.trim(),
     stock: Math.max(0, parseInt($('f-stock').value,10) || 0),
+    location: $('f-location').value === 'fenton' ? 'fenton' : 'hartland',
     images,
     image: images[0] || '',
     description: $('f-desc').value.trim()
   };
   const wg = parseInt($('f-weight').value, 10);
   if(wg > 0) prod.weight_grams = wg;
+  try { localStorage.setItem('mr_last_location', prod.location); } catch(_){}
   if(origId){
     const i = state.data.products.findIndex(x => x.id === origId);
     if(i >= 0) state.data.products[i] = prod;
@@ -1990,6 +2059,7 @@ $('reload').onclick = () => loadData();
 $('search').oninput = e => { state.query = e.target.value; renderRows(); };
 $('filter-cat').onchange = e => { state.cat = e.target.value; renderRows(); };
 $('filter-stock').onchange = e => { state.stockFilter = e.target.value; renderRows(); };
+$('filter-location').onchange = e => { state.locationFilter = e.target.value; renderRows(); };
 if($('bulk-scope')) $('bulk-scope').onchange = () => { updateBulkScopeUI(); previewBulkUpdate(); };
 if($('bulk-mode')) $('bulk-mode').onchange = () => previewBulkUpdate();
 if($('bulk-value')) $('bulk-value').oninput = () => previewBulkUpdate();

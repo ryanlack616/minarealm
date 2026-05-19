@@ -2668,6 +2668,27 @@ Deploy worker, commit, hand off file to Cynthia for Porkbun upload.
 - H1 full customer entity (current pill is read-only over orders — sufficient for now)
 - H3 refunds
 - H5 discounts
-- H4 multi-location decision (depends on Q6 answer)
 
 **Risk posture:** working system exists. Tonight''s risk is regression, not missing features. Stop building after item 2 above; everything else is meeting-driven.
+
+### §38B addendum — H4 separate-inventory decision (resolved)
+
+**Decision:** Each product belongs to **one** location — `hartland` or `fenton`. Stock counts are independent. If a piece exists at both shops, create two product entries (one per location). No "shared" or "both" mode.
+
+**Rationale:** Cynthia's mental model: each shelf at each shop is its own thing. Shared-stock semantics (single SKU, two stock counts) would either confuse the count or require shop-specific decrements on every sale — more UI surface than benefit for the early stage. Two entries keeps every screen (Inventory, Sold-modal, Orders) trivially correct.
+
+**Schema:**
+- `product.location: 'fenton' | 'hartland'` (defaults to `'hartland'` when absent — all pre-existing pieces).
+- Worker pass-through preserves the field on `PUT /api/products` without code change.
+- Sale-source location is prepended to the order note as `[Hartland]` / `[Fenton]` (no worker-side schema change needed for May 19).
+
+**UI surface added:**
+- Product edit modal: `Location` select (required).
+- Inventory toolbar: `filter-location` dropdown (Both / Hartland / Fenton).
+- Inventory rows: small `HRT` / `FEN` badge next to product name.
+- Ring-up-sale modal: `Where` select (remembers last choice in `localStorage.mr_last_location`).
+
+**Future (if/when promoted to first-class):**
+- Worker `/api/orders/in-store` should accept and persist `saleLocation` on the order envelope (currently lives only in the note).
+- Dashboard split by location (today's close-out per shop).
+- Per-location margin / dead-stock KPIs.
