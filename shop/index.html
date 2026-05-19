@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6M44R4WB73"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6M44R4WB73');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0c0b10">
+<title>Shop · Minarealm Crystals</title>
+<meta name="description" content="Shop crystals, jewelry, fossils, and spiritual tools from Minarealm. Free local pickup in Fenton and Hartland, Michigan.">
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<style>
+  :root {
+    --bg:#0c0b10; --surface:#14121c; --surface2:#1c1926;
+    --gold:#d4a94a; --gold-light:#e8c570; --gold-dim:#8a6d30;
+    --purple:#7c5cbf; --text:#e8e4d6; --text-dim:#9a9080;
+    --border:#2a2535; --nav-bg:rgba(12,11,16,.96); --radius:4px;
+    --danger:#c24a4a; --success:#4ac29a;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:Georgia,'Times New Roman',serif;line-height:1.6;min-height:100vh}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+
+  /* Navigation */
+  nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);padding:0 40px;display:flex;align-items:center;
+    justify-content:space-between;height:64px}
+  .nav-logo{font-size:1.4rem;color:var(--gold);letter-spacing:.02em;font-weight:500}
+  .nav-logo span{display:block;font-size:.65rem;color:var(--text-dim);letter-spacing:.2em;text-transform:uppercase}
+  .nav-links{list-style:none;display:flex;gap:28px}
+  .nav-links a{color:var(--text);font-size:.95rem;transition:color .2s;position:relative}
+  .nav-links a:hover{color:var(--gold)}
+  .nav-links a:after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--gold);transition:width .2s}
+  .nav-links a:hover:after{width:100%}
+  .cart-btn{background:var(--gold);color:#0c0b10;border:none;padding:10px 20px;border-radius:var(--radius);
+    font-family:inherit;font-size:.9rem;cursor:pointer;font-weight:700;letter-spacing:.05em;transition:all .2s;display:flex;align-items:center;gap:8px}
+  .cart-btn:hover{background:var(--gold-light);transform:translateY(-1px);box-shadow:0 4px 12px rgba(212,169,74,.3)}
+  .cart-btn:active{transform:translateY(0)}
+
+  /* Header */
+  header.head{text-align:center;padding:56px 24px 32px;max-width:900px;margin:0 auto}
+  header.head .eyebrow{color:var(--gold);letter-spacing:.25em;text-transform:uppercase;font-size:.8rem;font-weight:600}
+  header.head h1{font-size:2.8rem;margin:12px 0 16px;font-weight:400;line-height:1.2}
+  header.head h1 em{color:var(--gold-light);font-style:normal;font-weight:600}
+  header.head p{color:var(--text-dim);max-width:680px;margin:0 auto;line-height:1.7;font-size:1rem}
+
+  /* Controls */
+  .controls{max-width:1200px;margin:0 auto;padding:20px 24px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center}
+  .pill{background:var(--surface);border:1px solid var(--border);color:var(--text-dim);
+    padding:8px 18px;border-radius:999px;cursor:pointer;font:inherit;font-size:.9rem;transition:all .15s;font-weight:500}
+  .pill:hover{color:var(--text);border-color:var(--gold-dim);background:rgba(212,169,74,.05)}
+  .pill.active{background:var(--gold);color:#0c0b10;border-color:var(--gold);font-weight:700;box-shadow:0 4px 12px rgba(212,169,74,.2)}
+  .search{background:var(--surface);border:1px solid var(--border);color:var(--text);
+    padding:10px 16px;border-radius:var(--radius);font:inherit;font-size:.9rem;min-width:240px;transition:all .2s}
+  .search:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,169,74,.1)}
+  .search::placeholder{color:var(--text-dim);opacity:.7}
+
+  /* Grid & Cards */
+  .grid{max-width:1200px;margin:0 auto;padding:24px;
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+  
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;
+    display:flex;flex-direction:column;transition:all .3s;position:relative}
+  .card:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 12px 36px rgba(212,169,74,.15)}
+  
+  .card .img{position:relative;aspect-ratio:1/1;background:#0c0b10;overflow:hidden;cursor:zoom-in}
+  .card .img img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+  .card:hover .img img{transform:scale(1.05)}
+  
+  .card .img .nav-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(212,169,74,.9);
+    color:#0c0b10;border:none;width:36px;height:36px;border-radius:50%;
+    display:grid;place-items:center;cursor:pointer;font-size:1.2rem;line-height:1;opacity:0;transition:all .2s;z-index:2;font-weight:bold}
+  .card:hover .img .nav-arrow{opacity:1}
+  .card .img .nav-arrow.prev{left:10px}
+  .card .img .nav-arrow.next{right:10px}
+  .card .img .nav-arrow:hover{background:var(--gold-light);box-shadow:0 4px 12px rgba(0,0,0,.4)}
+  
+  .card .img .dots{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:5px;z-index:2}
+  .card .img .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);transition:all .2s;cursor:pointer;border:1px solid rgba(255,255,255,.2)}
+  .card .img .dot:hover{background:rgba(255,255,255,.6)}
+  .card .img .dot.active{background:var(--gold);border-color:var(--gold);transform:scale(1.3)}
+  .card .img .count{position:absolute;top:10px;right:10px;background:rgba(12,11,16,.85);color:var(--text);
+    font-size:.75rem;padding:4px 10px;border-radius:4px;z-index:2;font-family:-apple-system,sans-serif;font-weight:600}
+
+  .card .thumbs{display:flex;gap:8px;padding:10px 12px 0;overflow-x:auto;scrollbar-width:thin}
+  .card .thumb{width:52px;height:52px;border:1px solid var(--border);border-radius:6px;background:#0c0b10;
+    padding:0;cursor:pointer;flex:0 0 auto;overflow:hidden;transition:border-color .2s,transform .2s}
+  .card .thumb img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85;transition:opacity .2s}
+  .card .thumb:hover{border-color:var(--gold-dim);transform:translateY(-1px)}
+  .card .thumb:hover img{opacity:1}
+  .card .thumb.active{border-color:var(--gold);box-shadow:0 0 0 1px rgba(212,169,74,.35)}
+  .card .thumb.active img{opacity:1}
+
+  /* Lightbox */
+  .lb{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+  .lb.open{display:flex;animation:fadeIn .2s}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .lb img{max-width:95vw;max-height:90vh;object-fit:contain;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.8)}
+  .lb .lb-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:2.4rem;cursor:pointer;z-index:2;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;transition:all .2s;font-weight:bold}
+  .lb .lb-close:hover{background:rgba(255,255,255,.2);transform:scale(1.1)}
+  .lb .lb-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);color:#fff;
+    border:1px solid rgba(255,255,255,.2);width:52px;height:52px;border-radius:50%;cursor:pointer;font-size:1.8rem;display:grid;place-items:center;transition:all .2s;font-weight:bold}
+  .lb .lb-nav:hover{background:rgba(0,0,0,.7);border-color:#fff}
+  .lb .lb-nav.prev{left:20px}.lb .lb-nav.next{right:20px}
+  .lb .lb-thumbs{position:absolute;left:50%;transform:translateX(-50%);bottom:78px;display:flex;gap:8px;max-width:90vw;
+    overflow-x:auto;padding:8px 10px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.2);border-radius:8px;
+    scrollbar-width:thin;backdrop-filter:blur(8px)}
+  .lb .lb-thumb{width:56px;height:56px;flex:0 0 auto;border:1px solid rgba(255,255,255,.28);border-radius:6px;
+    overflow:hidden;background:#111;padding:0;cursor:pointer;transition:border-color .2s,transform .2s}
+  .lb .lb-thumb img{width:100%;height:100%;object-fit:cover;display:block;opacity:.82;transition:opacity .2s}
+  .lb .lb-thumb:hover{transform:translateY(-1px);border-color:#fff}
+  .lb .lb-thumb:hover img{opacity:1}
+  .lb .lb-thumb.active{border-color:var(--gold);box-shadow:0 0 0 1px rgba(212,169,74,.35)}
+  .lb .lb-thumb.active img{opacity:1}
+  .lb .lb-caption{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:#fff;font-size:.95rem;text-align:center;background:rgba(0,0,0,.7);padding:12px 20px;border-radius:6px;max-width:80vw;backdrop-filter:blur(8px)}
+
+  /* Card body */
+  .card .body{padding:16px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .card .cat{color:var(--gold);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;font-weight:600}
+  .card .nm{font-size:1.1rem;line-height:1.3;font-weight:500;color:var(--text)}
+  .card .desc{color:var(--text-dim);font-size:.9rem;flex:1;line-height:1.5}
+  .card .row{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-top:6px}
+  .card .pricing{display:flex;flex-direction:column;gap:4px}
+  .card .price{color:var(--gold-light);font-weight:700;font-size:1.15rem}
+  .card .bundle{display:block;color:var(--text-dim);font-size:.8rem;font-weight:500}
+  .card .stock{font-size:.8rem;color:var(--text-dim);font-weight:500}
+  .card .stock.low{color:#e89a4a;font-weight:600}
+  .card .stock.out{color:var(--danger);font-weight:600}
+  .add{background:var(--purple);color:#fff;border:none;padding:10px 14px;border-radius:var(--radius);
+    font:inherit;font-size:.85rem;cursor:pointer;font-weight:700;letter-spacing:.05em;transition:all .2s;display:flex;align-items:center;justify-content:center}
+  .add:hover{background:#8a6fd0;transform:translateY(-2px);box-shadow:0 6px 16px rgba(124,92,191,.3)}
+  .add:active{transform:translateY(0)}
+  .add:disabled{background:var(--surface2);color:var(--text-dim);cursor:not-allowed;opacity:.6}
+
+  .empty{grid-column:1/-1;text-align:center;color:var(--text-dim);padding:80px 20px}
+  .empty-icon{font-size:4rem;margin-bottom:16px;opacity:.3}
+  .empty p{font-size:1.1rem;margin-bottom:8px}
+
+  /* Cart drawer */
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s}
+  .scrim.open{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,100%);background:var(--surface);
+    border-left:1px solid var(--border);z-index:201;transform:translateX(100%);transition:transform .3s;
+    display:flex;flex-direction:column}
+  .drawer.open{transform:translateX(0)}
+  .drawer header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+  .drawer header h2{font-weight:500;color:var(--gold-light);font-size:1.2rem}
+  .drawer .close{background:none;border:none;color:var(--text-dim);font-size:1.6rem;cursor:pointer;width:40px;height:40px;display:grid;place-items:center;transition:all .2s;border-radius:50%}
+  .drawer .close:hover{color:var(--gold);background:rgba(212,169,74,.1)}
+  
+  .items{flex:1;overflow-y:auto;padding:14px 24px}
+  .line{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;
+    padding:14px;border-bottom:1px solid var(--border);border-radius:6px;transition:all .2s}
+  .line:hover{background:rgba(212,169,74,.06)}
+  .line img{width:64px;height:64px;object-fit:cover;border-radius:6px}
+  .line .lnm{font-size:1rem;font-weight:500;line-height:1.3}
+  .line .lprice{color:var(--gold-light);font-size:.9rem;font-weight:600}
+  
+  .qty{display:flex;align-items:center;gap:8px;margin-top:6px}
+  .qty button{background:var(--surface2);border:1px solid var(--border);color:var(--text);
+    width:28px;height:28px;border-radius:4px;cursor:pointer;font:inherit;font-weight:bold;transition:all .2s;display:flex;align-items:center;justify-content:center}
+  .qty button:hover{border-color:var(--gold);color:var(--gold);background:rgba(212,169,74,.08)}
+  .qty button:active{transform:scale(.92)}
+  .qty span{min-width:24px;text-align:center;font-size:.9rem;font-weight:600}
+  .rm{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:.85rem;text-decoration:underline;transition:color .2s;font-weight:500}
+  .rm:hover{color:var(--danger)}
+  
+  .totals{padding:16px 24px;border-top:1px solid var(--border);background:var(--surface2)}
+  .tl{display:flex;justify-content:space-between;margin-bottom:10px;font-size:.95rem;color:var(--text-dim)}
+  .tl.grand{color:var(--gold-light);font-size:1.2rem;font-weight:700;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border)}
+  
+  .checkout-btn{width:100%;background:var(--gold);color:#0c0b10;border:none;padding:14px;border-radius:var(--radius);
+    font:inherit;font-size:1.02rem;cursor:pointer;font-weight:700;letter-spacing:.06em;margin-top:14px;transition:all .2s}
+  .checkout-btn:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 6px 16px rgba(212,169,74,.3)}
+  .checkout-btn:active{transform:translateY(0)}
+  .checkout-btn:disabled{background:var(--surface);color:var(--text-dim);cursor:not-allowed;opacity:.6}
+  
+  .cart-empty{text-align:center;padding:48px 20px;color:var(--text-dim)}
+  .cart-empty p{font-size:1.1rem;line-height:1.6}
+
+  /* Checkout form */
+  .checkout{padding:20px 24px;display:flex;flex-direction:column;gap:12px}
+  .checkout label{font-size:.8rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+  .checkout input,.checkout textarea,.checkout select{
+    background:var(--surface2);border:1px solid var(--border);color:var(--text);
+    padding:11px 13px;border-radius:var(--radius);font:inherit;font-size:.95rem;width:100%;transition:all .2s}
+  .checkout input:focus,.checkout textarea:focus,.checkout select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,169,74,.1)}
+  .checkout textarea{min-height:80px;resize:vertical}
+  .back-btn{background:none;border:1px solid var(--border);color:var(--text-dim);padding:10px;border-radius:var(--radius);
+    cursor:pointer;font:inherit;font-size:.9rem;font-weight:600;transition:all .2s}
+  .back-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(212,169,74,.08)}
+
+  .checkout-msg{font-size:.82rem;color:var(--text-dim);line-height:1.6;padding:0 24px 12px;text-align:center}
+  .addr-group{display:none;flex-direction:column;gap:12px}
+  .addr-group.visible{display:flex}
+  .addr-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .shipping-preview{font-size:.82rem;color:var(--gold);background:rgba(212,169,74,.08);border:1px solid var(--gold-dim);border-radius:var(--radius);padding:8px 12px;line-height:1.5}
+
+  /* Toast notifications */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
+    background:var(--gold);color:#0c0b10;padding:12px 24px;border-radius:var(--radius);
+    font-weight:700;z-index:300;opacity:0;transition:all .3s;font-size:.95rem;box-shadow:0 8px 24px rgba(0,0,0,.3);display:flex;align-items:center;gap:10px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.err{background:var(--danger);color:#fff}
+  .toast.info{background:var(--purple);color:#fff}
+
+  /* Footer */
+  footer{text-align:center;color:var(--text-dim);padding:48px 20px;border-top:1px solid var(--border);margin-top:60px;font-size:.9rem;line-height:1.8}
+  footer a{color:var(--gold);text-decoration:underline;transition:color .2s}
+  footer a:hover{color:var(--gold-light)}
+
+  /* Responsive */
+  @media(max-width:900px){
+    .grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+    header.head h1{font-size:2.2rem}
+  }
+
+  @media(max-width:768px){
+    nav{padding:0 20px;height:56px}
+    .nav-logo span{font-size:.6rem}
+    .cart-btn{padding:8px 14px;font-size:.85rem}
+    header.head{padding:40px 16px 24px}
+    header.head h1{font-size:1.8rem}
+    header.head p{font-size:.95rem}
+    .controls{padding:16px 16px}
+    .search{min-width:100%;max-width:100%}
+    .grid{padding:16px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+    .card .body{padding:12px}
+    .drawer{width:100%}
+  }
+
+  @media(max-width:480px){
+    nav{padding:0 12px;height:52px}
+    .nav-logo{font-size:1.2rem}
+    .cart-btn{padding:6px 10px;font-size:.8rem}
+    header.head h1{font-size:1.4rem;margin:8px 0 12px}
+    header.head p{font-size:.9rem}
+    .controls{padding:12px;gap:8px;flex-direction:column}
+    .search{font-size:.85rem}
+    .pill{padding:6px 14px;font-size:.8rem}
+    .grid{padding:12px;gap:10px}
+    .card{border-radius:6px}
+    .card .img{border-radius:6px}
+    .card .body{gap:6px;padding:10px}
+    .card .nm{font-size:.95rem}
+    .card .desc{font-size:.8rem}
+    .card .thumbs{gap:6px;padding:8px 10px 0}
+    .card .thumb{width:44px;height:44px}
+    .lb .lb-thumbs{bottom:74px;gap:6px;padding:7px 8px}
+    .lb .lb-thumb{width:46px;height:46px}
+    .lb .lb-caption{font-size:.85rem;padding:10px 14px;bottom:16px;max-width:92vw}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">minarealm<span>Crystals &amp; Minerals</span></a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/shop/">Shop</a></li>
+    <li><a href="/#services">Services</a></li>
+    <li><a href="/#events">Events</a></li>
+    <li><a href="/#contact">Contact</a></li>
+  </ul>
+  <button class="cart-btn" id="cart-btn" aria-label="Open shopping cart">
+    <span>🛒</span>
+    <span>Cart (<span id="cart-count">0</span>)</span>
+  </button>
+</nav>
+
+<header class="head">
+  <p class="eyebrow">Online Shop</p>
+  <h1>Shop the <em>Mineral Realm</em></h1>
+  <p>Crystals, jewelry, fossils, and spiritual tools — available for local pickup in Fenton &amp; Hartland or shipping across the US. Orders are confirmed by email; payment collected via Square invoice.</p>
+</header>
+
+<div class="controls">
+  <input id="search" class="search" type="search" placeholder="Search products…" aria-label="Search products">
+  <div id="cats"></div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>
+  © <span id="yr"></span> Minarealm · Fenton &amp; Hartland, MI · <a href="tel:5176722880">517-672-2880</a> · <a href="mailto:info@minarealm.shop">info@minarealm.shop</a>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true">
+  <header>
+    <h2 id="drawer-title">Your Cart</h2>
+    <button class="close" id="close" aria-label="Close cart">×</button>
+  </header>
+
+  <div id="cart-view">
+    <div class="items" id="items"></div>
+    <div class="totals" id="totals"></div>
+  </div>
+
+  <form id="checkout-form" class="checkout" style="display:none">
+    <button type="button" class="back-btn" id="back-to-cart">← Back to cart</button>
+    <label for="cf-name">Name *</label>
+    <input id="cf-name" name="name" required autocomplete="name">
+    <label for="cf-email">Email *</label>
+    <input id="cf-email" name="email" type="email" required autocomplete="email">
+    <label for="cf-phone">Phone</label>
+    <input id="cf-phone" name="phone" type="tel" autocomplete="tel">
+    <label for="cf-fulfill">Fulfillment *</label>
+    <select id="cf-fulfill" name="fulfillment" required>
+      <option value="">— Select fulfillment method —</option>
+      <option value="Pickup — Fenton">Pickup — Fenton (3452 W Thompson Rd)</option>
+      <option value="Pickup — Hartland">Pickup — Hartland (9512 E Highland Rd)</option>
+      <option value="Ship — USPS">Ship via USPS</option>
+    </select>
+    <div id="addr-group" class="addr-group">
+      <label for="cf-addr1">Street address *</label>
+      <input id="cf-addr1" name="addr1" autocomplete="address-line1" placeholder="123 Main St">
+      <label for="cf-addr2">Apt / suite <span style="font-weight:400;text-transform:none">(optional)</span></label>
+      <input id="cf-addr2" name="addr2" autocomplete="address-line2" placeholder="Apt 4B">
+      <div class="addr-row">
+        <div>
+          <label for="cf-city">City *</label>
+          <input id="cf-city" name="city" autocomplete="address-level2">
+        </div>
+        <div>
+          <label for="cf-state">State *</label>
+          <input id="cf-state" name="state" autocomplete="address-level1" placeholder="MI" maxlength="2" style="text-transform:uppercase">
+        </div>
+      </div>
+      <label for="cf-zip">ZIP code *</label>
+      <input id="cf-zip" name="zip" autocomplete="postal-code" inputmode="numeric" maxlength="10">
+      <div id="shipping-preview" class="shipping-preview" style="display:none"></div>
+    </div>
+    <label for="cf-notes">Notes</label>
+    <textarea id="cf-notes" name="notes" placeholder="Special requests, preferred stone, etc."></textarea>
+    <button class="checkout-btn" type="submit" id="cf-submit">Place Order</button>
+    <p class="checkout-msg" id="cf-msg">
+      After you submit, Cynthia will email you to confirm availability. No charge is made until you pick up.
+    </p>
+  </form>
+</aside>
+
+<div class="toast" id="toast">Added to cart</div>
+
+<div class="lb" id="lb" aria-hidden="true" role="dialog" aria-modal="true">
+  <button class="lb-close" id="lb-close" aria-label="Close image viewer">×</button>
+  <button class="lb-nav prev" id="lb-prev" aria-label="Previous image">❮</button>
+  <img id="lb-img" alt="">
+  <button class="lb-nav next" id="lb-next" aria-label="Next image">❯</button>
+  <div class="lb-thumbs" id="lb-thumbs"></div>
+  <div class="lb-caption" id="lb-caption"></div>
+</div>
+
+<script>
+// ─── Cloudflare Worker URL (catalog + orders) ──────────────────────
+const API = 'https://minarealm-admin.minarealm.workers.dev';
+// ───────────────────────────────────────────────────────────────────
+
+const STATE = {
+  products: [],
+  categories: [],
+  cart: JSON.parse(localStorage.getItem('minarealm_cart') || '[]'),
+  filter: 'all',
+  query: '',
+  slideIndex: {},
+  loading: false
+};
+
+const WIX_BASE = 'https://static.wixstatic.com/media';
+function fixImgUrl(u){
+  if(!u) return null;
+  const raw = String(u).trim();
+  const brokenR2 = /^https:\/\/pub-8d9037b9df7a4082ab5ace47eb40f7de\.r2\.dev\/products\/[^/]+\/(IMG_[0-9]+\.jpeg)$/i;
+  const m = raw.match(brokenR2);
+  if(m){
+    // Fallback to local mirrored inventory image when old R2 product key is missing.
+    return '/assets/start-of-inventory/' + m[1];
+  }
+
+  if(raw.startsWith('http')) return raw;
+
+  if(raw.startsWith('/media/')) return WIX_BASE + raw;
+
+  if(raw.startsWith('/assets/')) return raw;
+
+  if(raw.startsWith('/')) {
+    const name = raw.slice(1);
+    if(/^IMG_[0-9]+\.jpe?g$/i.test(name)) return '/assets/start-of-inventory/' + name;
+    if(/^(59ff2e_|a0c024|b2d032|c6323c_).+\.(jpg|jpeg|png|webp|avif)$/i.test(name)) return '/assets/optimized/' + name;
+    if(/^(logo\.svg|ppend\.jpg)$/i.test(name)) return '/assets/' + name;
+    return raw;
+  }
+
+  return raw;
+}
+function imagesOf(p){
+  if(Array.isArray(p.images) && p.images.length > 0) return p.images.map(fixImgUrl).filter(Boolean);
+  const img = fixImgUrl(p.image);
+  if(img) return [img];
+  return ['/logo.svg'];
+}
+
+const money = n => '$' + Number(n).toFixed(2);
+const $ = id => document.getElementById(id);
+
+async function loadProducts(){
+  try {
+    STATE.loading = true;
+    const r = await fetch(API + '/api/products', { cache: 'no-store' });
+    if(!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    STATE.products = d.products || [];
+    STATE.categories = d.categories || [];
+    STATE.loading = false;
+    return;
+  } catch(e){ /* fall through */ }
+  try {
+    const r = await fetch('/data/products.public.json?v=' + Date.now());
+    if(!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    STATE.products = d.products || [];
+    STATE.categories = d.categories || [];
+  } catch(e){
+    $('grid').innerHTML = '<div class="empty"><div class="empty-icon">⚠</div><p>Could not load products.</p><p><a href="tel:5176722880">Call 517-672-2880</a> to order.</p></div>';
+  }
+  STATE.loading = false;
+}
+
+function renderCats(){
+  const el = $('cats');
+  const all = [{id:'all',name:'All'}].concat(STATE.categories);
+  el.innerHTML = all.map(c =>
+    `<button class="pill${STATE.filter===c.id?' active':''}" data-cat="${c.id}">${c.name}</button>`
+  ).join('');
+  el.querySelectorAll('button').forEach(b => b.onclick = () => {
+    STATE.filter = b.dataset.cat;
+    renderCats(); renderGrid();
+  });
+}
+
+function renderGrid(){
+  const q = STATE.query.trim().toLowerCase();
+  const items = STATE.products.filter(p => {
+    if(STATE.filter !== 'all' && p.category !== STATE.filter) return false;
+    if(q && !(p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q))) return false;
+    return true;
+  });
+  if(items.length === 0){
+    $('grid').innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><p>No products match your search.</p><p>Try different keywords or browse all categories.</p></div>';
+    return;
+  }
+  $('grid').innerHTML = items.map(p => {
+    const out = (p.stock ?? 0) <= 0;
+    const low = !out && p.stock <= 3;
+    const stockLabel = out ? 'Out of stock' : (low ? `Only ${p.stock} left` : `${p.stock} in stock`);
+    const stockCls = out ? 'out' : (low ? 'low' : '');
+    const bundle = p.bundle ? `<span class="bundle">${p.bundle}</span>` : '';
+    const imgs = imagesOf(p);
+    const idx = STATE.slideIndex[p.id] || 0;
+    const multi = imgs.length > 1;
+    const dots = multi ? `<div class="dots">${imgs.map((_,i)=>`<span class="dot${i===idx?' active':''}" data-dot="${i}"></span>`).join('')}</div>` : '';
+    const thumbs = `<div class="thumbs">${imgs.map((img, i)=>`
+      <button class="thumb${i===idx?' active':''}" data-thumb="${i}" aria-label="View image ${i+1} of ${p.name}">
+        <img loading="lazy" src="${img}" alt="${p.name} thumbnail ${i+1}">
+      </button>`).join('')}</div>`;
+    const arrows = multi ? `
+      <button class="nav-arrow prev" data-slide="prev" aria-label="Previous image">❮</button>
+      <button class="nav-arrow next" data-slide="next" aria-label="Next image">❯</button>
+      <span class="count">${idx+1}/${imgs.length}</span>` : '';
+    return `
+      <article class="card" data-pid="${p.id}">
+        <div class="img">
+          <img loading="lazy" src="${imgs[idx]}" alt="${p.name}" data-lightbox>
+          ${arrows}${dots}
+        </div>
+        ${thumbs}
+        <div class="body">
+          <span class="cat">${catName(p.category)}</span>
+          <h3 class="nm">${p.name}</h3>
+          <p class="desc">${p.description || ''}</p>
+          <div class="row">
+            <div class="pricing">
+              <span class="price">${money(p.price)}</span>
+              ${bundle}
+              <div class="stock ${stockCls}">${stockLabel}</div>
+            </div>
+            <button class="add" data-id="${p.id}" ${out?'disabled':''}>
+              ${out ? 'Sold Out' : 'Add'}
+            </button>
+          </div>
+        </div>
+      </article>`;
+  }).join('');
+  $('grid').querySelectorAll('.add').forEach(b => b.onclick = (e) => { e.stopPropagation(); addToCart(b.dataset.id); });
+
+  // Carousel controls
+  $('grid').querySelectorAll('.card').forEach(card => {
+    const pid = card.dataset.pid;
+    card.querySelectorAll('[data-slide]').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const p = STATE.products.find(x => x.id === pid);
+        const n = imagesOf(p).length;
+        const cur = STATE.slideIndex[pid] || 0;
+        STATE.slideIndex[pid] = btn.dataset.slide === 'next'
+          ? (cur + 1) % n
+          : (cur - 1 + n) % n;
+        renderGrid();
+      };
+    });
+    card.querySelectorAll('[data-dot]').forEach(d => {
+      d.onclick = (e) => {
+        e.stopPropagation();
+        STATE.slideIndex[pid] = parseInt(d.dataset.dot, 10);
+        renderGrid();
+      };
+    });
+    card.querySelectorAll('[data-thumb]').forEach(t => {
+      t.onclick = (e) => {
+        e.stopPropagation();
+        STATE.slideIndex[pid] = parseInt(t.dataset.thumb, 10);
+        renderGrid();
+      };
+    });
+    const lbImg = card.querySelector('[data-lightbox]');
+    if(lbImg) lbImg.onclick = () => openLightbox(pid);
+  });
+}
+
+let lbPid = null;
+function openLightbox(pid){
+  lbPid = pid;
+  const p = STATE.products.find(x => x.id === pid);
+  if(!p) return;
+  const imgs = imagesOf(p);
+  const idx = STATE.slideIndex[pid] || 0;
+  $('lb-img').src = imgs[idx];
+  $('lb-img').alt = p.name;
+  $('lb-caption').textContent = `${p.name} · ${idx+1}/${imgs.length}`;
+  $('lb-prev').style.display = imgs.length > 1 ? '' : 'none';
+  $('lb-next').style.display = imgs.length > 1 ? '' : 'none';
+  $('lb-thumbs').style.display = imgs.length > 1 ? '' : 'none';
+  $('lb-thumbs').innerHTML = imgs.map((img, i) => `
+    <button class="lb-thumb${i===idx ? ' active' : ''}" data-lb-thumb="${i}" aria-label="View image ${i+1} of ${p.name}">
+      <img loading="lazy" src="${img}" alt="${p.name} thumbnail ${i+1}">
+    </button>`).join('');
+  $('lb-thumbs').querySelectorAll('[data-lb-thumb]').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      STATE.slideIndex[pid] = parseInt(btn.dataset.lbThumb, 10);
+      openLightbox(pid);
+    };
+  });
+  $('lb').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(){ 
+  $('lb').classList.remove('open'); 
+  lbPid = null;
+  $('lb-thumbs').innerHTML = '';
+  document.body.style.overflow = '';
+}
+function lbStep(dir){
+  if(!lbPid) return;
+  const p = STATE.products.find(x => x.id === lbPid);
+  const imgs = imagesOf(p);
+  const cur = STATE.slideIndex[lbPid] || 0;
+  STATE.slideIndex[lbPid] = dir === 'next' ? (cur + 1) % imgs.length : (cur - 1 + imgs.length) % imgs.length;
+  openLightbox(lbPid);
+}
+
+function catName(id){
+  const c = STATE.categories.find(x => x.id === id);
+  return c ? c.name : id;
+}
+
+function addToCart(id){
+  const p = STATE.products.find(x => x.id === id);
+  if(!p) return;
+  const line = STATE.cart.find(l => l.id === id);
+  const inCart = line ? line.qty : 0;
+  if(inCart >= p.stock){ toast('Stock limit reached', 'err'); return; }
+  if(line) line.qty += 1;
+  else STATE.cart.push({ id, qty: 1 });
+  saveCart();
+  toast('Added to cart');
+}
+
+function updateQty(id, delta){
+  const line = STATE.cart.find(l => l.id === id);
+  if(!line) return;
+  const p = STATE.products.find(x => x.id === id);
+  const newQty = line.qty + delta;
+  if(newQty <= 0){ STATE.cart = STATE.cart.filter(l => l.id !== id); }
+  else if(p && newQty > p.stock){ toast('Stock limit reached', 'err'); return; }
+  else line.qty = newQty;
+  saveCart();
+}
+
+function removeLine(id){
+  STATE.cart = STATE.cart.filter(l => l.id !== id);
+  saveCart();
+}
+
+function saveCart(){
+  localStorage.setItem('minarealm_cart', JSON.stringify(STATE.cart));
+  renderCart();
+}
+
+function cartCount(){ return STATE.cart.reduce((s,l)=>s+l.qty,0); }
+
+function renderCart(){
+  $('cart-count').textContent = cartCount();
+  const items = $('items');
+  const totals = $('totals');
+  if(STATE.cart.length === 0){
+    items.innerHTML = '<div class="cart-empty"><p>Your cart is empty</p><p>Browse the shop and add crystals, jewelry, or spiritual tools.</p></div>';
+    totals.innerHTML = '';
+    return;
+  }
+  let sub = 0;
+  items.innerHTML = STATE.cart.map(l => {
+    const p = STATE.products.find(x => x.id === l.id);
+    if(!p) return '';
+    sub += p.price * l.qty;
+    return `
+      <div class="line">
+        <img src="${imagesOf(p)[0]}" alt="">
+        <div>
+          <div class="lnm">${p.name}</div>
+          <div class="lprice">${money(p.price)} × ${l.qty} = ${money(p.price*l.qty)}</div>
+          <div class="qty">
+            <button data-dec="${p.id}" aria-label="Decrease quantity">−</button>
+            <span>${l.qty}</span>
+            <button data-inc="${p.id}" aria-label="Increase quantity">+</button>
+            <button class="rm" data-rm="${p.id}">remove</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+  items.querySelectorAll('[data-inc]').forEach(b => b.onclick = () => updateQty(b.dataset.inc, +1));
+  items.querySelectorAll('[data-dec]').forEach(b => b.onclick = () => updateQty(b.dataset.dec, -1));
+  items.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => removeLine(b.dataset.rm));
+
+  totals.innerHTML = `
+    <div class="tl"><span>Subtotal</span><span>${money(sub)}</span></div>
+    <div class="tl"><span>Shipping &amp; tax</span><span>Calculated at checkout</span></div>
+    <div class="tl grand"><span>Estimated</span><span>${money(sub)}</span></div>
+    <button class="checkout-btn" id="go-checkout">Checkout &#x2192;</button>`;
+  $('go-checkout').onclick = showCheckout;
+}
+
+function openDrawer(){ $('drawer').classList.add('open'); $('scrim').classList.add('open'); $('drawer').setAttribute('aria-hidden','false'); }
+function closeDrawer(){
+  $('drawer').classList.remove('open'); $('scrim').classList.remove('open'); $('drawer').setAttribute('aria-hidden','true');
+  showCart();
+}
+// Weight & shipping helpers (mirror server-side logic for preview)
+const WEIGHT_EST = {
+  'crystal-bracelet':25,'agate-slice':80,'crystal-sphere':150,'labradorite-heart':100,
+  'polished-sphere':400,'mystery-bag':350,'tumbled-set':80,'sterling-ring':15,
+  'selenite-dragonfly-plate':200,'selenite-mushroom-women-plate':390,'selenite-tower-6in':150,
+  'yellow-calcite-pooh-bear':122,'yooperlite-owl':200,'purple-labradorite-palmstone':32
+};
+function productWeightG(p){
+  if(p.weight_grams) return Math.round(Number(p.weight_grams));
+  if(p.weight_lbs) return Math.round(Number(p.weight_lbs)*453.592);
+  return WEIGHT_EST[p.id]||200;
+}
+function shippingRate(g,sub){
+  const threshold = 100;
+  if(sub>=threshold) return 0;
+  if(g<=250) return 6.99; if(g<=450) return 9.99;
+  if(g<=1000) return 14.99; if(g<=2000) return 19.99;
+  return 29.99;
+}
+const MI_TAX_RATE = 0.06;
+function cartSub(){
+  let sub=0;
+  STATE.cart.forEach(l=>{
+    const p=STATE.products.find(x=>x.id===l.id);
+    if(p) sub+=p.price*l.qty;
+  });
+  return sub;
+}
+function cartShipping(){
+  let g=0, sub=0;
+  STATE.cart.forEach(l=>{
+    const p=STATE.products.find(x=>x.id===l.id);
+    if(p){ g+=productWeightG(p)*l.qty; sub+=p.price*l.qty; }
+  });
+  return shippingRate(g,sub);
+}
+function updateShippingPreview(){
+  const fulfill=$('cf-fulfill').value;
+  const isShip=fulfill.startsWith('Ship');
+  const ag=$('addr-group'); const prev=$('shipping-preview');
+  if(isShip){
+    ag.classList.add('visible');
+    // make address fields required
+    ['cf-addr1','cf-city','cf-state','cf-zip'].forEach(id=>$(id).required=true);
+    const rate=cartShipping();
+    const sub=cartSub();
+    prev.style.display='';
+    const taxAmt = Math.round(sub * MI_TAX_RATE * 100) / 100;
+    const estTotal = sub + rate + taxAmt;
+    prev.innerHTML = (rate===0
+      ? '<strong>Shipping: FREE</strong> (order over $100)'
+      : `<strong>Shipping: ${money(rate)}</strong> (USPS flat rate, exact weight calculated at checkout)`)
+      + `<br>MI Sales Tax (6%): ${money(taxAmt)}`
+      + `<br><strong>Estimated total: ${money(estTotal)}</strong>`;
+    $('cf-submit').textContent='Pay with Square';
+    $('cf-msg').textContent='You will be taken to a secure Square checkout page to pay. We ship USPS.';
+  } else {
+    ag.classList.remove('visible');
+    ['cf-addr1','cf-city','cf-state','cf-zip'].forEach(id=>$(id).required=false);
+    prev.style.display='none';
+    $('cf-submit').textContent='Place Order';
+    $('cf-msg').textContent='After you submit, Cynthia will confirm availability and send a Square invoice for payment. No charge is made until pickup.';
+  }
+}
+function showCheckout(){
+  if(STATE.cart.length === 0) return;
+  $('cart-view').style.display = 'none';
+  $('checkout-form').style.display = 'flex';
+  $('drawer-title').textContent = 'Checkout';
+  updateShippingPreview();
+}
+function showCart(){
+  $('cart-view').style.display = 'block';
+  $('checkout-form').style.display = 'none';
+  $('drawer-title').textContent = 'Your Cart';
+}
+
+function toast(msg, type = 'success'){
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+// Event listeners
+$('cart-btn').onclick = openDrawer;
+$('close').onclick = closeDrawer;
+$('scrim').onclick = closeDrawer;
+$('back-to-cart').onclick = showCart;
+$('search').oninput = e => { STATE.query = e.target.value; renderGrid(); };
+
+$('cf-fulfill').addEventListener('change', updateShippingPreview);
+
+$('checkout-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fulfill = $('cf-fulfill').value;
+  const isShip = fulfill.startsWith('Ship');
+  const btn = $('cf-submit');
+  const payload = {
+    name:  $('cf-name').value.trim(),
+    email: $('cf-email').value.trim(),
+    phone: $('cf-phone').value.trim(),
+    source: 'shop-web',
+    fulfillment: fulfill,
+    notes: $('cf-notes').value.trim(),
+    lines: STATE.cart.map(l => ({ id: l.id, qty: l.qty }))
+  };
+  btn.disabled = true;
+  const origText = btn.textContent;
+  if(isShip){
+    btn.textContent = 'Creating payment link…';
+    payload.shippingAddress = {
+      name:  $('cf-name').value.trim(),
+      line1: $('cf-addr1').value.trim(),
+      line2: ($('cf-addr2').value||'').trim(),
+      city:  $('cf-city').value.trim(),
+      state: $('cf-state').value.trim().toUpperCase(),
+      zip:   $('cf-zip').value.trim()
+    };
+    try {
+      const r = await fetch(API + '/api/checkout/create-payment-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await r.json();
+      if(!r.ok) throw new Error(data.error || 'Checkout error');
+      localStorage.removeItem('minarealm_cart');
+      window.location.href = data.url;
+    } catch(ex){
+      btn.disabled = false;
+      btn.textContent = origText;
+      toast(ex.message || 'Could not start checkout. Please try again.', 'err');
+    }
+  } else {
+    btn.textContent = 'Placing order…';
+    try {
+      const r = await fetch(API + '/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        keepalive: true
+      });
+      const data = await r.json().catch(() => ({}));
+      if(!r.ok) throw new Error(data.error || 'Could not place order. Please try again.');
+      localStorage.removeItem('minarealm_cart');
+      // Show inline confirmation
+      $('checkout-form').innerHTML = '<div style="padding:24px;text-align:center;line-height:1.8"><p style="font-size:1.1rem;color:var(--gold);margin-bottom:8px">✓ Order received</p><p style="color:var(--text-dim);font-size:.9rem">Cynthia will email you at '+payload.email+' to confirm and send a Square invoice. Thank you!</p></div>';
+    } catch(_){
+      btn.disabled = false;
+      btn.textContent = origText;
+      toast('Something went wrong. Please try again.', 'err');
+    }
+  }
+});
+
+$('lb-close').onclick = closeLightbox;
+$('lb-prev').onclick = () => lbStep('prev');
+$('lb-next').onclick = () => lbStep('next');
+$('lb').onclick = (e) => { if(e.target === $('lb')) closeLightbox(); };
+window.addEventListener('keydown', (e) => {
+  if(!$('lb').classList.contains('open')) return;
+  if(e.key === 'Escape') closeLightbox();
+  else if(e.key === 'ArrowLeft') lbStep('prev');
+  else if(e.key === 'ArrowRight') lbStep('next');
+});
+
+$('yr').textContent = new Date().getFullYear();
+
+// Initialize
+(async () => {
+  await loadProducts();
+  renderCats();
+  renderGrid();
+  renderCart();
+})();
+</script>
+</body>
+</html>

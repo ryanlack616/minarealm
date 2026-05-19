@@ -1,0 +1,40 @@
+{
+  "forms": {
+    "contact": {
+      "name": "Contact Message",
+      "actions": [
+        { "type": "email", "to": "cynthia@minarealm.org" }
+      ]
+    },
+    "booking": {
+      "name": "Booking Request",
+      "actions": [
+        { "type": "email", "to": "cynthia@minarealm.org" }
+      ]
+    },
+    "subscription-signup": {
+      "name": "Subscription Box Signup",
+      "actions": [
+        { "type": "email", "to": "cynthia@minarealm.org" }
+      ]
+    },
+    "tea-signup": {
+      "name": "Tea Launch Signup",
+      "actions": [
+        { "type": "email", "to": "cynthia@minarealm.org" }
+      ]
+    },
+    "welcome-signup": {
+      "name": "Welcome 15% Off Signup",
+      "actions": [
+        { "type": "email", "to": "cynthia@minarealm.org" }
+      ]
+    },
+    "shop-order": {
+      "name": "Shop Order Request",
+      "actions": [
+        { "type": "email", "to": "cynthia@minarealm.org" }
+      ]
+    }
+  }
+}

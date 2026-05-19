@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6M44R4WB73"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6M44R4WB73');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop · Minarealm Crystals</title>
+<meta name="description" content="Shop crystals, jewelry, fossils, and spiritual tools from Minarealm. Free local pickup in Fenton and Hartland, Michigan.">
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<style>
+  :root {
+    --bg:#0c0b10; --surface:#14121c; --surface2:#1c1926;
+    --gold:#d4a94a; --gold-light:#e8c570; --gold-dim:#8a6d30;
+    --purple:#7c5cbf; --text:#e8e4d6; --text-dim:#9a9080;
+    --border:#2a2535; --nav-bg:rgba(12,11,16,.96); --radius:4px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:Georgia,'Times New Roman',serif;line-height:1.6;min-height:100vh}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+
+  nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);padding:0 40px;display:flex;align-items:center;
+    justify-content:space-between;height:64px}
+  .nav-logo{font-size:1.4rem;color:var(--gold);letter-spacing:.02em}
+  .nav-logo span{display:block;font-size:.65rem;color:var(--text-dim);letter-spacing:.2em;text-transform:uppercase}
+  .nav-links{list-style:none;display:flex;gap:28px}
+  .nav-links a{color:var(--text);font-size:.95rem;transition:color .2s}
+  .nav-links a:hover{color:var(--gold)}
+  .cart-btn{background:var(--gold);color:#0c0b10;border:none;padding:10px 16px;border-radius:var(--radius);
+    font-family:inherit;font-size:.9rem;cursor:pointer;font-weight:700;letter-spacing:.05em}
+  .cart-btn:hover{background:var(--gold-light)}
+
+  header.head{text-align:center;padding:56px 20px 24px;max-width:900px;margin:0 auto}
+  header.head .eyebrow{color:var(--gold);letter-spacing:.25em;text-transform:uppercase;font-size:.8rem}
+  header.head h1{font-size:2.8rem;margin:8px 0 14px;font-weight:400}
+  header.head h1 em{color:var(--gold-light)}
+  header.head p{color:var(--text-dim);max-width:620px;margin:0 auto}
+
+  .controls{max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+  .pill{background:var(--surface);border:1px solid var(--border);color:var(--text-dim);
+    padding:7px 16px;border-radius:999px;cursor:pointer;font:inherit;font-size:.85rem;transition:all .15s}
+  .pill:hover{color:var(--text);border-color:var(--gold-dim)}
+  .pill.active{background:var(--gold);color:#0c0b10;border-color:var(--gold);font-weight:700}
+  .search{background:var(--surface);border:1px solid var(--border);color:var(--text);
+    padding:8px 14px;border-radius:var(--radius);font:inherit;font-size:.9rem;min-width:220px}
+  .search:focus{outline:none;border-color:var(--gold)}
+
+  .grid{max-width:1200px;margin:0 auto;padding:24px;
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;
+    display:flex;flex-direction:column;transition:transform .2s,border-color .2s}
+  .card:hover{transform:translateY(-3px);border-color:var(--gold-dim)}
+  .card .img{position:relative;aspect-ratio:1/1;background:#0c0b10;overflow:hidden;cursor:zoom-in}
+  .card .img img{width:100%;height:100%;object-fit:cover;transition:opacity .2s}
+  .card .img .nav-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(12,11,16,.7);
+    color:var(--text);border:1px solid var(--border);width:30px;height:30px;border-radius:50%;
+    display:grid;place-items:center;cursor:pointer;font-size:1rem;line-height:1;opacity:0;transition:opacity .2s;z-index:2}
+  .card:hover .img .nav-arrow{opacity:1}
+  .card .img .nav-arrow.prev{left:6px}
+  .card .img .nav-arrow.next{right:6px}
+  .card .img .nav-arrow:hover{background:var(--gold);color:#0c0b10;border-color:var(--gold)}
+  .card .img .dots{position:absolute;bottom:6px;left:0;right:0;display:flex;justify-content:center;gap:4px;z-index:2}
+  .card .img .dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4);transition:background .15s}
+  .card .img .dot.active{background:var(--gold)}
+  .card .img .count{position:absolute;top:6px;right:6px;background:rgba(12,11,16,.75);color:var(--text);
+    font-size:.7rem;padding:2px 7px;border-radius:999px;z-index:2;font-family:-apple-system,sans-serif}
+
+  /* Lightbox */
+  .lb{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+  .lb.open{display:flex}
+  .lb img{max-width:95vw;max-height:90vh;object-fit:contain;border-radius:4px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+  .lb .lb-close{position:absolute;top:16px;right:20px;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;z-index:2}
+  .lb .lb-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);color:#fff;
+    border:1px solid rgba(255,255,255,.2);width:48px;height:48px;border-radius:50%;cursor:pointer;font-size:1.5rem}
+  .lb .lb-nav.prev{left:20px}.lb .lb-nav.next{right:20px}
+  .lb .lb-caption{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:#fff;font-size:.9rem;text-align:center;background:rgba(0,0,0,.6);padding:8px 16px;border-radius:4px;max-width:80vw}
+  .card .body{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .card .cat{color:var(--gold);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase}
+  .card .nm{font-size:1.05rem;line-height:1.3}
+  .card .desc{color:var(--text-dim);font-size:.85rem;flex:1}
+  .card .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px}
+  .card .price{color:var(--gold-light);font-weight:700}
+  .card .bundle{display:block;color:var(--text-dim);font-size:.75rem;margin-top:2px}
+  .card .stock{font-size:.72rem;color:var(--text-dim)}
+  .card .stock.low{color:#e89a4a}
+  .card .stock.out{color:#c24a4a}
+  .add{background:var(--purple);color:#fff;border:none;padding:9px 12px;border-radius:var(--radius);
+    font:inherit;font-size:.82rem;cursor:pointer;font-weight:700;letter-spacing:.05em}
+  .add:hover{filter:brightness(1.15)}
+  .add:disabled{background:var(--surface2);color:var(--text-dim);cursor:not-allowed}
+
+  .empty{grid-column:1/-1;text-align:center;color:var(--text-dim);padding:60px 20px}
+
+  /* Cart drawer */
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s}
+  .scrim.open{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--surface);
+    border-left:1px solid var(--border);z-index:201;transform:translateX(100%);transition:transform .3s;
+    display:flex;flex-direction:column}
+  .drawer.open{transform:translateX(0)}
+  .drawer header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+  .drawer header h2{font-weight:400;color:var(--gold-light)}
+  .drawer .close{background:none;border:none;color:var(--text-dim);font-size:1.4rem;cursor:pointer}
+  .items{flex:1;overflow-y:auto;padding:12px 20px}
+  .line{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;
+    padding:12px 0;border-bottom:1px solid var(--border)}
+  .line img{width:56px;height:56px;object-fit:cover;border-radius:4px}
+  .line .lnm{font-size:.95rem}
+  .line .lprice{color:var(--gold-light);font-size:.85rem}
+  .qty{display:flex;align-items:center;gap:6px;margin-top:4px}
+  .qty button{background:var(--surface2);border:1px solid var(--border);color:var(--text);
+    width:22px;height:22px;border-radius:3px;cursor:pointer;font:inherit}
+  .qty span{min-width:18px;text-align:center;font-size:.85rem}
+  .rm{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:.8rem;text-decoration:underline}
+  .totals{padding:16px 20px;border-top:1px solid var(--border);background:var(--surface2)}
+  .tl{display:flex;justify-content:space-between;margin-bottom:8px;font-size:.9rem;color:var(--text-dim)}
+  .tl.grand{color:var(--gold-light);font-size:1.1rem;font-weight:700;margin-top:12px;padding-top:12px;border-top:1px dashed var(--border)}
+  .checkout-btn{width:100%;background:var(--gold);color:#0c0b10;border:none;padding:13px;border-radius:var(--radius);
+    font:inherit;font-size:1rem;cursor:pointer;font-weight:700;letter-spacing:.1em;margin-top:14px}
+  .checkout-btn:hover{background:var(--gold-light)}
+  .checkout-btn:disabled{background:var(--surface);color:var(--text-dim);cursor:not-allowed}
+  .cart-empty{text-align:center;padding:40px 20px;color:var(--text-dim)}
+
+  /* Checkout form */
+  .checkout{padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+  .checkout label{font-size:.78rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.1em}
+  .checkout input,.checkout textarea,.checkout select{
+    background:var(--surface2);border:1px solid var(--border);color:var(--text);
+    padding:9px 11px;border-radius:var(--radius);font:inherit;font-size:.92rem;width:100%}
+  .checkout input:focus,.checkout textarea:focus,.checkout select:focus{outline:none;border-color:var(--gold)}
+  .checkout textarea{min-height:70px;resize:vertical}
+  .back-btn{background:none;border:1px solid var(--border);color:var(--text-dim);padding:8px;border-radius:var(--radius);
+    cursor:pointer;font:inherit;font-size:.85rem}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(40px);
+    background:var(--gold);color:#0c0b10;padding:10px 18px;border-radius:var(--radius);
+    font-weight:700;z-index:300;opacity:0;transition:all .3s;font-size:.9rem}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  footer{text-align:center;color:var(--text-dim);padding:40px 20px;border-top:1px solid var(--border);margin-top:60px;font-size:.85rem}
+  footer a{color:var(--gold)}
+
+  @media(max-width:720px){
+    nav{padding:0 16px}
+    .nav-links{display:none}
+    header.head h1{font-size:2rem}
+    .grid{padding:16px;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+    .card .body{padding:10px}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">minarealm<span>Crystals &amp; Minerals</span></a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/shop/">Shop</a></li>
+    <li><a href="/#services">Services</a></li>
+    <li><a href="/#events">Events</a></li>
+    <li><a href="/#contact">Contact</a></li>
+  </ul>
+  <button class="cart-btn" id="cart-btn" aria-label="Open cart">Cart (<span id="cart-count">0</span>)</button>
+</nav>
+
+<header class="head">
+  <p class="eyebrow">Online Shop</p>
+  <h1>Shop the <em>Mineral Realm</em></h1>
+  <p>Crystals, jewelry, fossils, and spiritual tools — available for local pickup in Fenton &amp; Hartland or shipping across the US. Orders are confirmed by email; payment collected via Square invoice.</p>
+</header>
+
+<div class="controls">
+  <input id="search" class="search" type="search" placeholder="Search products…" aria-label="Search products">
+  <div id="cats"></div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>
+  © <span id="yr"></span> Minarealm · Fenton &amp; Hartland, MI · <a href="tel:5176722880">517-672-2880</a> · <a href="mailto:info@minarealm.shop">info@minarealm.shop</a>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <header>
+    <h2 id="drawer-title">Your Cart</h2>
+    <button class="close" id="close" aria-label="Close cart">×</button>
+  </header>
+
+  <div id="cart-view">
+    <div class="items" id="items"></div>
+    <div class="totals" id="totals"></div>
+  </div>
+
+  <form id="checkout-form" class="checkout" style="display:none" action="https://formspree.io/info@minarealm.shop" method="POST">
+    <button type="button" class="back-btn" id="back-to-cart">← Back to cart</button>
+    <label for="cf-name">Name</label>
+    <input id="cf-name" name="name" required autocomplete="name">
+    <label for="cf-email">Email</label>
+    <input id="cf-email" name="email" type="email" required autocomplete="email">
+    <label for="cf-phone">Phone</label>
+    <input id="cf-phone" name="phone" type="tel" autocomplete="tel">
+    <label for="cf-fulfill">Fulfillment</label>
+    <select id="cf-fulfill" name="fulfillment" required>
+      <option value="Pickup — Fenton">Pickup — Fenton (3452 W Thompson Rd)</option>
+      <option value="Pickup — Hartland">Pickup — Hartland</option>
+      <option value="Ship — USPS">Ship via USPS (quote to follow)</option>
+    </select>
+    <label for="cf-notes">Notes</label>
+    <textarea id="cf-notes" name="notes" placeholder="Special requests, preferred stone, etc."></textarea>
+    <input type="hidden" name="_subject" value="New Minarealm order">
+    <input type="hidden" name="order" id="cf-order">
+    <input type="hidden" name="order_total" id="cf-total">
+    <button class="checkout-btn" type="submit">Place Order</button>
+    <p style="font-size:.78rem;color:var(--text-dim);line-height:1.5">
+      After you submit, Cynthia will email you a Square invoice for payment and confirm availability. No charge is made here.
+    </p>
+  </form>
+</aside>
+
+<div class="toast" id="toast">Added to cart</div>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lb-close" aria-label="Close">×</button>
+  <button class="lb-nav prev" id="lb-prev" aria-label="Previous">‹</button>
+  <img id="lb-img" alt="">
+  <button class="lb-nav next" id="lb-next" aria-label="Next">›</button>
+  <div class="lb-caption" id="lb-caption"></div>
+</div>
+
+<script>
+// ─── Cloudflare Worker URL (catalog + orders) ──────────────────────
+const API = 'https://minarealm-admin.minarealm.workers.dev';
+// ───────────────────────────────────────────────────────────────────
+
+const STATE = {
+  products: [],
+  categories: [],
+  cart: JSON.parse(localStorage.getItem('minarealm_cart') || '[]'),
+  filter: 'all',
+  query: '',
+  slideIndex: {} // productId -> current image index
+};
+
+function imagesOf(p){
+  // Prefer p.images array if present & non-empty; fall back to p.image; else logo.
+  if(Array.isArray(p.images) && p.images.length > 0) return p.images.filter(Boolean);
+  if(p.image) return [p.image];
+  return ['/logo.svg'];
+}
+
+const money = n => '$' + Number(n).toFixed(2);
+const $ = id => document.getElementById(id);
+
+async function loadProducts(){
+  // Try Worker (live catalog) first; fall back to static JSON if unreachable.
+  try {
+    const r = await fetch(API + '/api/products', { cache: 'no-store' });
+    if(!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    STATE.products = d.products || [];
+    STATE.categories = d.categories || [];
+    return;
+  } catch(e){ /* fall through */ }
+  try {
+    const r = await fetch('/data/products.public.json?v=' + Date.now());
+    if(!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    STATE.products = d.products || [];
+    STATE.categories = d.categories || [];
+  } catch(e){
+    $('grid').innerHTML = '<div class="empty">Could not load products. Please call 517-672-2880.</div>';
+  }
+}
+
+function renderCats(){
+  const el = $('cats');
+  const all = [{id:'all',name:'All'}].concat(STATE.categories);
+  el.innerHTML = all.map(c =>
+    `<button class="pill${STATE.filter===c.id?' active':''}" data-cat="${c.id}">${c.name}</button>`
+  ).join('');
+  el.querySelectorAll('button').forEach(b => b.onclick = () => {
+    STATE.filter = b.dataset.cat;
+    renderCats(); renderGrid();
+  });
+}
+
+function renderGrid(){
+  const q = STATE.query.trim().toLowerCase();
+  const items = STATE.products.filter(p => {
+    if(STATE.filter !== 'all' && p.category !== STATE.filter) return false;
+    if(q && !(p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q))) return false;
+    return true;
+  });
+  if(items.length === 0){
+    $('grid').innerHTML = '<div class="empty">No products match. Try another search.</div>';
+    return;
+  }
+  $('grid').innerHTML = items.map(p => {
+    const out = (p.stock ?? 0) <= 0;
+    const low = !out && p.stock <= 3;
+    const stockLabel = out ? 'Out of stock' : (low ? `Only ${p.stock} left` : `${p.stock} in stock`);
+    const stockCls = out ? 'out' : (low ? 'low' : '');
+    const bundle = p.bundle ? `<span class="bundle">${p.bundle}</span>` : '';
+    const imgs = imagesOf(p);
+    const idx = STATE.slideIndex[p.id] || 0;
+    const multi = imgs.length > 1;
+    const dots = multi ? `<div class="dots">${imgs.map((_,i)=>`<span class="dot${i===idx?' active':''}" data-dot="${i}"></span>`).join('')}</div>` : '';
+    const arrows = multi ? `
+      <button class="nav-arrow prev" data-slide="prev" aria-label="Previous image">‹</button>
+      <button class="nav-arrow next" data-slide="next" aria-label="Next image">›</button>
+      <span class="count">${idx+1}/${imgs.length}</span>` : '';
+    return `
+      <article class="card" data-pid="${p.id}">
+        <div class="img">
+          <img loading="lazy" src="${imgs[idx]}" alt="${p.name}" data-lightbox>
+          ${arrows}${dots}
+        </div>
+        <div class="body">
+          <span class="cat">${catName(p.category)}</span>
+          <h3 class="nm">${p.name}</h3>
+          <p class="desc">${p.description || ''}</p>
+          <div class="row">
+            <div>
+              <span class="price">${money(p.price)}</span>
+              ${bundle}
+              <div class="stock ${stockCls}">${stockLabel}</div>
+            </div>
+            <button class="add" data-id="${p.id}" ${out?'disabled':''}>
+              ${out ? 'Sold Out' : 'Add to Cart'}
+            </button>
+          </div>
+        </div>
+      </article>`;
+  }).join('');
+  $('grid').querySelectorAll('.add').forEach(b => b.onclick = (e) => { e.stopPropagation(); addToCart(b.dataset.id); });
+
+  // Carousel controls
+  $('grid').querySelectorAll('.card').forEach(card => {
+    const pid = card.dataset.pid;
+    card.querySelectorAll('[data-slide]').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const p = STATE.products.find(x => x.id === pid);
+        const n = imagesOf(p).length;
+        const cur = STATE.slideIndex[pid] || 0;
+        STATE.slideIndex[pid] = btn.dataset.slide === 'next'
+          ? (cur + 1) % n
+          : (cur - 1 + n) % n;
+        renderGrid();
+      };
+    });
+    card.querySelectorAll('[data-dot]').forEach(d => {
+      d.onclick = (e) => {
+        e.stopPropagation();
+        STATE.slideIndex[pid] = parseInt(d.dataset.dot, 10);
+        renderGrid();
+      };
+    });
+    const lbImg = card.querySelector('[data-lightbox]');
+    if(lbImg) lbImg.onclick = () => openLightbox(pid);
+  });
+}
+
+// Lightbox
+let lbPid = null;
+function openLightbox(pid){
+  lbPid = pid;
+  const p = STATE.products.find(x => x.id === pid);
+  if(!p) return;
+  const imgs = imagesOf(p);
+  const idx = STATE.slideIndex[pid] || 0;
+  $('lb-img').src = imgs[idx];
+  $('lb-img').alt = p.name;
+  $('lb-caption').textContent = `${p.name} · ${idx+1}/${imgs.length}`;
+  $('lb-prev').style.display = imgs.length > 1 ? '' : 'none';
+  $('lb-next').style.display = imgs.length > 1 ? '' : 'none';
+  $('lb').classList.add('open');
+}
+function closeLightbox(){ $('lb').classList.remove('open'); lbPid = null; }
+function lbStep(dir){
+  if(!lbPid) return;
+  const p = STATE.products.find(x => x.id === lbPid);
+  const imgs = imagesOf(p);
+  const cur = STATE.slideIndex[lbPid] || 0;
+  STATE.slideIndex[lbPid] = dir === 'next' ? (cur + 1) % imgs.length : (cur - 1 + imgs.length) % imgs.length;
+  renderGrid();
+  openLightbox(lbPid);
+}
+
+function catName(id){
+  const c = STATE.categories.find(x => x.id === id);
+  return c ? c.name : id;
+}
+
+function addToCart(id){
+  const p = STATE.products.find(x => x.id === id);
+  if(!p) return;
+  const line = STATE.cart.find(l => l.id === id);
+  const inCart = line ? line.qty : 0;
+  if(inCart >= p.stock){ toast('No more in stock'); return; }
+  if(line) line.qty += 1;
+  else STATE.cart.push({ id, qty: 1 });
+  saveCart();
+  toast('Added to cart');
+}
+
+function updateQty(id, delta){
+  const line = STATE.cart.find(l => l.id === id);
+  if(!line) return;
+  const p = STATE.products.find(x => x.id === id);
+  const newQty = line.qty + delta;
+  if(newQty <= 0){ STATE.cart = STATE.cart.filter(l => l.id !== id); }
+  else if(p && newQty > p.stock){ toast('No more in stock'); return; }
+  else line.qty = newQty;
+  saveCart();
+}
+
+function removeLine(id){
+  STATE.cart = STATE.cart.filter(l => l.id !== id);
+  saveCart();
+}
+
+function saveCart(){
+  localStorage.setItem('minarealm_cart', JSON.stringify(STATE.cart));
+  renderCart();
+}
+
+function cartCount(){ return STATE.cart.reduce((s,l)=>s+l.qty,0); }
+
+function renderCart(){
+  $('cart-count').textContent = cartCount();
+  const items = $('items');
+  const totals = $('totals');
+  if(STATE.cart.length === 0){
+    items.innerHTML = '<div class="cart-empty">Your cart is empty.<br><br>Browse the shop and add crystals, jewelry, or a mystery bag.</div>';
+    totals.innerHTML = '';
+    return;
+  }
+  let sub = 0;
+  items.innerHTML = STATE.cart.map(l => {
+    const p = STATE.products.find(x => x.id === l.id);
+    if(!p) return '';
+    sub += p.price * l.qty;
+    return `
+      <div class="line">
+        <img src="${imagesOf(p)[0]}" alt="">
+        <div>
+          <div class="lnm">${p.name}</div>
+          <div class="lprice">${money(p.price)} × ${l.qty} = ${money(p.price*l.qty)}</div>
+          <div class="qty">
+            <button data-dec="${p.id}" aria-label="Decrease">−</button>
+            <span>${l.qty}</span>
+            <button data-inc="${p.id}" aria-label="Increase">+</button>
+            <button class="rm" data-rm="${p.id}">remove</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+  items.querySelectorAll('[data-inc]').forEach(b => b.onclick = () => updateQty(b.dataset.inc, +1));
+  items.querySelectorAll('[data-dec]').forEach(b => b.onclick = () => updateQty(b.dataset.dec, -1));
+  items.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => removeLine(b.dataset.rm));
+
+  const tax = 0; // sales tax collected via Square invoice
+  totals.innerHTML = `
+    <div class="tl"><span>Subtotal</span><span>${money(sub)}</span></div>
+    <div class="tl"><span>Shipping / tax</span><span>Quoted on invoice</span></div>
+    <div class="tl grand"><span>Estimated Total</span><span>${money(sub)}</span></div>
+    <button class="checkout-btn" id="go-checkout">Request Invoice</button>`;
+  $('go-checkout').onclick = showCheckout;
+}
+
+function openDrawer(){ $('drawer').classList.add('open'); $('scrim').classList.add('open'); $('drawer').setAttribute('aria-hidden','false'); }
+function closeDrawer(){
+  $('drawer').classList.remove('open'); $('scrim').classList.remove('open'); $('drawer').setAttribute('aria-hidden','true');
+  showCart();
+}
+function showCheckout(){
+  if(STATE.cart.length === 0) return;
+  $('cart-view').style.display = 'none';
+  $('checkout-form').style.display = 'flex';
+  $('drawer-title').textContent = 'Request Invoice';
+  const lines = STATE.cart.map(l => {
+    const p = STATE.products.find(x => x.id === l.id);
+    return p ? `${l.qty}× ${p.name} @ ${money(p.price)} = ${money(p.price*l.qty)}` : '';
+  }).filter(Boolean).join('\n');
+  const total = STATE.cart.reduce((s,l)=>{
+    const p = STATE.products.find(x=>x.id===l.id); return s + (p?p.price*l.qty:0);
+  },0);
+  $('cf-order').value = lines;
+  $('cf-total').value = money(total);
+}
+function showCart(){
+  $('cart-view').style.display = 'block';
+  $('checkout-form').style.display = 'none';
+  $('drawer-title').textContent = 'Your Cart';
+}
+
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1600);
+}
+
+$('cart-btn').onclick = openDrawer;
+$('close').onclick = closeDrawer;
+$('scrim').onclick = closeDrawer;
+$('back-to-cart').onclick = showCart;
+$('search').oninput = e => { STATE.query = e.target.value; renderGrid(); };
+$('checkout-form').addEventListener('submit', () => {
+  // Also send order to the Worker so it appears in /admin/ orders view.
+  // Fire-and-forget — Formspree submission still happens normally so Cynthia
+  // gets the email immediately even if the Worker is unreachable.
+  try {
+    const payload = {
+      name:  $('cf-name').value,
+      email: $('cf-email').value,
+      phone: $('cf-phone').value,
+      source: 'shop-web',
+      fulfillment: $('cf-fulfill').value,
+      notes: $('cf-notes').value,
+      lines: STATE.cart.map(l => ({ id: l.id, qty: l.qty }))
+    };
+    const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+    if(navigator.sendBeacon){
+      navigator.sendBeacon(API + '/api/orders', blob);
+    } else {
+      fetch(API + '/api/orders', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload), keepalive: true }).catch(()=>{});
+    }
+  } catch(e){ /* never block checkout */ }
+  setTimeout(()=>{ localStorage.removeItem('minarealm_cart'); }, 500);
+});
+
+$('lb-close').onclick = closeLightbox;
+$('lb-prev').onclick = () => lbStep('prev');
+$('lb-next').onclick = () => lbStep('next');
+$('lb').onclick = (e) => { if(e.target === $('lb')) closeLightbox(); };
+window.addEventListener('keydown', (e) => {
+  if(!$('lb').classList.contains('open')) return;
+  if(e.key === 'Escape') closeLightbox();
+  else if(e.key === 'ArrowLeft') lbStep('prev');
+  else if(e.key === 'ArrowRight') lbStep('next');
+});
+
+$('yr').textContent = new Date().getFullYear();
+
+(async () => {
+  await loadProducts();
+  renderCats();
+  renderGrid();
+  renderCart();
+})();
+</script>
+</body>
+</html>

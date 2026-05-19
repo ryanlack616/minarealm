@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6M44R4WB73"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6M44R4WB73');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crystal Subscription Box · Minarealm Crystals</title>
+<meta name="description" content="Hand-curated monthly crystal boxes from Minarealm. Every box is personalized to your preferences — no gimmicks, just genuine crystals chosen for you.">
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<style>
+  :root {
+    --bg:#0c0b10; --surface:#14121c; --surface2:#1c1926;
+    --gold:#d4a94a; --gold-light:#e8c570; --gold-dim:#8a6d30;
+    --text:#f1ecdf; --text-dim:#c8c0a8; --accent:#9b6ed1;
+    --radius:14px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:Georgia,'Times New Roman',serif; line-height:1.6; }
+  a { color:var(--gold-light); }
+  nav { display:flex; justify-content:space-between; align-items:center; padding:14px 40px; background:rgba(12,11,16,0.92); border-bottom:1px solid rgba(212,169,74,0.15); position:sticky; top:0; z-index:50; backdrop-filter:blur(8px); }
+  .nav-logo { display:flex; align-items:center; gap:12px; font-size:1.2rem; color:var(--gold-light); letter-spacing:0.04em; text-decoration:none; }
+  .nav-logo img { height:40px; width:40px; object-fit:contain; display:block; }
+  .nav-logo-text { display:flex; flex-direction:column; gap:2px; }
+  .nav-logo-text span { display:block; font-size:0.65rem; color:var(--text-dim); letter-spacing:0.2em; text-transform:uppercase; margin-top:0; font-style:normal; }
+  .nav-links { list-style:none; display:flex; gap:22px; }
+  .nav-links a { text-decoration:none; color:var(--text); font-size:0.92rem; transition:color 0.2s; }
+  .nav-links a:hover { color:var(--gold-light); }
+  .hero { padding:80px 24px 60px; text-align:center; max-width:780px; margin:0 auto; }
+  .hero-eyebrow { color:var(--accent); letter-spacing:0.3em; text-transform:uppercase; font-size:0.78rem; margin-bottom:18px; }
+  .hero h1 { font-size:3rem; line-height:1.15; margin-bottom:20px; color:var(--gold-light); }
+  .hero h1 em { color:var(--accent); font-style:italic; }
+  .hero p { color:var(--text-dim); font-size:1.1rem; max-width:620px; margin:0 auto 28px; }
+  .badge { display:inline-block; background:linear-gradient(135deg,#9b6ed1,#7c5cbf); color:#fff; padding:6px 14px; border-radius:99px; font-size:0.78rem; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:18px; }
+  .tiers { max-width:1100px; margin:40px auto; padding:0 24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px; }
+  .tier { background:var(--surface); border:1px solid rgba(212,169,74,0.18); border-radius:var(--radius); padding:32px 26px; display:flex; flex-direction:column; transition:transform 0.2s, border-color 0.2s; }
+  .tier:hover { transform:translateY(-4px); border-color:var(--gold); }
+  .tier.featured { border-color:var(--gold); box-shadow:0 8px 30px rgba(212,169,74,0.15); position:relative; }
+  .tier-flag { position:absolute; top:-12px; right:18px; background:var(--gold); color:#0c0b10; padding:4px 12px; border-radius:6px; font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase; font-weight:700; }
+  .tier-name { font-size:1.4rem; color:var(--gold-light); margin-bottom:6px; }
+  .tier-tag { color:var(--accent); font-size:0.85rem; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:18px; }
+  .tier-price { font-size:2.4rem; color:var(--text); margin-bottom:4px; }
+  .tier-price small { font-size:0.95rem; color:var(--text-dim); }
+  .tier-desc { color:var(--text-dim); font-size:0.95rem; margin:14px 0 18px; }
+  .tier ul { list-style:none; margin:8px 0 22px; flex:1; }
+  .tier li { padding:6px 0 6px 22px; position:relative; color:var(--text); font-size:0.93rem; }
+  .tier li::before { content:'✦'; position:absolute; left:0; color:var(--gold); }
+  .btn { display:inline-block; background:var(--gold); color:#0c0b10; padding:13px 22px; border-radius:8px; text-decoration:none; text-align:center; font-weight:600; letter-spacing:0.05em; transition:background 0.2s; cursor:pointer; border:none; font-family:inherit; font-size:0.95rem; }
+  .btn:hover { background:var(--gold-light); }
+  .btn-outline { background:transparent; color:var(--gold-light); border:1px solid var(--gold); }
+  .btn-outline:hover { background:rgba(212,169,74,0.1); }
+  .how { background:var(--surface2); padding:60px 24px; margin-top:60px; }
+  .how-inner { max-width:1000px; margin:0 auto; }
+  .how h2 { font-size:2rem; color:var(--gold-light); text-align:center; margin-bottom:8px; }
+  .how-sub { text-align:center; color:var(--text-dim); margin-bottom:40px; }
+  .how-steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:24px; }
+  .step { text-align:center; padding:20px; }
+  .step-num { display:inline-block; width:42px; height:42px; line-height:42px; border-radius:50%; background:var(--gold); color:#0c0b10; font-weight:700; margin-bottom:14px; font-size:1.1rem; }
+  .step-title { color:var(--gold-light); font-size:1.1rem; margin-bottom:8px; }
+  .step-text { color:var(--text-dim); font-size:0.92rem; }
+  .signup { max-width:720px; margin:60px auto; background:var(--surface); border:1px solid rgba(155,110,209,0.3); border-radius:var(--radius); padding:40px 32px; }
+  .signup h2 { color:var(--gold-light); font-size:1.7rem; margin-bottom:8px; }
+  .signup p { color:var(--text-dim); margin-bottom:24px; }
+  .form-grid { display:grid; gap:14px; }
+  .form-grid label { color:var(--text-dim); font-size:0.78rem; letter-spacing:0.1em; text-transform:uppercase; display:block; margin-bottom:4px; }
+  .form-grid input, .form-grid select, .form-grid textarea {
+    width:100%; padding:11px 13px; background:var(--bg); color:var(--text); border:1px solid rgba(212,169,74,0.2); border-radius:8px; font-family:inherit; font-size:0.95rem;
+  }
+  .form-grid input:focus, .form-grid select:focus, .form-grid textarea:focus { outline:none; border-color:var(--gold); }
+  .form-grid textarea { min-height:90px; resize:vertical; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .checkbox-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; }
+  .checkbox-grid label { display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--bg); border:1px solid rgba(212,169,74,0.15); border-radius:6px; cursor:pointer; font-size:0.88rem; color:var(--text); text-transform:none; letter-spacing:0; }
+  .checkbox-grid label:hover { border-color:var(--gold-dim); }
+  .checkbox-grid input { width:auto; }
+  .testimonials { max-width:1000px; margin:60px auto; padding:0 24px; }
+  .testimonials h2 { color:var(--gold-light); text-align:center; font-size:2rem; margin-bottom:8px; }
+  .testimonials .sub { text-align:center; color:var(--text-dim); margin-bottom:30px; font-style:italic; }
+  .t-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+  .t-card { background:var(--surface); border:1px solid rgba(212,169,74,0.15); border-radius:var(--radius); padding:24px; }
+  .t-stars { color:var(--gold); margin-bottom:10px; }
+  .t-text { color:var(--text); font-style:italic; margin-bottom:12px; font-size:0.95rem; }
+  .t-name { color:var(--text-dim); font-size:0.85rem; }
+  .t-placeholder { opacity:0.5; }
+  footer { background:var(--surface); padding:30px 24px; text-align:center; color:var(--text-dim); font-size:0.85rem; margin-top:60px; border-top:1px solid rgba(212,169,74,0.1); }
+  footer a { color:var(--gold-light); text-decoration:none; }
+  @media (max-width:600px){
+    .hero h1 { font-size:2rem; }
+    .nav-links { display:none; }
+    .form-row { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo" aria-label="Minarealm Crystals - Home">
+    <img src="/assets/logo.svg" alt="Minarealm logo">
+    <div class="nav-logo-text">
+      <div>minarealm</div>
+      <span>Crystals &amp; Minerals</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/shop/">Shop</a></li>
+    <li><a href="/subscription/">Boxes</a></li>
+    <li><a href="/#services">Services</a></li>
+    <li><a href="/#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <span class="badge">Now Accepting Founding Members</span>
+  <p class="hero-eyebrow">Monthly Crystal Subscription</p>
+  <h1>The <em>Curated Crystal Box</em></h1>
+  <p>Hand-picked, ethically sourced crystals delivered to your door each month. Every box is personalized to <em>you</em> — tell us what you love, what you don't, and Cynthia curates the rest. No fillers, no gimmicks, no two boxes the same.</p>
+  <a href="#signup" class="btn">Become a Founding Member</a>
+</section>
+
+<section class="tiers">
+
+  <div class="tier">
+    <h3 class="tier-name">The Seedling Box</h3>
+    <p class="tier-tag">New Collector Tier</p>
+    <div class="tier-price">$44.44<small>/mo</small></div>
+    <p class="tier-desc"><strong>Perfect for:</strong> New collectors or a monthly &ldquo;energy boost.&rdquo; Watch your collection grow. This box is designed to introduce you to the beauty of the mineral kingdom with high-quality, accessible pieces.</p>
+    <ul>
+      <li>Value: $55.00+ worth of crystals &amp; treasures</li>
+      <li>Includes a curated selection of tumbled stones, small clusters, carvings, or polished specimens</li>
+      <li>Free message from spirit (optional)</li>
+      <li>Shipping: always free</li>
+    </ul>
+    <a class="btn btn-outline" href="#signup">Join the Seedling Box</a>
+  </div>
+
+  <div class="tier featured">
+    <span class="tier-flag">Most Loved</span>
+    <h3 class="tier-name">The Garden Box</h3>
+    <p class="tier-tag">Member Favorite</p>
+    <div class="tier-price">$55.55<small>/mo</small></div>
+    <p class="tier-desc"><strong>Perfect for:</strong> Dedicated seekers. The Garden Box offers a deeper variety of specialized minerals and unique finds.</p>
+    <ul>
+      <li>Value: $70.00+ worth of crystals &amp; treasures</li>
+      <li>Includes a curated selection of a wider range of items, larger statement pieces, unique palm stones, tumbles, or rare items from our latest global shipments</li>
+      <li>Optional: tea, incense, and more</li>
+      <li>Free message from spirit (optional)</li>
+      <li>Shipping: always free</li>
+    </ul>
+    <a class="btn" href="#signup">Join the Garden Box</a>
+  </div>
+
+  <div class="tier">
+    <h3 class="tier-name">The Realm: Collector Tier</h3>
+    <p class="tier-tag">Best Value</p>
+    <div class="tier-price">$111.11<small>/mo</small></div>
+    <p class="tier-desc"><strong>Perfect for:</strong> The ultimate premium experience. This tier is for those who want to level up their collection with more substantial, stand-out pieces. It&rsquo;s our best value for enthusiasts.</p>
+    <ul>
+      <li>Value: $150.00+ worth of premium shop inventory</li>
+      <li>What to expect: a curated selection of our higher-tier items</li>
+      <li>Depending on monthly stock, this may include display pieces, larger raw clusters, or higher-grade or rare items and carvings with more presence than our standard boxes</li>
+      <li>Extra crystal freebies included</li>
+      <li>Free message from spirit (optional)</li>
+      <li>Shipping: always free</li>
+    </ul>
+    <a class="btn btn-outline" href="#signup">Join the Realm</a>
+  </div>
+
+</section>
+
+<section class="how">
+  <div class="how-inner">
+    <h2>How It Works</h2>
+    <p class="how-sub">Personalized, every single month — never a duplicate.</p>
+    <div class="how-steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Tell Us About You</div>
+        <div class="step-text">Fill out a short profile — your favorite stones, what you don't want, what you're working through.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Cynthia Curates</div>
+        <div class="step-text">Each month, Cynthia personally hand-picks a box just for you — no algorithms, no random shipments.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Arrives at Your Door</div>
+        <div class="step-text">Beautifully packaged, with a card explaining each piece and how to work with it.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-title">Adjust Anytime</div>
+        <div class="step-text">Pause, skip, or tell us what to send less of. Cancel any time, no commitment.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="signup" id="signup">
+  <h2>Become a Founding Member</h2>
+  <p>Reserve your spot. Cynthia will reach out within 1-2 days to confirm your preferences and set up your first box. Founding members get a permanent 10% off and a free welcome gift.</p>
+
+  <form class="form-grid" id="subscription-form">
+
+    <div class="form-row">
+      <div>
+        <label for="sb-name">Your Name</label>
+        <input id="sb-name" name="name" required autocomplete="name">
+      </div>
+      <div>
+        <label for="sb-email">Email</label>
+        <input id="sb-email" name="email" type="email" required autocomplete="email">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div>
+        <label for="sb-phone">Phone (optional)</label>
+        <input id="sb-phone" name="phone" type="tel" autocomplete="tel">
+      </div>
+      <div>
+        <label for="sb-tier">Tier</label>
+        <select id="sb-tier" name="tier" required>
+          <option value="">Pick a tier...</option>
+          <option>The Seedling Box - $44.44/mo</option>
+          <option>The Garden Box - $55.55/mo</option>
+          <option>The Realm: Collector Tier - $111.11/mo</option>
+          <option>Not sure yet — help me decide</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label>What stones / vibes do you love?</label>
+      <div class="checkbox-grid">
+        <label><input type="checkbox" name="loves" value="Amethyst"> Amethyst</label>
+        <label><input type="checkbox" name="loves" value="Rose Quartz"> Rose Quartz</label>
+        <label><input type="checkbox" name="loves" value="Clear Quartz"> Clear Quartz</label>
+        <label><input type="checkbox" name="loves" value="Labradorite"> Labradorite</label>
+        <label><input type="checkbox" name="loves" value="Selenite"> Selenite</label>
+        <label><input type="checkbox" name="loves" value="Black Tourmaline"> Tourmaline</label>
+        <label><input type="checkbox" name="loves" value="Citrine"> Citrine</label>
+        <label><input type="checkbox" name="loves" value="Fluorite"> Fluorite</label>
+        <label><input type="checkbox" name="loves" value="Carnelian"> Carnelian</label>
+        <label><input type="checkbox" name="loves" value="Moonstone"> Moonstone</label>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div>
+        <label for="sb-fulfill">Local pickup or shipped?</label>
+        <select id="sb-fulfill" name="fulfillment">
+          <option value="">Select...</option>
+          <option value="shipped">Shipped to me</option>
+          <option value="local_pickup">Local pickup (Fenton / Hartland)</option>
+        </select>
+      </div>
+      <div>
+        <label>Free message from spirit?</label>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;flex-wrap:wrap;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.9rem;color:var(--text);text-transform:none;letter-spacing:0;cursor:pointer;"><input type="radio" name="spirit_message" value="yes"> Yes please</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.9rem;color:var(--text);text-transform:none;letter-spacing:0;cursor:pointer;"><input type="radio" name="spirit_message" value="no"> No thank you</label>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <label for="sb-extras">Would you like optional extras in your box?</label>
+      <select id="sb-extras" name="extras_opt_in">
+        <option value="">Select...</option>
+        <option value="crystals_only">Crystals and minerals only</option>
+        <option value="extras_ok">Tea, incense, and extras are welcome</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="sb-avoid">What you don't want (allergies, stones, items, vibes to avoid)</label>
+      <textarea id="sb-avoid" name="avoid" placeholder="e.g. no jewelry, no sage (asthma), nothing too heavy..."></textarea>
+    </div>
+
+    <div>
+      <label for="sb-intent">What are you working on? (optional)</label>
+      <textarea id="sb-intent" name="intent" placeholder="e.g. grounding, opening up to love, sleep, manifestation, just collecting..."></textarea>
+    </div>
+
+    <button type="submit" class="btn" id="subscription-submit">Reserve My Box</button>
+    <p style="font-size:0.78rem;color:var(--text-dim);">No payment now. Cynthia confirms by phone or email and sets you up via Square invoice. Cancel anytime.</p>
+  </form>
+  <div id="subscription-success" style="display:none;margin-top:18px;padding:16px 18px;border:1px solid rgba(212,169,74,0.25);border-radius:10px;background:rgba(212,169,74,0.08);color:var(--text);">
+    Thank you. Your subscription request is in Cynthia's system and she will reach out within 1-2 days.
+  </div>
+</section>
+
+<section class="testimonials">
+  <h2>From the Founding Circle</h2>
+  <p class="sub">Real reviews coming as our first members receive their boxes.</p>
+  <div class="t-grid">
+    <div class="t-card t-placeholder">
+      <div class="t-stars">★★★★★</div>
+      <p class="t-text">"Your testimonial here — be among the first."</p>
+      <p class="t-name">— Future Founding Member</p>
+    </div>
+    <div class="t-card t-placeholder">
+      <div class="t-stars">★★★★★</div>
+      <p class="t-text">"Your testimonial here — be among the first."</p>
+      <p class="t-name">— Future Founding Member</p>
+    </div>
+    <div class="t-card t-placeholder">
+      <div class="t-stars">★★★★★</div>
+      <p class="t-text">"Your testimonial here — be among the first."</p>
+      <p class="t-name">— Future Founding Member</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Minarealm Crystals · Fenton &amp; Hartland, Michigan · <a href="tel:5176722880">517-672-2880</a></p>
+  <p style="margin-top:8px;"><a href="/">← Back to Minarealm</a></p>
+</footer>
+
+<script>
+  var API = 'https://minarealm-admin.minarealm.workers.dev';
+
+  function formDataToObject(form) {
+    var data = new FormData(form);
+    var out = {};
+    data.forEach(function(value, key) {
+      if (key === '_subject' || key === '_gotcha') return;
+      if (Object.prototype.hasOwnProperty.call(out, key)) {
+        if (!Array.isArray(out[key])) out[key] = [out[key]];
+        out[key].push(value);
+      } else {
+        out[key] = value;
+      }
+    });
+    return out;
+  }
+
+  document.getElementById('subscription-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var form = e.currentTarget;
+    var submit = document.getElementById('subscription-submit');
+    submit.textContent = 'Sending…';
+    submit.disabled = true;
+
+    var payload = formDataToObject(form);
+    payload.source = 'subscription-page';
+
+    fetch(API + '/api/forms/subscription', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    }).then(function(res) {
+      if (!res.ok) throw new Error('submit failed');
+      form.style.display = 'none';
+      document.getElementById('subscription-success').style.display = 'block';
+    }).catch(function() {
+      submit.textContent = 'Reserve My Box';
+      submit.disabled = false;
+      alert('Could not send your request right now. Please call 517-672-2880 or try again.');
+    });
+  });
+</script>
+
+</body>
+</html>

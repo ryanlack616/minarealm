@@ -1,0 +1,2602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Admin · Minarealm</title>
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<style>
+  :root{
+    --bg:#0c0b10;--surface:#14121c;--surface2:#1c1926;
+    --gold:#d4a94a;--gold-light:#e8c570;--purple:#7c5cbf;
+    --text:#e8e4d6;--text-dim:#9a9080;--border:#2a2535;
+    --danger:#c24a4a;--good:#4ac29a;--warn:#e89a4a;--radius:4px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,Segoe UI,Arial,sans-serif;line-height:1.5;min-height:100vh}
+  a{color:var(--gold)}
+  button,input,select,textarea{font:inherit}
+  img{max-width:100%;display:block}
+
+  /* Login */
+  .login{min-height:100vh;display:grid;place-items:center;padding:24px}
+  .login .box{background:var(--surface);border:1px solid var(--border);padding:40px;border-radius:8px;max-width:360px;width:100%;text-align:center}
+  .login h1{color:var(--gold);font-weight:400;margin-bottom:6px;font-family:Georgia,serif;font-size:2rem}
+  .login p{color:var(--text-dim);margin-bottom:24px;font-size:.9rem}
+  .login input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);
+    padding:12px;border-radius:var(--radius);margin-bottom:12px;text-align:center;letter-spacing:.3em}
+  .login input:focus{outline:none;border-color:var(--gold)}
+  .login button{width:100%;background:var(--gold);color:#0c0b10;border:none;padding:12px;
+    border-radius:var(--radius);cursor:pointer;font-weight:700;letter-spacing:.1em}
+  .login button:disabled{opacity:.6;cursor:wait}
+  .login .err{color:var(--danger);font-size:.85rem;margin-top:10px;min-height:1.2em}
+
+  /* Admin */
+  .admin{display:none}
+  .admin.active{display:block}
+  header.bar{position:sticky;top:0;z-index:50;background:rgba(12,11,16,.98);border-bottom:1px solid var(--border);
+    padding:12px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  header.bar h1{font-family:Georgia,serif;font-weight:400;color:var(--gold);font-size:1.3rem}
+  header.bar .right{display:flex;gap:8px;flex-wrap:wrap}
+  .save-status{display:flex;align-items:center;gap:6px;color:var(--text-dim);font-size:.85rem;padding:0 8px}
+  .save-status.dirty{color:var(--warn)}
+  .save-status.saving{color:var(--purple)}
+  .save-status.saved{color:var(--good)}
+
+  .tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 24px;background:var(--bg);position:sticky;top:64px;z-index:40}
+  .tab{background:none;border:none;color:var(--text-dim);padding:14px 20px;cursor:pointer;font-weight:600;
+    letter-spacing:.05em;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:8px}
+  .tab:hover{color:var(--text)}
+  .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+  .tab .badge{background:var(--purple);color:#fff;font-size:.7rem;padding:2px 8px;border-radius:999px;font-weight:700}
+
+  .pane{display:none}
+  .pane.active{display:block}
+
+  .btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);
+    padding:8px 14px;border-radius:var(--radius);cursor:pointer;font-size:.85rem;transition:all .15s}
+  .btn:hover{border-color:var(--gold);color:var(--gold)}
+  .btn.primary{background:var(--gold);color:#0c0b10;border-color:var(--gold);font-weight:700}
+  .btn.primary:hover{background:var(--gold-light);color:#0c0b10}
+  .btn.purple{background:var(--purple);color:#fff;border-color:var(--purple);font-weight:700}
+  .btn.danger{background:var(--danger);color:#fff;border-color:var(--danger)}
+  .btn.ghost{background:transparent}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  main{max-width:1200px;margin:0 auto;padding:24px}
+  .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+  .stat{background:var(--surface);border:1px solid var(--border);padding:14px;border-radius:6px}
+  .stat .k{color:var(--text-dim);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase}
+  .stat .v{font-size:1.6rem;color:var(--gold-light);margin-top:4px;font-family:Georgia,serif}
+  .stat.warn .v{color:var(--warn)}
+  .stat.danger .v{color:var(--danger)}
+  .stat.good .v{color:var(--good)}
+
+  .toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+  .toolbar input{background:var(--surface);border:1px solid var(--border);color:var(--text);
+    padding:8px 12px;border-radius:var(--radius);min-width:220px}
+  .toolbar input:focus{outline:none;border-color:var(--gold)}
+  .toolbar select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:var(--radius)}
+  .toolbar .spacer{flex:1}
+
+  table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:6px;overflow:hidden;border:1px solid var(--border)}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:.88rem;vertical-align:middle}
+  th{background:var(--surface2);color:var(--text-dim);font-weight:600;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(212,169,74,.04)}
+  .thumb{width:40px;height:40px;object-fit:cover;border-radius:4px;background:#0c0b10}
+  .cell-stock input,.cell-price input{background:var(--surface2);border:1px solid var(--border);color:var(--text);
+    padding:4px 6px;border-radius:3px;font-size:.85rem}
+  .cell-stock input{width:70px}
+  .cell-price input{width:80px}
+  .stock-low{color:var(--warn);font-weight:700}
+  .stock-out{color:var(--danger);font-weight:700}
+  .row-actions{display:flex;gap:6px;flex-wrap:wrap}
+  .row-actions button{padding:5px 10px;font-size:.75rem;border-radius:3px}
+  tr.row-low-margin td{background:rgba(232,154,74,.08)}
+  tr.row-missing-cost td{background:rgba(124,92,191,.12)}
+
+  /* Modal */
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:none;padding:20px;overflow-y:auto}
+  .scrim.open{display:flex;align-items:flex-start;justify-content:center}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:8px;max-width:600px;width:100%;padding:24px;margin:auto}
+  .modal h2{font-family:Georgia,serif;font-weight:400;color:var(--gold-light);margin-bottom:16px}
+  .field{margin-bottom:12px}
+  .field label{display:block;color:var(--text-dim);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px}
+  .field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);
+    color:var(--text);padding:9px 11px;border-radius:var(--radius)}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold)}
+  .field textarea{min-height:80px;resize:vertical}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+
+  /* Image manager */
+  .dropzone{border:2px dashed var(--border);border-radius:6px;padding:18px;text-align:center;color:var(--text-dim);
+    cursor:pointer;transition:all .15s;background:var(--surface2);font-size:.88rem;margin-top:8px}
+  .dropzone:hover,.dropzone.drag{border-color:var(--gold);color:var(--gold);background:rgba(212,169,74,.05)}
+  .dropzone strong{color:var(--gold)}
+  .image-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+  .image-row .thumb-sm{width:42px;height:42px;object-fit:cover;border-radius:3px;background:#0c0b10;flex-shrink:0;border:1px solid var(--border)}
+  .image-row input{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);
+    padding:7px 9px;border-radius:var(--radius);font-size:.82rem;font-family:monospace}
+  .image-row input:focus{outline:none;border-color:var(--gold)}
+  .image-row button{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);
+    width:30px;height:30px;border-radius:3px;cursor:pointer;font-size:.85rem;padding:0;flex-shrink:0}
+  .image-row button:hover{color:var(--gold);border-color:var(--gold)}
+  .image-row button.rm:hover{color:var(--danger);border-color:var(--danger)}
+  .upload-progress{font-size:.8rem;color:var(--purple);margin-top:6px;min-height:1em}
+
+  /* Orders */
+  .order-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 18px;margin-bottom:12px}
+  .order-card.new{border-left:4px solid var(--purple)}
+  .order-card.fulfilled{opacity:.7}
+  .order-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px}
+  .order-id{color:var(--text-dim);font-size:.78rem;font-family:monospace}
+  .order-status{font-size:.7rem;padding:3px 10px;border-radius:999px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+  .order-status.new{background:var(--purple);color:#fff}
+  .order-status.fulfilled{background:var(--good);color:#0c0b10}
+  .order-status.cancelled{background:var(--danger);color:#fff}
+  .order-cust{margin:6px 0 10px;font-size:.95rem}
+  .order-cust .em{color:var(--gold-light)}
+  .order-cust a{color:var(--gold);text-decoration:underline}
+  .order-meta{font-size:.82rem;color:var(--text-dim);margin-top:6px;line-height:1.5}
+  .order-lines{font-size:.85rem;color:var(--text-dim);margin:8px 0;background:var(--surface2);padding:10px 14px;border-radius:4px;line-height:1.7}
+  .order-lines .ln{display:flex;justify-content:space-between}
+  .order-lines .total{color:var(--gold-light);font-weight:700;margin-top:6px;padding-top:6px;border-top:1px dashed var(--border)}
+  .order-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .order-notes{margin-top:8px}
+  .order-notes textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);
+    padding:8px 10px;border-radius:var(--radius);font:inherit;font-size:.85rem;min-height:50px;resize:vertical}
+  .order-addr{font-size:.83rem;background:var(--surface2);border:1px solid var(--border);border-radius:4px;
+    padding:10px 14px;margin:8px 0;line-height:1.8;color:var(--text)}
+  .order-addr .addr-label{color:var(--gold-light);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;display:block;font-weight:700}
+  .tracking-row{display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap}
+  .tracking-row input{flex:1;min-width:160px;background:var(--surface2);border:1px solid var(--border);color:var(--text);
+    padding:7px 10px;border-radius:var(--radius);font:inherit;font-size:.85rem}
+  .tracking-row input:focus{outline:none;border-color:var(--gold)}
+  @media print{
+    nav,#sidebar,.order-actions,.tracking-row,.order-notes,.order-meta,.modal,.toast,
+    button:not(.no-print),select,.order-card:not(.printing){display:none!important}
+    body{background:#fff;color:#000}
+    .order-card.printing{border:none;box-shadow:none;padding:0;break-inside:avoid}
+    .order-addr,.order-lines{background:#f7f7f7;border:1px solid #ccc}
+    .order-head strong{font-size:1.1rem}
+  }
+
+  .empty-state{text-align:center;padding:60px 20px;color:var(--text-dim)}
+
+  .dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px}
+  .panel h3{color:var(--gold-light);font-family:Georgia,serif;font-weight:400;font-size:1.1rem;margin-bottom:10px}
+  .kpi-list{display:grid;gap:8px}
+  .kpi{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--border);padding-bottom:6px}
+  .kpi:last-child{border-bottom:none;padding-bottom:0}
+  .kpi .label{color:var(--text-dim);font-size:.85rem}
+  .kpi .value{color:var(--text);font-weight:700}
+  .tiny-table{width:100%;border-collapse:collapse}
+  .tiny-table td,.tiny-table th{padding:7px 4px;border-bottom:1px solid var(--border);font-size:.84rem}
+  .tiny-table tr:last-child td{border-bottom:none}
+  .action-list{display:grid;gap:8px}
+  .action-item{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;font-size:.85rem;color:var(--text-dim)}
+  .approval-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:12px}
+  .approval-box .meta{font-size:.84rem;color:var(--text-dim);margin-top:6px}
+  .approval-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(40px);
+    background:var(--good);color:#0c0b10;padding:10px 18px;border-radius:var(--radius);
+    font-weight:700;z-index:300;opacity:0;transition:all .3s}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.err{background:var(--danger);color:#fff}
+
+  details.help{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 18px;margin-top:24px}
+  details.help summary{cursor:pointer;color:var(--gold);font-weight:700;letter-spacing:.05em}
+  details.help p{margin-top:10px;color:var(--text-dim);font-size:.9rem;line-height:1.6}
+  details.help code{background:var(--surface2);padding:2px 6px;border-radius:3px;font-size:.85em}
+
+  @media(max-width:640px){
+    table{font-size:.78rem}
+    th,td{padding:8px}
+    .hide-sm{display:none}
+    .tabs{padding:0 12px;overflow-x:auto}
+    .tab{padding:12px 14px;font-size:.85rem;white-space:nowrap}
+  }
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<section class="login" id="login">
+  <div class="box">
+    <h1>minarealm</h1>
+    <p>Admin sign-in</p>
+    <form id="login-form">
+      <input type="text" id="un" placeholder="username" autocomplete="username" autocapitalize="none" autofocus style="letter-spacing:.1em">
+      <input type="password" id="pw" placeholder="password" autocomplete="current-password">
+      <button class="btn primary" type="submit" id="login-btn" style="font-size:1rem;padding:12px">Sign In</button>
+      <div class="err" id="login-err"></div>
+      <p style="color:var(--text-dim);font-size:.75rem;margin-top:14px;line-height:1.4">First time? Sign in as <code style="color:var(--gold)">cynthia</code> with the bootstrap password to create your owner account.</p>
+    </form>
+  </div>
+</section>
+
+<!-- Admin -->
+<div class="admin" id="admin">
+  <header class="bar">
+    <h1>Minarealm · Admin</h1>
+    <div class="right">
+      <span class="save-status" id="save-status"></span>
+      <span class="who" id="who" style="color:var(--text-dim);font-size:.85rem;padding:0 8px"></span>
+      <a class="btn" href="/shop/" target="_blank">View Shop ↗</a>
+      <button class="btn ghost" id="change-pw">Change Password</button>
+      <button class="btn ghost" id="reload">Reload</button>
+      <button class="btn ghost" id="logout">Log out</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="inventory">Inventory <span class="badge" id="inv-badge" style="display:none" title="Low or out-of-stock items">0</span></button>
+    <button class="tab" data-tab="orders">Orders <span class="badge" id="orders-badge" style="display:none">0</span></button>
+    <button class="tab" data-tab="forms">Forms</button>
+    <button class="tab owner-only" data-tab="users" style="display:none">Users</button>
+    <button class="tab owner-only" data-tab="activity" style="display:none">Activity</button>
+  </nav>
+
+  <main>
+    <!-- Dashboard pane -->
+    <div class="pane active" id="pane-dashboard">
+      <div class="summary" id="biz-summary"></div>
+      <div class="dashboard-grid">
+        <section class="panel">
+          <h3>Order Health</h3>
+          <div class="kpi-list" id="order-health"></div>
+        </section>
+
+        <section class="panel">
+          <h3>Top Products (30 days)</h3>
+          <div id="top-products"></div>
+        </section>
+
+        <section class="panel">
+          <h3>Inventory Risk</h3>
+          <div id="inventory-risk"></div>
+        </section>
+
+        <section class="panel">
+          <h3>Today’s Close-out</h3>
+          <div id="todays-closeout"></div>
+        </section>
+
+        <section class="panel">
+          <h3>Outstanding Invoices</h3>
+          <div id="outstanding-invoices"></div>
+        </section>
+
+        <section class="panel">
+          <h3>What Needs Attention</h3>
+          <div class="action-list" id="action-list"></div>
+        </section>
+
+        <section class="panel">
+          <h3>Slow Movers & Aging</h3>
+          <div id="slow-movers"></div>
+        </section>
+
+        <section class="panel">
+          <h3>Supplier Performance</h3>
+          <div id="supplier-performance"></div>
+        </section>
+
+        <section class="panel">
+          <h3>Reorder Queue</h3>
+          <div id="reorder-queue"></div>
+        </section>
+
+        <section class="panel">
+          <h3>Pricing Opportunities</h3>
+          <div id="pricing-opportunities"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Inventory pane -->
+    <div class="pane" id="pane-inventory">
+      <div id="approval-box"></div>
+      <div id="rollback-box"></div>
+      <div class="summary" id="summary"></div>
+
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Search products…">
+        <select id="filter-cat"></select>
+        <select id="filter-stock">
+          <option value="all">All stock levels</option>
+          <option value="instock">In stock</option>
+          <option value="low">Low (≤ 3)</option>
+          <option value="out">Out of stock</option>
+        </select>
+        <div class="spacer"></div>
+        <span id="count" style="color:var(--text-dim);font-size:.85rem"></span>
+        <button class="btn primary" id="add-btn">+ Add Product</button>
+      </div>
+
+      <section class="panel" style="margin-bottom:14px">
+        <h3>Bulk Cost Update</h3>
+        <div class="toolbar" style="margin-bottom:8px">
+          <select id="bulk-scope">
+            <option value="visible">Visible rows (current filters)</option>
+            <option value="missing">All products missing wholesale cost</option>
+            <option value="category">Specific category</option>
+            <option value="supplier">Specific supplier</option>
+          </select>
+          <select id="bulk-category" style="display:none"></select>
+          <input id="bulk-supplier" type="text" placeholder="Supplier name" style="display:none;min-width:220px">
+          <select id="bulk-mode">
+            <option value="fixed">Set fixed wholesale cost</option>
+            <option value="margin">Derive from target margin %</option>
+          </select>
+          <input id="bulk-value" type="number" step="0.01" min="0" placeholder="Value" style="max-width:140px">
+          <button class="btn" id="bulk-preview">Preview</button>
+          <button class="btn primary" id="bulk-apply">Apply</button>
+        </div>
+        <div id="bulk-preview-out" style="color:var(--text-dim);font-size:.84rem">Choose a scope and value, then click Preview.</div>
+        <div class="toolbar" style="margin-top:10px;margin-bottom:8px">
+          <select id="confirm-kind">
+            <option value="both">Confirm both retail + wholesale</option>
+            <option value="retail">Confirm retail only</option>
+            <option value="wholesale">Confirm wholesale only</option>
+          </select>
+          <button class="btn" id="confirm-preview">Preview Confirm</button>
+          <button class="btn primary" id="confirm-apply">Mark Confirmed</button>
+        </div>
+        <div id="confirm-preview-out" style="color:var(--text-dim);font-size:.84rem">Use current scope above, then preview and mark values confirmed.</div>
+      </section>
+
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Name</th>
+            <th class="hide-sm">Category</th>
+            <th>Retail</th>
+            <th class="hide-sm">Wholesale</th>
+            <th class="hide-sm">Margin</th>
+            <th>Stock</th>
+            <th class="hide-sm">Supplier</th>
+            <th class="hide-sm">Bundle</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+
+      <details class="help">
+        <summary>How saving &amp; images work</summary>
+        <p><strong>Auto-save:</strong> retail price, wholesale cost, stock, and product edits save automatically to the cloud after a brief pause. The status badge in the top-right shows <em>Saving…</em> → <em>Saved ✓</em>.</p>
+        <p><strong>Margin tracking:</strong> set both <em>Retail</em> and <em>Wholesale</em> to unlock per-item margin and portfolio gross-profit KPIs in Dashboard.</p>
+        <p><strong>Images:</strong> drag a photo onto the dropzone (or tap to choose). It uploads to the cloud and the URL is filled in automatically. The first image is the cover; reorder with the ↑ ↓ buttons.</p>
+        <p><strong>Orders:</strong> the Orders tab shows incoming customer orders. Mark them <em>Fulfilled</em> when shipped/picked up. New orders also email <code>cynthia@minarealm.org</code>.</p>
+      </details>
+    </div>
+
+    <!-- Orders pane -->
+    <div class="pane" id="pane-orders">
+      <div class="toolbar">
+        <select id="orders-filter">
+          <option value="new">New only</option>
+          <option value="all">All orders</option>
+          <option value="fulfilled">Fulfilled</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <input type="search" id="orders-search" placeholder="Search name / email / order #" style="flex:1;min-width:140px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 11px;border-radius:var(--radius);font:inherit;font-size:.85rem">
+        <div class="spacer"></div>
+        <button class="btn ghost" id="export-orders" title="Download orders for the date range as CSV">Export CSV</button>
+        <button class="btn ghost" id="refresh-orders">Refresh</button>
+      </div>
+      <div id="orders-list"></div>
+    </div>
+
+    <!-- Forms pane -->
+    <div class="pane" id="pane-forms">
+      <div class="toolbar">
+        <select id="forms-filter">
+          <option value="all">All submissions</option>
+          <option value="booking">Bookings</option>
+          <option value="contact">Contact</option>
+          <option value="newsletter">Newsletter</option>
+          <option value="subscription">Subscriptions</option>
+        </select>
+        <div class="spacer"></div>
+        <button class="btn ghost" id="refresh-forms">Refresh</button>
+      </div>
+      <div id="forms-list"></div>
+      <p style="color:var(--text-dim);font-size:.78rem;margin-top:10px">These submissions are stored internally in the Worker KV, not sent through Formspree.</p>
+    </div>
+
+    <!-- Users pane (owner-only) -->
+    <div class="pane" id="pane-users">
+      <div class="toolbar">
+        <strong style="color:var(--gold-light);font-family:Georgia,serif;font-size:1.1rem;font-weight:400">Staff Accounts</strong>
+        <div class="spacer"></div>
+        <button class="btn primary" id="add-user-btn">+ Add User</button>
+      </div>
+      <table id="users-tbl">
+        <thead><tr>
+          <th>Username</th><th>Name</th><th>Role</th><th>Publishes</th><th class="hide-sm">Last Login</th><th class="hide-sm">Created</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="users-rows"></tbody>
+      </table>
+      <p style="color:var(--text-dim);font-size:.85rem;margin-top:14px;line-height:1.5">
+        <strong style="color:var(--gold)">Owner</strong> = full access (you, Cynthia). Can manage users and view activity log.<br>
+        <strong style="color:var(--gold)">Admin</strong> = staff. Can edit inventory, manage orders, upload images. Cannot see users or activity.<br>
+        <strong style="color:var(--gold-light)">Auto-publish</strong> = trusted staff publish directly to the live shop. Others submit changes for your approval.
+      </p>
+    </div>
+
+    <!-- Activity pane (owner-only) -->
+    <div class="pane" id="pane-activity">
+      <div class="toolbar">
+        <strong style="color:var(--gold-light);font-family:Georgia,serif;font-size:1.1rem;font-weight:400">Activity Log</strong>
+        <input id="activity-search" type="search" placeholder="Filter (user, action, item)…">
+        <div class="spacer"></div>
+        <button class="btn ghost" id="refresh-activity">Refresh</button>
+      </div>
+      <table id="activity-tbl">
+        <thead><tr>
+          <th>When</th><th>Who</th><th>Action</th><th>Target</th><th>Details</th>
+        </tr></thead>
+        <tbody id="activity-rows"></tbody>
+      </table>
+      <p style="color:var(--text-dim);font-size:.78rem;margin-top:10px">Activity is retained for 365 days.</p>
+    </div>
+  </main>
+</div>
+
+<!-- Edit Modal -->
+<div class="scrim" id="modal-scrim">
+  <div class="modal">
+    <h2 id="modal-title">Edit Product</h2>
+    <form id="product-form">
+      <input type="hidden" id="f-id">
+      <div class="field">
+        <label>Name *</label>
+        <input id="f-name" required>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Category *</label>
+          <select id="f-category" required></select>
+        </div>
+        <div class="field">
+          <label>Slug / ID *</label>
+          <input id="f-slug" required pattern="[a-z0-9\-]+" title="lowercase letters, numbers, dashes">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Retail Price (USD) *</label>
+          <input id="f-retail" type="number" step="0.01" min="0" required>
+        </div>
+        <div class="field">
+          <label>Wholesale Cost (USD)</label>
+          <input id="f-wholesale" type="number" step="0.01" min="0" placeholder="0.00">
+        </div>
+      </div>
+      <div class="field">
+        <label>Stock *</label>
+        <input id="f-stock" type="number" min="0" step="1" required>
+      </div>
+      <div class="field">
+        <label>Weight (grams) <span style="color:var(--text-dim);text-transform:none;letter-spacing:0;font-size:.75rem">(for shipping — weigh with kitchen scale)</span></label>
+        <input id="f-weight" type="number" min="0" step="1" placeholder="e.g. 150">
+      </div>
+      <div class="field">
+        <label>Supplier</label>
+        <input id="f-supplier" placeholder="e.g. Spiritfolk Psychic Readings">
+      </div>
+      <div class="field">
+        <label>Bundle / Sub-label</label>
+        <input id="f-bundle" placeholder="e.g. 2 for $20">
+      </div>
+      <div class="field">
+        <label>Images <span style="color:var(--text-dim);text-transform:none;letter-spacing:0;font-size:.75rem">(first is the cover; drag to upload)</span></label>
+        <div id="f-images-list"></div>
+        <div class="dropzone" id="dropzone">
+          <strong>Drag photos here</strong> or click to choose<br>
+          <span style="font-size:.78rem">JPG · PNG · WebP &nbsp;·&nbsp; up to 8 MB each &nbsp;·&nbsp; multi-select OK</span>
+          <input type="file" id="file-input" accept="image/*" multiple style="display:none">
+        </div>
+        <div class="upload-progress" id="upload-progress"></div>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea id="f-desc"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="modal-cancel">Cancel</button>
+        <button type="submit" class="btn primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- User add/edit modal (owner-only) -->
+<div class="scrim" id="user-scrim">
+  <div class="modal" style="max-width:440px">
+    <h2 id="user-modal-title">Add User</h2>
+    <form id="user-form">
+      <input type="hidden" id="u-orig">
+      <div class="field">
+        <label>Username *</label>
+        <input id="u-username" required pattern="[a-z0-9_\-]+" title="lowercase letters, numbers, dashes, underscores" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Display Name</label>
+        <input id="u-name" placeholder="e.g. Sarah" autocomplete="off">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Role *</label>
+          <select id="u-role" required>
+            <option value="admin">Admin (staff)</option>
+            <option value="owner">Owner (full access)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Active</label>
+          <select id="u-active">
+            <option value="true">Active</option>
+            <option value="false">Disabled</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label id="u-pw-label">Password *</label>
+        <input id="u-password" type="text" autocomplete="new-password" placeholder="min 4 chars">
+        <p style="color:var(--text-dim);font-size:.78rem;margin-top:4px" id="u-pw-hint">They can change this themselves after first login.</p>
+      </div>
+      <div class="field" id="u-trusted-field">
+        <label>Publish changes</label>
+        <select id="u-trusted">
+          <option value="false">Needs your approval</option>
+          <option value="true">Auto-publish (trusted)</option>
+        </select>
+        <p style="color:var(--text-dim);font-size:.78rem;margin-top:4px">Trusted staff publish directly to the live shop. Others wait for your approval before anything goes live.</p>
+      </div>
+      <div class="modal-actions">
+<div class="scrim" id="pw-scrim">
+  <div class="modal" style="max-width:380px">
+    <h2>Change Your Password</h2>
+    <form id="pw-form">
+      <div class="field">
+        <label>Current Password</label>
+        <input id="pw-current" type="password" required autocomplete="current-password">
+      </div>
+      <div class="field">
+        <label>New Password</label>
+        <input id="pw-next" type="password" required minlength="4" autocomplete="new-password">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="pw-cancel">Cancel</button>
+        <button type="submit" class="btn primary">Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- In-store sale modal (multi-line cart) -->
+<div class="scrim" id="sold-scrim">
+  <div class="modal" style="max-width:680px">
+    <h2 id="sold-title">Ring up sale</h2>
+    <div id="sold-lines" style="margin-bottom:14px"></div>
+    <div style="display:flex;gap:6px;align-items:flex-end;padding:10px 12px;background:var(--surface2);border-radius:6px;margin-bottom:14px">
+      <div style="flex:1">
+        <label style="display:block;font-size:.72rem;color:var(--text-dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">Add another item</label>
+        <select id="sold-add-product" style="width:100%"></select>
+      </div>
+      <div style="width:72px">
+        <label style="display:block;font-size:.72rem;color:var(--text-dim);margin-bottom:4px">Qty</label>
+        <input id="sold-add-qty" type="number" min="1" step="1" value="1" style="width:100%;text-align:center">
+      </div>
+      <button type="button" class="btn" id="sold-add-btn" style="white-space:nowrap">+ Add</button>
+    </div>
+    <form id="sold-form">
+      <div class="field">
+        <label>Payment</label>
+        <select id="sold-payment">
+          <option value="paid_in_store">Paid now (cash / Square Reader)</option>
+          <option value="invoice">Pending invoice (customer pays later)</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Customer name <span style="color:var(--text-dim);font-weight:400">(optional)</span></label>
+          <input id="sold-customer-name" type="text" placeholder="Walk-in customer">
+        </div>
+        <div class="field">
+          <label>Email <span style="color:var(--text-dim);font-weight:400">(optional, for receipt)</span></label>
+          <input id="sold-customer-email" type="email">
+        </div>
+      </div>
+      <div class="field">
+        <label>Note <span style="color:var(--text-dim);font-weight:400">(optional)</span></label>
+        <input id="sold-note" type="text" maxlength="200" placeholder="e.g. discount given, event, etc.">
+      </div>
+      <div id="sold-total" style="font-size:1.2rem;margin:14px 0;padding:10px 12px;background:var(--surface2);border-radius:6px;text-align:center">Total: <strong>$0.00</strong></div>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="sold-cancel">Cancel</button>
+        <button type="submit" class="btn primary" id="sold-submit">Record sale</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="scrim" id="receipt-scrim">
+  <div class="modal" style="max-width:420px;text-align:center">
+    <h2 id="receipt-title" style="margin-bottom:6px">✓ Sale recorded</h2>
+    <div id="receipt-summary" style="color:var(--text-dim);margin-bottom:18px"></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button type="button" class="btn primary" id="receipt-print">Print receipt</button>
+      <button type="button" class="btn" id="receipt-email" style="display:none">Email receipt to <span id="receipt-email-addr"></span></button>
+      <button type="button" class="btn ghost" id="receipt-done">Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── Configure your worker URL here ──────────────────────────────────
+const API = 'https://minarealm-admin.minarealm.workers.dev';
+// ─────────────────────────────────────────────────────────────────────
+
+const $ = id => document.getElementById(id);
+function escHtml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+const state = {
+  data: null, orders: [], forms: [], users: [], audit: [],
+  user: null,            // { username, name, role }
+  pendingCatalog: null,
+  previousCatalog: null,
+  ordersFilter: 'new',
+  formsFilter: 'all',
+  activityFilter: '',
+  query: '', cat: 'all', stockFilter: 'all',
+  saveTimer: null, saving: false
+};
+
+const USER_KEY  = 'minarealm_admin_user';
+const isMissingWholesaleCost = (p) => !Number.isFinite(Number(p.wholesale_cost)) || Number(p.wholesale_cost) <= 0;
+
+async function api(path, opts = {}){
+  const allow401 = !!opts.allow401;
+  const res = await fetch(API + path, {
+    ...opts,
+    credentials: 'include',
+    headers: {
+      ...(opts.body && !(opts.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
+      ...(opts.headers || {})
+    }
+  });
+  if(res.status === 401){
+    if(allow401) return null;
+    localStorage.removeItem(USER_KEY);
+    location.reload();
+    throw new Error('Session expired');
+  }
+  if(res.status === 428){
+    if(!$('pw-scrim').classList.contains('open')) $('change-pw').click();
+    throw new Error('Password update required before continuing.');
+  }
+  const data = await res.json().catch(() => ({}));
+  if(!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+  return data;
+}
+
+// ─── Login ───────────────────────────────────────────────────────────
+$('login-form').onsubmit = async (e) => {
+  e.preventDefault();
+  $('login-btn').disabled = true;
+  $('login-err').textContent = '';
+  try {
+    const r = await fetch(API + '/api/login', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: $('un').value.trim().toLowerCase(), password: $('pw').value })
+    });
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.error || 'Login failed');
+    if(j.user){
+      state.user = j.user;
+      localStorage.setItem(USER_KEY, JSON.stringify(j.user));
+    }
+    unlock();
+  } catch(err){
+    $('login-err').textContent = err.message;
+    $('pw').value = ''; $('pw').focus();
+  } finally {
+    $('login-btn').disabled = false;
+  }
+};
+
+async function unlock(){
+  await initSessionUser();
+  if(!state.user){
+    $('login').style.display = 'grid';
+    $('admin').classList.remove('active');
+    return;
+  }
+  $('login').style.display = 'none';
+  $('admin').classList.add('active');
+  await Promise.all([loadData(), loadOrders()]);
+  await loadPendingCatalog();
+  renderBusinessDashboard();
+}
+
+async function initSessionUser(){
+  if(!state.user){
+    try { state.user = await api('/api/whoami', { allow401: true }); } catch { state.user = null; }
+  }
+  if(state.user){
+    localStorage.setItem(USER_KEY, JSON.stringify(state.user));
+    $('who').textContent = `Logged in as ${state.user.username} (${state.user.role})`;
+    if(state.user.mustChangePassword){
+      toast('Password update required before admin actions');
+      $('change-pw').click();
+    }
+  }
+  document.querySelectorAll('.owner-only').forEach(el => {
+    el.style.display = (state.user && state.user.role === 'owner') ? '' : 'none';
+  });
+}
+
+$('logout').onclick = async () => {
+  try { await api('/api/logout', { method: 'POST' }); } catch {}
+  localStorage.removeItem(USER_KEY);
+  location.reload();
+};
+
+// ─── Tabs ────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  $('pane-' + t.dataset.tab).classList.add('active');
+  if(t.dataset.tab === 'dashboard') renderBusinessDashboard();
+  if(t.dataset.tab === 'forms') loadForms();
+  if(t.dataset.tab === 'orders') loadOrders();  if(t.dataset.tab === 'users') loadUsers();
+  if(t.dataset.tab === 'activity') loadAudit();});
+
+// ─── Data ────────────────────────────────────────────────────────────
+async function loadData(){
+  setStatus('');
+  try {
+    state.data = await api('/api/products');
+    state.data.products = (state.data.products || []).map(normalizeProductFinancials);
+    state.data.categories = state.data.categories || [];
+    renderAll();
+    renderBusinessDashboard();
+  } catch(e){ toast(e.message, true); }
+}
+
+function renderAll(){ renderSummary(); renderFilters(); renderRows(); }
+
+const REORDER_LEAD_DAYS = 10;
+const REORDER_TARGET_COVER_DAYS = 21;
+const TARGET_MARGIN_PCT = 55;
+
+function money(v){ return '$' + (v || 0).toFixed(2); }
+function ageHours(iso){ return Math.max(0, (Date.now() - new Date(iso).getTime()) / 36e5); }
+function ageDays(iso){ return Math.max(0, (Date.now() - new Date(iso).getTime()) / 86400000); }
+function n2(v){ return Math.round((Number(v) || 0) * 100) / 100; }
+function getRetail(p){
+  const retail = Number(p.retail_price);
+  if(Number.isFinite(retail) && retail >= 0) return retail;
+  const fallback = Number(p.price);
+  return (Number.isFinite(fallback) && fallback >= 0) ? fallback : 0;
+}
+function getWholesale(p){
+  const wholesale = Number(p.wholesale_cost);
+  return (Number.isFinite(wholesale) && wholesale >= 0) ? wholesale : 0;
+}
+function marginUnit(p){ return getRetail(p) - getWholesale(p); }
+function marginPct(p){
+  const retail = getRetail(p);
+  return retail > 0 ? ((marginUnit(p) / retail) * 100) : 0;
+}
+function normalizeConfidence(v, fallback = 'unknown'){
+  const x = String(v || '').trim().toLowerCase();
+  if(['confirmed','legacy','estimated'].includes(x)) return x;
+  return fallback;
+}
+function normalizeProductFinancials(p){
+  const retail = getRetail(p);
+  const wholesale = getWholesale(p);
+  const supplier = String(p.supplier || '').trim();
+  return {
+    ...p,
+    retail_price: retail,
+    wholesale_cost: wholesale,
+    supplier,
+    retail_confidence: normalizeConfidence(p.retail_confidence, retail > 0 ? 'legacy' : 'unknown'),
+    wholesale_confidence: normalizeConfidence(p.wholesale_confidence, wholesale > 0 ? 'estimated' : 'unknown'),
+    price: retail
+  };
+}
+
+function getSupplierName(p){
+  const s = String(p.supplier || '').trim();
+  return s || 'Unassigned';
+}
+
+function buildSalesIndex(orders){
+  const map = new Map();
+  const now = Date.now();
+  for(const o of (orders || [])){
+    if(o.status === 'cancelled') continue;
+    const createdTs = new Date(o.created).getTime();
+    const in30 = Number.isFinite(createdTs) && (now - createdTs <= 30 * 86400000);
+    for(const l of (o.lines || [])){
+      const key = l.id;
+      if(!key) continue;
+      const cur = map.get(key) || { qty30: 0, rev30: 0, qtyAll: 0, lastSoldTs: 0 };
+      const qty = Number(l.qty || 0);
+      const subtotal = Number(l.subtotal || 0);
+      cur.qtyAll += qty;
+      if(in30){
+        cur.qty30 += qty;
+        cur.rev30 += subtotal;
+      }
+      if(Number.isFinite(createdTs) && createdTs > cur.lastSoldTs) cur.lastSoldTs = createdTs;
+      map.set(key, cur);
+    }
+  }
+  return map;
+}
+
+function renderBusinessDashboard(){
+  const summaryEl = $('biz-summary');
+  if(!summaryEl) return;
+
+  const allOrders = state.orders || [];
+  const liveOrders = allOrders.filter(o => o.status !== 'cancelled');
+  const now = Date.now();
+  const inDays = (o, d) => (now - new Date(o.created).getTime()) <= d * 86400000;
+
+  const rev7 = liveOrders.filter(o => inDays(o, 7)).reduce((s, o) => s + (o.total || 0), 0);
+  const rev30 = liveOrders.filter(o => inDays(o, 30)).reduce((s, o) => s + (o.total || 0), 0);
+  const orders7 = liveOrders.filter(o => inDays(o, 7)).length;
+  const orders30 = liveOrders.filter(o => inDays(o, 30)).length;
+  const aov30 = orders30 ? (rev30 / orders30) : 0;
+
+  // Today (calendar day, local — uses created timestamp's date portion)
+  const todayDate = new Date(); todayDate.setHours(0, 0, 0, 0);
+  const todayStart = todayDate.getTime();
+  const isToday = o => new Date(o.created).getTime() >= todayStart;
+  const todays = liveOrders.filter(isToday);
+  const revToday = todays.reduce((s, o) => s + (o.total || 0), 0);
+  const todaysShop = todays.filter(o => o.source === 'in-store');
+  const todaysWeb  = todays.filter(o => o.source !== 'in-store');
+  const revTodayShop = todaysShop.reduce((s, o) => s + (o.total || 0), 0);
+  const revTodayWeb  = todaysWeb.reduce((s, o) => s + (o.total || 0), 0);
+
+  const open = allOrders.filter(o => o.status === 'new');
+  const fulfilled = allOrders.filter(o => o.status === 'fulfilled').length;
+  const cancelled = allOrders.filter(o => o.status === 'cancelled').length;
+  const fulfillmentRate = allOrders.length ? (fulfilled / allOrders.length) * 100 : 0;
+  const oldestOpen = open.length ? Math.max(...open.map(o => ageHours(o.created))) : 0;
+
+  // SLA aging buckets
+  const aging = {
+    under12: open.filter(o => ageHours(o.created) < 12).length,
+    h12to24: open.filter(o => { const h = ageHours(o.created); return h >= 12 && h < 24; }).length,
+    over24:  open.filter(o => ageHours(o.created) >= 24).length
+  };
+  const products = (state.data && state.data.products) ? state.data.products : [];
+  const retailValueOnHand = products.reduce((s, p) => s + (getRetail(p) * (p.stock || 0)), 0);
+  const wholesaleValueOnHand = products.reduce((s, p) => s + (getWholesale(p) * (p.stock || 0)), 0);
+  const potentialGrossProfit = retailValueOnHand - wholesaleValueOnHand;
+  const costMissing = products.filter(isMissingWholesaleCost).length;
+  const salesIndex = buildSalesIndex(liveOrders);
+
+  summaryEl.innerHTML = `
+    <div class="stat ${todays.length ? 'good' : ''}"><div class="k">Today · Orders</div><div class="v">${todays.length}</div><div style="font-size:.72rem;color:var(--text-dim);margin-top:2px">${todaysWeb.length} online · ${todaysShop.length} in-store</div></div>
+    <div class="stat ${revToday > 0 ? 'good' : ''}"><div class="k">Today · Revenue</div><div class="v">${money(revToday)}</div><div style="font-size:.72rem;color:var(--text-dim);margin-top:2px">${money(revTodayWeb)} online · ${money(revTodayShop)} shop</div></div>
+    <div class="stat"><div class="k">Revenue (7d)</div><div class="v">${money(rev7)}</div></div>
+    <div class="stat"><div class="k">Revenue (30d)</div><div class="v">${money(rev30)}</div></div>
+    <div class="stat ${open.length ? 'warn' : 'good'}"><div class="k">Open Orders</div><div class="v">${open.length}</div></div>
+    <div class="stat"><div class="k">AOV (30d)</div><div class="v">${money(aov30)}</div></div>
+    <div class="stat"><div class="k">Retail Value On Hand</div><div class="v">${money(retailValueOnHand)}</div></div>
+    <div class="stat"><div class="k">Cost Basis On Hand</div><div class="v">${money(wholesaleValueOnHand)}</div></div>
+    <div class="stat ${potentialGrossProfit >= 0 ? 'good' : 'danger'}"><div class="k">Potential Gross Profit</div><div class="v">${money(potentialGrossProfit)}</div></div>
+    <div class="stat ${fulfillmentRate >= 70 ? 'good' : 'warn'}"><div class="k">Fulfillment Rate</div><div class="v">${fulfillmentRate.toFixed(0)}%</div></div>`;
+
+  $('order-health').innerHTML = `
+    <div class="kpi"><span class="label">Orders in last 7 days</span><span class="value">${orders7}</span></div>
+    <div class="kpi"><span class="label">Orders in last 30 days</span><span class="value">${orders30}</span></div>
+    <div class="kpi"><span class="label">Fulfilled</span><span class="value">${fulfilled}</span></div>
+    <div class="kpi"><span class="label">Cancelled</span><span class="value">${cancelled}</span></div>
+    <div class="kpi"><span class="label">Oldest open order</span><span class="value">${open.length ? oldestOpen.toFixed(1) + 'h' : 'none'}</span></div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)">
+      <div style="font-size:.78rem;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Open Order Aging</div>
+      <div class="kpi"><span class="label">&lt;12 hours</span><span class="value">${aging.under12}</span></div>
+      <div class="kpi ${aging.h12to24 > 0 ? 'warn' : ''}"><span class="label">12 – 24 hours</span><span class="value">${aging.h12to24}</span></div>
+      <div class="kpi ${aging.over24 > 0 ? 'warn' : ''}"><span class="label">&gt;24 hours</span><span class="value">${aging.over24}</span></div>
+    </div>`;
+
+  const lineMap = new Map();
+  liveOrders.filter(o => inDays(o, 30)).forEach(o => {
+    (o.lines || []).forEach(l => {
+      const cur = lineMap.get(l.id) || { name: l.name || l.id, qty: 0, revenue: 0 };
+      cur.qty += Number(l.qty || 0);
+      cur.revenue += Number(l.subtotal || 0);
+      lineMap.set(l.id, cur);
+    });
+  });
+  const top = [...lineMap.values()].sort((a, b) => b.revenue - a.revenue).slice(0, 6);
+  $('top-products').innerHTML = top.length ? `
+    <table class="tiny-table">
+      <thead><tr><th style="text-align:left">Product</th><th>Qty</th><th style="text-align:right">Revenue</th></tr></thead>
+      <tbody>${top.map(t => `<tr><td>${t.name}</td><td>${t.qty}</td><td style="text-align:right">${money(t.revenue)}</td></tr>`).join('')}</tbody>
+    </table>` : '<div class="empty-state" style="padding:20px">No order history yet.</div>';
+
+  const lowStock = products.filter(p => (p.stock || 0) > 0 && (p.stock || 0) <= 3)
+    .sort((a, b) => (a.stock || 0) - (b.stock || 0)).slice(0, 8);
+  const outStock = products.filter(p => (p.stock || 0) <= 0).slice(0, 8);
+  const deadStock = products.filter(p => {
+    if((p.stock || 0) <= 0) return false;
+    const s = salesIndex.get(p.id);
+    if(!s || !s.lastSoldTs) return true;
+    return (Date.now() - s.lastSoldTs) > 90 * 86400000;
+  });
+  const deadStockCost = deadStock.reduce((sum, p) => sum + (getWholesale(p) * (p.stock || 0)), 0);
+  $('inventory-risk').innerHTML = `
+    <div class="kpi"><span class="label">Low stock items (<=3)</span><span class="value">${products.filter(p => (p.stock || 0) > 0 && (p.stock || 0) <= 3).length}</span></div>
+    <div class="kpi"><span class="label">Out of stock items</span><span class="value">${products.filter(p => (p.stock || 0) <= 0).length}</span></div>
+    <div class="kpi"><span class="label">Missing wholesale cost</span><span class="value">${costMissing}</span></div>
+    <div class="kpi"><span class="label">Dead-stock cost risk</span><span class="value">${money(deadStockCost)}</span></div>
+    <div style="margin-top:10px;color:var(--text-dim);font-size:.84rem">${lowStock.length ? ('Low: ' + lowStock.map(p => `${p.name} (${p.stock})`).join(' • ')) : 'No low-stock alerts.'}</div>
+    <div style="margin-top:8px;color:var(--text-dim);font-size:.84rem">${outStock.length ? ('Out: ' + outStock.map(p => p.name).join(' • ')) : 'No out-of-stock alerts.'}</div>`;
+
+  // ── Today's Close-out ────────────────────────────────────────────
+  const closeoutEl = $('todays-closeout');
+  if(closeoutEl){
+    if(todays.length === 0){
+      closeoutEl.innerHTML = '<div class="empty-state" style="padding:20px">No sales yet today.</div>';
+    } else {
+      const byProduct = new Map();
+      todays.forEach(o => (o.lines || []).forEach(l => {
+        const cur = byProduct.get(l.id) || { name: l.name || l.id, qty: 0, revenue: 0 };
+        cur.qty += Number(l.qty || 0);
+        cur.revenue += Number(l.subtotal || 0);
+        byProduct.set(l.id, cur);
+      }));
+      const productRows = [...byProduct.values()].sort((a,b) => b.revenue - a.revenue);
+      const paid    = todays.filter(o => o.paymentStatus === 'paid' || o.paymentStatus === 'paid_in_store');
+      const pending = todays.filter(o => o.paymentStatus === 'pending_invoice' || o.paymentStatus === 'invoiced');
+      const paidTotal    = paid.reduce((s,o)=>s+(o.total||0), 0);
+      const pendingTotal = pending.reduce((s,o)=>s+(o.total||0), 0);
+      const itemsCount = todays.reduce((s,o)=>s + (o.lines||[]).reduce((q,l)=>q+Number(l.qty||0),0), 0);
+      closeoutEl.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+          <div class="kpi"><span class="label">Items sold</span><span class="value">${itemsCount}</span></div>
+          <div class="kpi"><span class="label">Orders</span><span class="value">${todays.length}</span></div>
+          <div class="kpi good"><span class="label">Collected</span><span class="value">${money(paidTotal)}</span></div>
+          <div class="kpi ${pendingTotal > 0 ? 'warn' : ''}"><span class="label">Pending invoice</span><span class="value">${money(pendingTotal)}</span></div>
+        </div>
+        <table class="tiny-table">
+          <thead><tr><th style="text-align:left">Product</th><th>Qty</th><th style="text-align:right">Revenue</th></tr></thead>
+          <tbody>${productRows.map(r => `<tr><td>${escHtml(r.name)}</td><td>${r.qty}</td><td style="text-align:right">${money(r.revenue)}</td></tr>`).join('')}</tbody>
+        </table>
+        ${pending.length ? `<div style="margin-top:10px;font-size:.82rem;color:var(--warn)">⚠ ${pending.length} pending invoice${pending.length===1?'':'s'} — ${pending.map(o=>escHtml(o.customer?.name||'?')).join(', ')}</div>` : ''}`;
+    }
+  }
+
+  // ── Outstanding Invoices (all-time, not just today) ──────────────
+  const outstandingEl = $('outstanding-invoices');
+  if(outstandingEl){
+    const outstanding = liveOrders
+      .filter(o => o.paymentStatus === 'pending_invoice')
+      .sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime());
+    if(outstanding.length === 0){
+      outstandingEl.innerHTML = '<div class="empty-state" style="padding:20px">No outstanding invoices. ✓</div>';
+    } else {
+      const total = outstanding.reduce((s, o) => s + Number(o.total || 0), 0);
+      const ageDays = o => Math.floor((Date.now() - new Date(o.created).getTime()) / 86400000);
+      const buckets = {
+        fresh:  outstanding.filter(o => ageDays(o) < 7).length,
+        a7to30: outstanding.filter(o => { const d = ageDays(o); return d >= 7 && d < 30; }).length,
+        over30: outstanding.filter(o => ageDays(o) >= 30).length
+      };
+      const rows = outstanding.slice(0, 20).map(o => {
+        const d = ageDays(o);
+        const tone = d >= 30 ? 'danger' : d >= 7 ? 'warn' : '';
+        return `<tr>
+          <td>${escHtml(o.customer?.name || '?')}${o.customer?.email ? `<div style="font-size:.7rem;color:var(--text-dim)">${escHtml(o.customer.email)}</div>` : ''}</td>
+          <td style="text-align:right;font-variant-numeric:tabular-nums">${money(o.total || 0)}</td>
+          <td style="text-align:right;font-size:.78rem"><span class="${tone}" style="${tone === 'danger' ? 'color:var(--danger)' : tone === 'warn' ? 'color:var(--warn)' : ''}">${d}d</span></td>
+          <td style="text-align:right"><button class="btn ghost" style="padding:2px 10px;font-size:.72rem" data-mark-paid="${escHtml(o.id)}" title="Mark paid">paid</button></td>
+        </tr>`;
+      }).join('');
+      outstandingEl.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:10px">
+          <div class="kpi"><span class="label">Count</span><span class="value">${outstanding.length}</span></div>
+          <div class="kpi ${buckets.fresh > 0 ? 'good' : ''}"><span class="label">&lt; 7d</span><span class="value">${buckets.fresh}</span></div>
+          <div class="kpi ${buckets.a7to30 > 0 ? 'warn' : ''}"><span class="label">7–30d</span><span class="value">${buckets.a7to30}</span></div>
+          <div class="kpi ${buckets.over30 > 0 ? 'danger' : ''}"><span class="label">&gt; 30d</span><span class="value">${buckets.over30}</span></div>
+        </div>
+        <div class="kpi" style="margin-bottom:8px"><span class="label">Total outstanding</span><span class="value">${money(total)}</span></div>
+        <table class="tiny-table">
+          <thead><tr><th style="text-align:left">Customer</th><th style="text-align:right">Amount</th><th style="text-align:right">Age</th><th></th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        ${outstanding.length > 20 ? `<div style="margin-top:8px;font-size:.75rem;color:var(--text-dim)">Showing oldest 20 of ${outstanding.length}.</div>` : ''}`;
+      outstandingEl.querySelectorAll('[data-mark-paid]').forEach(b => {
+        b.onclick = () => orderAction(b.dataset.markPaid, 'mark-paid');
+      });
+    }
+  }
+
+  const slowMovers = products
+    .filter(p => (p.stock || 0) > 0)
+    .map(p => {
+      const s = salesIndex.get(p.id) || { qty30: 0, qtyAll: 0, lastSoldTs: 0 };
+      const lastSold = s.lastSoldTs ? new Date(s.lastSoldTs).toISOString() : null;
+      return {
+        name: p.name,
+        stock: p.stock || 0,
+        sold30: s.qty30 || 0,
+        daysSinceSold: lastSold ? ageDays(lastSold) : Number.POSITIVE_INFINITY
+      };
+    })
+    .sort((a, b) => {
+      if(a.sold30 !== b.sold30) return a.sold30 - b.sold30;
+      return b.daysSinceSold - a.daysSinceSold;
+    })
+    .slice(0, 8);
+
+  $('slow-movers').innerHTML = slowMovers.length ? `
+    <table class="tiny-table">
+      <thead><tr><th style="text-align:left">Product</th><th>Stock</th><th>Sold 30d</th><th style="text-align:right">Last Sold</th></tr></thead>
+      <tbody>${slowMovers.map(x => `<tr><td>${x.name}</td><td>${x.stock}</td><td>${x.sold30}</td><td style="text-align:right">${Number.isFinite(x.daysSinceSold) ? Math.round(x.daysSinceSold) + 'd' : 'never'}</td></tr>`).join('')}</tbody>
+    </table>` : '<div class="empty-state" style="padding:20px">No inventory to analyze.</div>';
+
+  const supplierStats = new Map();
+  for(const p of products){
+    const supplier = getSupplierName(p);
+    const cur = supplierStats.get(supplier) || { supplier, skus: 0, retail: 0, cost: 0 };
+    const stock = Number(p.stock || 0);
+    cur.skus += 1;
+    cur.retail += getRetail(p) * stock;
+    cur.cost += getWholesale(p) * stock;
+    supplierStats.set(supplier, cur);
+  }
+  const suppliers = [...supplierStats.values()]
+    .map(x => ({ ...x, gross: x.retail - x.cost, marginPct: x.retail > 0 ? ((x.retail - x.cost) / x.retail) * 100 : 0 }))
+    .sort((a, b) => b.gross - a.gross)
+    .slice(0, 8);
+
+  $('supplier-performance').innerHTML = suppliers.length ? `
+    <table class="tiny-table">
+      <thead><tr><th style="text-align:left">Supplier</th><th>SKUs</th><th style="text-align:right">Gross</th><th style="text-align:right">Margin</th></tr></thead>
+      <tbody>${suppliers.map(s => `<tr><td>${s.supplier}</td><td>${s.skus}</td><td style="text-align:right">${money(s.gross)}</td><td style="text-align:right">${s.marginPct.toFixed(0)}%</td></tr>`).join('')}</tbody>
+    </table>` : '<div class="empty-state" style="padding:20px">No suppliers yet. Add supplier names in product editor.</div>';
+
+  const reorderRows = products
+    .map(p => {
+      const s = salesIndex.get(p.id) || { qty30: 0 };
+      const sold30 = Number(s.qty30 || 0);
+      const daily = sold30 / 30;
+      const stock = Number(p.stock || 0);
+      const reorderPoint = Math.ceil((daily * REORDER_LEAD_DAYS) + 1);
+      const targetStock = Math.ceil(daily * REORDER_TARGET_COVER_DAYS);
+      const suggestedQty = Math.max(0, targetStock - stock);
+      const spend = suggestedQty * getWholesale(p);
+      return {
+        id: p.id,
+        name: p.name,
+        sold30: n2(sold30),
+        stock,
+        daily: n2(daily),
+        reorderPoint,
+        suggestedQty,
+        spend
+      };
+    })
+    .filter(r => r.sold30 > 0 && r.stock <= r.reorderPoint && r.suggestedQty > 0)
+    .sort((a, b) => b.suggestedQty - a.suggestedQty)
+    .slice(0, 8);
+
+  const reorderSpend = reorderRows.reduce((sum, r) => sum + r.spend, 0);
+  $('reorder-queue').innerHTML = reorderRows.length ? `
+    <div style="color:var(--text-dim);font-size:.8rem;margin-bottom:8px">Lead time ${REORDER_LEAD_DAYS}d · target cover ${REORDER_TARGET_COVER_DAYS}d · est spend ${money(reorderSpend)}</div>
+    <table class="tiny-table">
+      <thead><tr><th style="text-align:left">Product</th><th>Stock</th><th>Sold 30d</th><th style="text-align:right">Buy Qty</th></tr></thead>
+      <tbody>${reorderRows.map(r => `<tr><td>${r.name}</td><td>${r.stock}</td><td>${r.sold30}</td><td style="text-align:right">${r.suggestedQty}</td></tr>`).join('')}</tbody>
+    </table>` : '<div class="empty-state" style="padding:20px">No immediate restocks. Current stock covers near-term demand.</div>';
+
+  const targetMargin = TARGET_MARGIN_PCT / 100;
+  const pricingRows = products
+    .map(p => {
+      const retail = getRetail(p);
+      const cost = getWholesale(p);
+      if(!(retail > 0) || !(cost > 0)) return null;
+      const currentMargin = marginPct(p);
+      if(currentMargin >= TARGET_MARGIN_PCT) return null;
+      const recommended = cost / (1 - targetMargin);
+      const delta = recommended - retail;
+      return {
+        name: p.name,
+        retail,
+        recommended,
+        delta,
+        margin: currentMargin
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.delta - a.delta)
+    .slice(0, 8);
+
+  $('pricing-opportunities').innerHTML = pricingRows.length ? `
+    <div style="color:var(--text-dim);font-size:.8rem;margin-bottom:8px">Target margin ${TARGET_MARGIN_PCT}% on in-stock costed items</div>
+    <table class="tiny-table">
+      <thead><tr><th style="text-align:left">Product</th><th style="text-align:right">Now</th><th style="text-align:right">Target</th><th style="text-align:right">Lift</th></tr></thead>
+      <tbody>${pricingRows.map(r => `<tr><td>${r.name}</td><td style="text-align:right">${money(r.retail)}</td><td style="text-align:right">${money(r.recommended)}</td><td style="text-align:right">+${money(r.delta)}</td></tr>`).join('')}</tbody>
+    </table>` : '<div class="empty-state" style="padding:20px">No urgent pricing lifts. Add wholesale costs to expand recommendations.</div>';
+
+  const actions = [];
+  if(open.length > 0) actions.push(`You have ${open.length} open order(s). Clear these first to reduce response time.`);
+  if(oldestOpen >= 24) actions.push(`Oldest open order is ${oldestOpen.toFixed(1)} hours old. Prioritize customer follow-up.`);
+  const lowCount = products.filter(p => (p.stock || 0) > 0 && (p.stock || 0) <= 3).length;
+  if(lowCount > 0) actions.push(`${lowCount} product(s) are running low. Reorder or mark expected restock dates.`);
+  if(costMissing > 0) actions.push(`${costMissing} product(s) have no wholesale cost yet. Add costs to unlock margin tracking.`);
+  const lowMarginCount = products.filter(p => getRetail(p) > 0 && marginPct(p) < 35).length;
+  if(lowMarginCount > 0) actions.push(`${lowMarginCount} product(s) are below 35% margin. Reprice or renegotiate supplier cost.`);
+  const unsold90 = deadStock.length;
+  if(unsold90 > 0) actions.push(`${unsold90} in-stock product(s) have not sold in 90+ days. Consider bundles, markdowns, or merchandising changes.`);
+  const estRetail = products.filter(p => normalizeConfidence(p.retail_confidence, 'legacy') === 'estimated').length;
+  const estCost = products.filter(p => normalizeConfidence(p.wholesale_confidence, 'estimated') === 'estimated').length;
+  if(estRetail > 0 || estCost > 0) actions.push(`Confidence review: ${estRetail} retail values and ${estCost} wholesale values are estimated.`);
+  if(reorderRows.length > 0) actions.push(`Reorder queue flags ${reorderRows.length} active SKU(s). Estimated immediate purchase need: ${money(reorderSpend)}.`);
+  if(pricingRows.length > 0) actions.push(`${pricingRows.length} product(s) are below ${TARGET_MARGIN_PCT}% target margin with known costs.`);
+  if(products.length > 0){
+    const blendedRetail = products.reduce((s, p) => s + getRetail(p), 0);
+    const blendedWholesale = products.reduce((s, p) => s + getWholesale(p), 0);
+    if(blendedRetail > 0){
+      const blendedMargin = ((blendedRetail - blendedWholesale) / blendedRetail) * 100;
+      actions.push(`Current blended unit margin is ${blendedMargin.toFixed(0)}%. Use this to guide supplier and pricing decisions.`);
+    }
+  }
+  if(orders30 === 0) actions.push('No orders in last 30 days. Push one weekly offer and one social proof post.');
+  if(actions.length === 0) actions.push('Everything looks stable. Keep weekly new-arrivals and service spotlight posts consistent.');
+  $('action-list').innerHTML = actions.map(a => `<div class="action-item">${a}</div>`).join('');
+}
+
+function renderSummary(){
+  const p = state.data.products;
+  const total = p.length;
+  const instock = p.filter(x => x.stock > 0).length;
+  const low = p.filter(x => x.stock > 0 && x.stock <= 3).length;
+  const out = p.filter(x => !x.stock || x.stock <= 0).length;
+  const retailValue = p.reduce((s,x) => s + getRetail(x) * (x.stock||0), 0);
+  const costValue = p.reduce((s,x) => s + getWholesale(x) * (x.stock||0), 0);
+  const grossValue = retailValue - costValue;
+  const newOrders = state.orders.filter(o => o.status === 'new').length;
+  $('summary').innerHTML = `
+    <div class="stat"><div class="k">Products</div><div class="v">${total}</div></div>
+    <div class="stat"><div class="k">In Stock</div><div class="v">${instock}</div></div>
+    <div class="stat warn"><div class="k">Low Stock</div><div class="v">${low}</div></div>
+    <div class="stat danger"><div class="k">Out of Stock</div><div class="v">${out}</div></div>
+    <div class="stat"><div class="k">Retail Value</div><div class="v">$${retailValue.toFixed(0)}</div></div>
+    <div class="stat"><div class="k">Cost Basis</div><div class="v">$${costValue.toFixed(0)}</div></div>
+    <div class="stat ${grossValue >= 0 ? 'good' : 'danger'}"><div class="k">Potential Gross</div><div class="v">$${grossValue.toFixed(0)}</div></div>
+    <div class="stat ${newOrders>0?'good':''}"><div class="k">New Orders</div><div class="v">${newOrders}</div></div>`;
+  const invBadge = $('inv-badge');
+  if(invBadge){
+    const attention = low + out;
+    if(attention > 0){ invBadge.textContent = attention; invBadge.style.display = ''; invBadge.title = `${low} low · ${out} out of stock`; }
+    else invBadge.style.display = 'none';
+  }
+}
+
+function renderFilters(){
+  const sel = $('filter-cat');
+  const cur = sel.value || 'all';
+  sel.innerHTML = '<option value="all">All categories</option>' +
+    state.data.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  sel.value = cur;
+
+  const bulkSel = $('bulk-category');
+  if(bulkSel){
+    const bulkCur = bulkSel.value || 'all';
+    bulkSel.innerHTML = '<option value="all">All categories</option>' +
+      state.data.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    bulkSel.value = bulkCur;
+  }
+}
+
+function catName(id){
+  const c = state.data.categories.find(x => x.id === id);
+  return c ? c.name : id;
+}
+
+function getFilteredProducts(){
+  const q = state.query.trim().toLowerCase();
+  return state.data.products.filter(p => {
+    if(state.cat !== 'all' && p.category !== state.cat) return false;
+    if(q && !(p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q))) return false;
+    const s = p.stock || 0;
+    if(state.stockFilter === 'instock' && s <= 0) return false;
+    if(state.stockFilter === 'low' && !(s > 0 && s <= 3)) return false;
+    if(state.stockFilter === 'out' && s > 0) return false;
+    return true;
+  });
+}
+
+function getBulkCandidates(){
+  const scope = $('bulk-scope')?.value || 'visible';
+  if(scope === 'visible') return getFilteredProducts();
+  if(scope === 'missing') return state.data.products.filter(isMissingWholesaleCost);
+  if(scope === 'category'){
+    const cat = $('bulk-category')?.value || 'all';
+    return state.data.products.filter(p => cat === 'all' || p.category === cat);
+  }
+  if(scope === 'supplier'){
+    const s = String($('bulk-supplier')?.value || '').trim().toLowerCase();
+    if(!s) return [];
+    return state.data.products.filter(p => String(p.supplier || '').trim().toLowerCase() === s);
+  }
+  return [];
+}
+
+function calcBulkWholesale(p, mode, value){
+  if(mode === 'fixed') return Math.max(0, value);
+  const retail = getRetail(p);
+  if(!(retail > 0)) return null;
+  const margin = Math.max(0, Math.min(95, value));
+  return Math.max(0, retail * (1 - margin / 100));
+}
+
+function updateBulkScopeUI(){
+  const scope = $('bulk-scope').value;
+  $('bulk-category').style.display = scope === 'category' ? '' : 'none';
+  $('bulk-supplier').style.display = scope === 'supplier' ? '' : 'none';
+}
+
+function previewBulkUpdate(){
+  if(!state.data) return;
+  const mode = $('bulk-mode').value;
+  const value = parseFloat($('bulk-value').value);
+  if(!Number.isFinite(value)){
+    $('bulk-preview-out').textContent = 'Enter a numeric value first.';
+    return { candidates: [], previewCount: 0, skipped: 0 };
+  }
+  const candidates = getBulkCandidates();
+  let previewCount = 0;
+  let skipped = 0;
+  let estDelta = 0;
+  for(const p of candidates){
+    const next = calcBulkWholesale(p, mode, value);
+    if(next == null){ skipped++; continue; }
+    const prev = getWholesale(p);
+    if(Math.abs(next - prev) < 0.0001) continue;
+    previewCount++;
+    estDelta += (next - prev) * (p.stock || 0);
+  }
+  const msg = mode === 'fixed'
+    ? `Preview: ${previewCount} product(s) will be set to wholesale ${money(value)}.${skipped ? ` Skipped ${skipped} (no retail).` : ''}`
+    : `Preview: ${previewCount} product(s) will be recalculated to ${value}% target margin.${skipped ? ` Skipped ${skipped} (no retail).` : ''}`;
+  $('bulk-preview-out').textContent = `${msg} Estimated change in cost basis on current stock: ${money(estDelta)}.`;
+  return { candidates, previewCount, skipped, mode, value };
+}
+
+function applyBulkUpdate(){
+  const { candidates, previewCount, mode, value } = previewBulkUpdate();
+  if(previewCount === 0){
+    toast('Nothing to update with current settings.', true);
+    return;
+  }
+  const confirmMsg = mode === 'fixed'
+    ? `Apply fixed wholesale cost ${money(value)} to ${previewCount} product(s)?`
+    : `Apply ${value}% target margin wholesale recalculation to ${previewCount} product(s)?`;
+  if(!confirm(confirmMsg)) return;
+
+  let applied = 0;
+  for(const p of candidates){
+    const next = calcBulkWholesale(p, mode, value);
+    if(next == null) continue;
+    const prev = getWholesale(p);
+    if(Math.abs(next - prev) < 0.0001) continue;
+    p.wholesale_cost = n2(next);
+    applied++;
+  }
+  if(applied > 0){
+    scheduleSave();
+    renderAll();
+    renderBusinessDashboard();
+    toast(`Updated wholesale cost on ${applied} product(s).`);
+  }
+}
+
+function previewConfirmUpdate(){
+  const kind = $('confirm-kind')?.value || 'both';
+  const candidates = getBulkCandidates();
+  let retailCount = 0;
+  let wholesaleCount = 0;
+
+  for(const p of candidates){
+    if((kind === 'both' || kind === 'retail') && getRetail(p) > 0 && normalizeConfidence(p.retail_confidence, 'legacy') !== 'confirmed') retailCount++;
+    if((kind === 'both' || kind === 'wholesale') && getWholesale(p) > 0 && normalizeConfidence(p.wholesale_confidence, 'estimated') !== 'confirmed') wholesaleCount++;
+  }
+
+  $('confirm-preview-out').textContent = `Preview: will confirm retail on ${retailCount} product(s) and wholesale on ${wholesaleCount} product(s) in current scope.`;
+  return { candidates, retailCount, wholesaleCount, kind };
+}
+
+function applyConfirmUpdate(){
+  const { candidates, retailCount, wholesaleCount, kind } = previewConfirmUpdate();
+  if(retailCount === 0 && wholesaleCount === 0){
+    toast('Nothing to confirm in this scope.', true);
+    return;
+  }
+  const msg = `Mark confirmed in this scope? Retail: ${retailCount}, Wholesale: ${wholesaleCount}`;
+  if(!confirm(msg)) return;
+
+  let changed = 0;
+  for(const p of candidates){
+    if((kind === 'both' || kind === 'retail') && getRetail(p) > 0 && normalizeConfidence(p.retail_confidence, 'legacy') !== 'confirmed'){
+      p.retail_confidence = 'confirmed';
+      changed++;
+    }
+    if((kind === 'both' || kind === 'wholesale') && getWholesale(p) > 0 && normalizeConfidence(p.wholesale_confidence, 'estimated') !== 'confirmed'){
+      p.wholesale_confidence = 'confirmed';
+      changed++;
+    }
+  }
+
+  if(changed > 0){
+    scheduleSave();
+    renderAll();
+    renderBusinessDashboard();
+    toast('Confirmation flags updated.');
+  }
+}
+
+function renderRows(){
+  const rows = getFilteredProducts();
+  $('count').textContent = `${rows.length} of ${state.data.products.length}`;
+  $('rows').innerHTML = rows.map(p => {
+    const s = p.stock || 0;
+    const cls = s <= 0 ? 'stock-out' : (s <= 3 ? 'stock-low' : '');
+    const retail = getRetail(p);
+    const wholesale = getWholesale(p);
+    const margin = marginUnit(p);
+    const pct = marginPct(p);
+    const supplier = getSupplierName(p);
+    const missingCost = isMissingWholesaleCost(p);
+    const rowClass = missingCost ? 'row-missing-cost' : (retail > 0 && pct < 35 ? 'row-low-margin' : '');
+    const retailConf = normalizeConfidence(p.retail_confidence, 'legacy');
+    const wholesaleConf = normalizeConfidence(p.wholesale_confidence, 'estimated');
+    const confColor = c => c === 'confirmed' ? 'var(--good)' : (c === 'estimated' ? 'var(--warn)' : 'var(--text-dim)');
+    const cover = (Array.isArray(p.images) && p.images[0]) || p.image || '/logo.svg';
+    const extra = (Array.isArray(p.images) && p.images.length > 1)
+      ? `<div style="color:var(--text-dim);font-size:.7rem;text-align:center;margin-top:2px">+${p.images.length-1}</div>` : '';
+    return `
+      <tr data-id="${p.id}" class="${rowClass}">
+        <td><img class="thumb" src="${cover}" alt="">${extra}</td>
+        <td><strong>${p.name}</strong><br><span style="color:var(--text-dim);font-size:.75rem">${p.id}</span><br><span style="font-size:.68rem;color:${confColor(retailConf)}">R:${retailConf}</span> · <span style="font-size:.68rem;color:${confColor(wholesaleConf)}">C:${wholesaleConf}</span></td>
+        <td class="hide-sm">${catName(p.category)}</td>
+        <td class="cell-price"><input type="number" step="0.01" min="0" value="${retail}" data-field="retail_price"></td>
+        <td class="cell-price hide-sm"><input type="number" step="0.01" min="0" value="${wholesale}" data-field="wholesale_cost"></td>
+        <td class="hide-sm" style="font-size:.8rem">
+          <div style="font-weight:700;color:${margin >= 0 ? 'var(--good)' : 'var(--danger)'}">${money(margin)}</div>
+          <div style="color:var(--text-dim)">${retail > 0 ? pct.toFixed(0) + '%' : 'n/a'}</div>
+        </td>
+        <td class="cell-stock"><input type="number" min="0" step="1" value="${s}" data-field="stock" class="${cls}"></td>
+        <td class="hide-sm" style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${supplier}">${supplier}</td>
+        <td class="hide-sm">${p.bundle || ''}</td>
+        <td>
+          <div class="row-actions">
+            <button class="btn" data-act="edit">Edit</button>
+            <button class="btn purple" data-act="sold" title="Ring up an in-store sale: creates a fulfilled order, decrements stock, logs to activity">Sold</button>
+            <button class="btn" data-act="-1" title="Adjust stock down without logging a sale (use for damage, samples, corrections)">−1</button>
+            <button class="btn" data-act="+1" title="Adjust stock up (restocking)">+1</button>
+            <button class="btn danger" data-act="del">Delete</button>
+          </div>
+        </td>
+      </tr>`;
+  }).join('');
+
+  $('rows').querySelectorAll('tr').forEach(tr => {
+    const id = tr.dataset.id;
+    tr.querySelectorAll('input[data-field]').forEach(inp => {
+      inp.addEventListener('change', () => updateField(id, inp.dataset.field, inp.value));
+    });
+    tr.querySelectorAll('[data-act]').forEach(b => b.onclick = () => rowAction(id, b.dataset.act));
+  });
+}
+
+function updateField(id, field, val){
+  const p = state.data.products.find(x => x.id === id);
+  if(!p) return;
+  if(field === 'retail_price'){
+    p.retail_price = Math.max(0, parseFloat(val) || 0);
+    p.price = p.retail_price;
+    p.retail_confidence = p.retail_price > 0 ? 'confirmed' : normalizeConfidence(p.retail_confidence, 'legacy');
+  } else if(field === 'wholesale_cost'){
+    p.wholesale_cost = Math.max(0, parseFloat(val) || 0);
+    p.wholesale_confidence = p.wholesale_cost > 0 ? 'confirmed' : normalizeConfidence(p.wholesale_confidence, 'estimated');
+  } else if(field === 'stock'){
+    p.stock = Math.max(0, parseInt(val,10) || 0);
+  }
+  scheduleSave();
+  renderSummary();
+  renderBusinessDashboard();
+  renderRows();
+}
+
+function rowAction(id, act){
+  const p = state.data.products.find(x => x.id === id);
+  if(!p) return;
+  if(act === 'edit'){ openModal(p); return; }
+  if(act === '+1'){ adjustStock(p, +1); return; }
+  if(act === '-1'){ adjustStock(p, -1); return; }
+  if(act === 'sold'){ sellInStore(p); return; }
+  if(act === 'del'){
+    if(!confirm(`Delete "${p.name}"?`)) return;
+    state.data.products = state.data.products.filter(x => x.id !== id);
+    scheduleSave(); renderAll();
+  }
+}
+
+async function adjustStock(p, delta){
+  // Optimistic local update for snappy UI, then audited server call.
+  const before = p.stock || 0;
+  const after = Math.max(0, before + delta);
+  if(before === after) return;
+  p.stock = after;
+  renderSummary(); renderRows();
+  try {
+    const reason = delta > 0 ? 'restock' : 'manual decrement';
+    const res = await api('/api/inventory/adjust', {
+      method: 'POST',
+      body: JSON.stringify({ productId: p.id, delta, reason })
+    });
+    if(!res || res.ok === false) throw new Error(res?.error || 'adjust failed');
+    // Reconcile with server truth (covers concurrent edits)
+    if(typeof res.after === 'number' && res.after !== p.stock){
+      p.stock = res.after;
+      renderSummary(); renderRows();
+    }
+  } catch(e){
+    // Roll back on failure
+    p.stock = before;
+    renderSummary(); renderRows();
+    toast('Stock change failed: ' + (e?.message || e), true);
+  }
+}
+
+function sellInStore(p){
+  const stock = p.stock || 0;
+  if(stock <= 0){ toast(`"${p.name}" is out of stock.`); return; }
+  // Start a new cart with this product as the first line.
+  state.cart = [{
+    productId: p.id,
+    name: p.name,
+    qty: 1,
+    price: Number(getRetail(p) || 0),
+    maxStock: stock
+  }];
+  $('sold-payment').value = 'paid_in_store';
+  $('sold-customer-name').value = '';
+  $('sold-customer-email').value = '';
+  $('sold-note').value = '';
+  populateSoldAddPicker();
+  renderSoldLines();
+  $('sold-scrim').style.display = 'block';
+}
+
+function populateSoldAddPicker(){
+  const sel = $('sold-add-product');
+  if(!sel) return;
+  const products = (state.data?.products || [])
+    .filter(p => (p.stock || 0) > 0)
+    .sort((a,b) => (a.name||'').localeCompare(b.name||''));
+  sel.innerHTML = '<option value="">— pick a product —</option>' +
+    products.map(p => `<option value="${escHtml(p.id)}" data-price="${getRetail(p)||0}" data-stock="${p.stock||0}">${escHtml(p.name)} · ${p.stock} left · ${money(getRetail(p)||0)}</option>`).join('');
+  sel.value = '';
+  $('sold-add-qty').value = 1;
+}
+
+function renderSoldLines(){
+  const el = $('sold-lines');
+  if(!el) return;
+  if(state.cart.length === 0){
+    el.innerHTML = '<div class="empty-state" style="padding:14px">No items in cart. Add one below.</div>';
+  } else {
+    el.innerHTML = `
+      <table class="tiny-table" style="width:100%">
+        <thead><tr>
+          <th style="text-align:left">Item</th>
+          <th style="width:70px">Qty</th>
+          <th style="width:90px">Price</th>
+          <th style="width:80px;text-align:right">Subtotal</th>
+          <th style="width:36px"></th>
+        </tr></thead>
+        <tbody>
+        ${state.cart.map((ln, i) => `
+          <tr>
+            <td>${escHtml(ln.name)}<div style="font-size:.7rem;color:var(--text-dim)">${ln.maxStock} in stock</div></td>
+            <td><input data-cart-qty="${i}" type="number" min="1" step="1" max="${ln.maxStock}" value="${ln.qty}" style="width:100%;text-align:center"></td>
+            <td><input data-cart-price="${i}" type="number" min="0" step="0.01" value="${ln.price.toFixed(2)}" style="width:100%"></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums">${money(ln.qty * ln.price)}</td>
+            <td><button type="button" class="btn danger ghost" data-cart-remove="${i}" title="Remove line" style="padding:2px 8px">×</button></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+    el.querySelectorAll('[data-cart-qty]').forEach(inp => {
+      inp.oninput = () => {
+        const i = +inp.dataset.cartQty;
+        const v = Math.max(1, Math.min(state.cart[i].maxStock, parseInt(inp.value,10) || 1));
+        state.cart[i].qty = v;
+        updateSoldTotal();
+      };
+    });
+    el.querySelectorAll('[data-cart-price]').forEach(inp => {
+      inp.oninput = () => {
+        const i = +inp.dataset.cartPrice;
+        state.cart[i].price = Math.max(0, parseFloat(inp.value) || 0);
+        updateSoldTotal();
+      };
+    });
+    el.querySelectorAll('[data-cart-remove]').forEach(b => {
+      b.onclick = () => {
+        const i = +b.dataset.cartRemove;
+        state.cart.splice(i, 1);
+        renderSoldLines();
+      };
+    });
+  }
+  updateSoldTotal();
+}
+
+function addLineFromPicker(){
+  const sel = $('sold-add-product');
+  const productId = sel.value;
+  if(!productId){ toast('Pick a product first'); return; }
+  const p = state.data.products.find(x => x.id === productId);
+  if(!p) return;
+  const qty = Math.max(1, parseInt($('sold-add-qty').value, 10) || 1);
+  const stock = p.stock || 0;
+  // If product already in cart, increment that line instead of duplicating
+  const existing = state.cart.find(ln => ln.productId === productId);
+  if(existing){
+    existing.qty = Math.min(stock, existing.qty + qty);
+  } else {
+    state.cart.push({
+      productId, name: p.name,
+      qty: Math.min(stock, qty),
+      price: Number(getRetail(p) || 0),
+      maxStock: stock
+    });
+  }
+  sel.value = '';
+  $('sold-add-qty').value = 1;
+  renderSoldLines();
+}
+
+function updateSoldTotal(){
+  const total = state.cart.reduce((s, ln) => s + (ln.qty * ln.price), 0);
+  const isInvoice = $('sold-payment').value === 'invoice';
+  $('sold-total').innerHTML = `Total: <strong>${money(total)}</strong>` +
+    (isInvoice ? ' <span style="color:var(--warn);font-size:.78rem;font-weight:600;letter-spacing:.04em;margin-left:8px">PENDING INVOICE</span>' : '') +
+    (state.cart.length > 1 ? ` <span style="font-size:.72rem;color:var(--text-dim);margin-left:6px">(${state.cart.length} items)</span>` : '');
+  const btn = $('sold-submit');
+  if(btn) btn.textContent = isInvoice ? 'Reserve & invoice' : 'Record sale';
+}
+
+async function submitInStoreSale(e){
+  e.preventDefault();
+  if(state.cart.length === 0){ toast('Cart is empty'); return; }
+  const paymentMethod = $('sold-payment').value;
+  const customerName = $('sold-customer-name').value.trim();
+  const customerEmail = $('sold-customer-email').value.trim();
+  const note = $('sold-note').value.trim();
+  // Validate stock once more
+  for(const ln of state.cart){
+    if(ln.qty > ln.maxStock){ toast(`Only ${ln.maxStock} of ${ln.name} in stock.`); return; }
+    if(ln.qty < 1){ toast(`Quantity must be at least 1 for ${ln.name}.`); return; }
+  }
+  const btn = $('sold-submit');
+  const orig = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Recording…';
+  try {
+    const res = await api('/api/orders/in-store', {
+      method: 'POST',
+      body: JSON.stringify({
+        lines: state.cart.map(ln => ({ productId: ln.productId, qty: ln.qty, price: ln.price })),
+        paymentMethod, customerName, customerEmail, note
+      })
+    });
+    if(!res || res.ok === false) throw new Error(res?.error || 'Sale failed');
+    $('sold-scrim').style.display = 'none';
+    const verb = paymentMethod === 'invoice' ? 'Reserved' : 'Sold';
+    const total = res.order?.total || state.cart.reduce((s,ln)=>s+ln.qty*ln.price,0);
+    const itemCount = state.cart.reduce((s,ln)=>s+ln.qty, 0);
+    state.cart = [];
+    await loadData();
+    await loadOrders();
+    renderBusinessDashboard();
+    openReceiptPrompt(res.order, verb, itemCount, total);
+  } catch(err){
+    toast('Sale failed: ' + (err?.message || err), true);
+  } finally {
+    btn.disabled = false; btn.textContent = orig;
+  }
+}
+
+function openReceiptPrompt(order, verb, itemCount, total){
+  if(!order){ toast(`${verb}: ${itemCount} item${itemCount===1?'':'s'} (${money(total)})`); return; }
+  $('receipt-title').textContent = `✓ ${verb} ${itemCount} item${itemCount===1?'':'s'} · ${money(total)}`;
+  $('receipt-summary').textContent = order.customer?.name && order.customer.name !== 'In-store customer'
+    ? `${order.customer.name} · ${new Date(order.created).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}`
+    : `Order ${order.id.slice(-6)} · ${new Date(order.created).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}`;
+  const email = order.customer?.email || '';
+  const emailBtn = $('receipt-email');
+  if(email){
+    $('receipt-email-addr').textContent = email;
+    emailBtn.style.display = '';
+    emailBtn.disabled = false;
+    emailBtn.onclick = async () => {
+      emailBtn.disabled = true;
+      emailBtn.textContent = 'Sending…';
+      try {
+        await api(`/api/orders/${encodeURIComponent(order.id)}/send-receipt`, { method: 'POST' });
+        emailBtn.textContent = '✓ Sent to ' + email;
+      } catch(e){
+        emailBtn.disabled = false;
+        emailBtn.textContent = 'Email receipt to ' + email;
+        toast('Email failed: ' + e.message, true);
+      }
+    };
+  } else {
+    emailBtn.style.display = 'none';
+  }
+  $('receipt-print').onclick = () => printPackingSlip(order);
+  $('receipt-done').onclick = () => { $('receipt-scrim').style.display = 'none'; };
+  $('receipt-scrim').style.display = 'block';
+}
+
+if($('sold-form')){
+  $('sold-form').addEventListener('submit', submitInStoreSale);
+  $('sold-cancel').onclick = () => { $('sold-scrim').style.display = 'none'; state.cart = []; };
+  $('sold-add-btn').onclick = addLineFromPicker;
+  $('sold-payment').addEventListener('change', updateSoldTotal);
+  $('sold-scrim').addEventListener('click', e => {
+    if(e.target.id === 'sold-scrim'){ $('sold-scrim').style.display = 'none'; state.cart = []; }
+  });
+}
+
+// ─── Auto-save ───────────────────────────────────────────────────────
+function scheduleSave(){
+  setStatus('dirty', 'Unsaved');
+  clearTimeout(state.saveTimer);
+  state.saveTimer = setTimeout(saveNow, 800);
+}
+async function saveNow(){
+  if(state.saving){
+    // Another save is in-flight — reschedule so this one is not silently dropped
+    clearTimeout(state.saveTimer);
+    state.saveTimer = setTimeout(saveNow, 600);
+    return;
+  }
+  state.saving = true;
+  setStatus('saving', 'Saving…');
+  try {
+    const r = await api('/api/products', { method: 'PUT', body: JSON.stringify(state.data) });
+    if(r.pending){
+      setStatus('saved', 'Submitted for owner approval');
+      await loadPendingCatalog();
+    } else {
+      setStatus('saved', 'Saved ✓');
+      await loadPendingCatalog();
+    }
+    setTimeout(() => { if(!state.saving) setStatus(''); }, 2000);
+  } catch(e){
+    setStatus('dirty', 'Save failed');
+    toast('Save failed: ' + e.message, true);
+  } finally {
+    state.saving = false;
+  }
+}
+function setStatus(cls, txt){
+  const el = $('save-status');
+  el.className = 'save-status' + (cls ? ' ' + cls : '');
+  el.textContent = txt || '';
+}
+
+async function loadPendingCatalog(){
+  try {
+    const r = await api('/api/catalog/pending');
+    state.pendingCatalog = r.pending || null;
+  } catch {
+    state.pendingCatalog = null;
+  }
+  renderApprovalBox();
+  if(state.user && state.user.role === 'owner') await loadPreviousCatalog();
+}
+
+async function loadPreviousCatalog(){
+  try {
+    const r = await api('/api/catalog/previous');
+    state.previousCatalog = r.previous || null;
+  } catch {
+    state.previousCatalog = null;
+  }
+  renderRollbackBox();
+}
+
+function computeCatalogDiff(live, pending){
+  const lp = (live && live.products) ? live.products : [];
+  const pp = (pending && pending.products) ? pending.products : [];
+  const liveMap = new Map(lp.map(p => [p.id, p]));
+  const pendingMap = new Map(pp.map(p => [p.id, p]));
+  const added = pp.filter(p => !liveMap.has(p.id));
+  const removed = lp.filter(p => !pendingMap.has(p.id));
+  const changed = pp.filter(p => {
+    const l = liveMap.get(p.id);
+    if(!l) return false;
+    return l.name !== p.name || Number(l.price) !== Number(p.price) ||
+           Number(l.stock) !== Number(p.stock) || l.description !== p.description ||
+           l.category !== p.category || Number(l.wholesale_cost) !== Number(p.wholesale_cost);
+  });
+  return { added, removed, changed };
+}
+
+function renderApprovalBox(){
+  const el = $('approval-box');
+  if(!el) return;
+  const p = state.pendingCatalog;
+  if(!p){
+    if(state.user && state.user.role === 'owner'){
+      el.innerHTML = '<div class="approval-box"><strong style="color:var(--gold-light)">Publishing Queue</strong><div class="meta">No pending shop updates.</div></div>';
+    } else {
+      el.innerHTML = '';
+    }
+    return;
+  }
+
+  const count = (p.catalog && Array.isArray(p.catalog.products)) ? p.catalog.products.length : 0;
+  const submitted = p.submittedAt ? new Date(p.submittedAt).toLocaleString() : 'unknown';
+
+  // Diff vs live catalog
+  const diff = computeCatalogDiff(state.data, p.catalog);
+  const diffParts = [];
+  if(diff.added.length)   diffParts.push(`<span style="color:#6fcf6f">+${diff.added.length} added</span>`);
+  if(diff.removed.length) diffParts.push(`<span style="color:#e07070">-${diff.removed.length} removed</span>`);
+  if(diff.changed.length) diffParts.push(`<span style="color:#f0c060">${diff.changed.length} changed</span>`);
+  const diffHtml = diffParts.length
+    ? `<div class="meta" style="margin-top:6px">Changes: ${diffParts.join(' · ')}
+        ${diff.added.length   ? `<div style="color:var(--text-dim);font-size:.80rem;margin-top:2px">Added: ${diff.added.map(x=>x.name).join(', ')}</div>` : ''}
+        ${diff.removed.length ? `<div style="color:var(--text-dim);font-size:.80rem">Removed: ${diff.removed.map(x=>x.name).join(', ')}</div>` : ''}
+        ${diff.changed.length ? `<div style="color:var(--text-dim);font-size:.80rem">Changed: ${diff.changed.map(x=>x.name).join(', ')}</div>` : ''}
+      </div>`
+    : `<div class="meta" style="margin-top:6px;color:var(--text-dim)">No product changes detected (metadata or note only).</div>`;
+
+  const base = `<div class="approval-box"><strong style="color:var(--gold-light)">Pending Shop Update</strong>
+    <div class="meta">Submitted by <strong>${p.submittedBy || 'unknown'}</strong> on ${submitted} · ${count} products</div>
+    ${p.summary ? `<div class="meta">Note: ${p.summary}</div>` : ''}
+    ${diffHtml}`;
+
+  if(state.user && state.user.role === 'owner'){
+    el.innerHTML = `${base}
+      <div class="approval-actions">
+        <button class="btn primary" id="approve-pending">Approve &amp; Publish</button>
+        <button class="btn danger" id="reject-pending">Reject</button>
+      </div></div>`;
+    $('approve-pending').onclick = approvePendingCatalog;
+    $('reject-pending').onclick = rejectPendingCatalog;
+  } else {
+    el.innerHTML = `${base}<div class="meta" style="margin-top:10px">Waiting on owner approval before changes go live.</div></div>`;
+  }
+}
+
+function renderRollbackBox(){
+  const el = $('rollback-box');
+  if(!el || !state.user || state.user.role !== 'owner') return;
+  el.innerHTML = '';
+  const prev = state.previousCatalog;
+  if(!prev) return;
+  el.innerHTML = `<div class="approval-box" style="border-color:#555;background:rgba(255,255,255,.03)">
+    <strong style="color:var(--text-dim)">Previous Version Available</strong>
+    <div class="meta">${prev.count} products · saved ${prev.updated || 'unknown date'}</div>
+    <div class="approval-actions">
+      <button class="btn" id="rollback-btn" style="border-color:#888;color:var(--text-dim)">Restore Previous Version</button>
+    </div></div>`;
+  $('rollback-btn').onclick = rollbackCatalog;
+}
+
+async function rollbackCatalog(){
+  if(!confirm('Restore the previous catalog version? The current live catalog becomes the new "previous" (you can swap back).')) return;
+  try {
+    const r = await api('/api/catalog/rollback', { method: 'POST', body: '{}' });
+    toast(`Restored: ${r.count} products from ${r.updated || 'prior version'}`);
+    await Promise.all([loadData(), loadPreviousCatalog()]);
+  } catch(e){ toast(e.message, true); }
+}
+
+async function approvePendingCatalog(){
+  try {
+    await api('/api/catalog/approve', { method: 'POST', body: '{}' });
+    toast('Pending update published');
+    await Promise.all([loadData(), loadPendingCatalog()]);
+  } catch(e){ toast(e.message, true); }
+}
+
+async function rejectPendingCatalog(){
+  let reason = '';
+  while(!reason.trim()){
+    const input = prompt('Reason for rejection (required — will be logged):', '');
+    if(input === null) return; // cancelled
+    reason = input.trim();
+    if(!reason) alert('A reason is required. Please describe what needs to change.');
+  }
+  try {
+    await api('/api/catalog/reject', { method: 'POST', body: JSON.stringify({ reason }) });
+    toast('Pending update rejected');
+    await loadPendingCatalog();
+  } catch(e){ toast(e.message, true); }
+}
+
+// ─── Modal ───────────────────────────────────────────────────────────
+function openModal(p){
+  const isNew = !p;
+  $('modal-title').textContent = isNew ? 'Add Product' : 'Edit Product';
+  $('f-id').value = isNew ? '' : p.id;
+  $('f-name').value = isNew ? '' : p.name;
+  $('f-slug').value = isNew ? '' : p.id;
+  $('f-slug').readOnly = !isNew;
+  $('f-retail').value = isNew ? '' : getRetail(p);
+  $('f-wholesale').value = isNew ? '' : getWholesale(p);
+  $('f-stock').value = isNew ? '' : (p.stock||0);
+  $('f-weight').value = isNew ? '' : (p.weight_grams > 0 ? p.weight_grams : '');
+  $('f-supplier').value = isNew ? '' : (p.supplier || '');
+  $('f-bundle').value = isNew ? '' : (p.bundle||'');
+  $('f-desc').value = isNew ? '' : (p.description||'');
+  const initImgs = isNew ? [] :
+    (Array.isArray(p.images) && p.images.length ? p.images.slice() :
+      (p.image ? [p.image] : []));
+  renderImageList(initImgs);
+  $('upload-progress').textContent = '';
+  const cats = state.data.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  $('f-category').innerHTML = cats;
+  $('f-category').value = isNew ? state.data.categories[0]?.id : p.category;
+  $('modal-scrim').classList.add('open');
+  setTimeout(() => $('f-name').focus(), 50);
+}
+
+function closeModal(){ $('modal-scrim').classList.remove('open'); }
+$('modal-cancel').onclick = closeModal;
+$('modal-scrim').onclick = (e) => { if(e.target === $('modal-scrim')) closeModal(); };
+
+function renderImageList(paths){
+  const list = $('f-images-list');
+  list.innerHTML = '';
+  paths.forEach(p => list.appendChild(buildImageRow(p)));
+}
+
+function buildImageRow(path){
+  const row = document.createElement('div');
+  row.className = 'image-row';
+  row.innerHTML = `
+    <img class="thumb-sm" src="${path || '/logo.svg'}" alt="">
+    <input type="text" placeholder="https://..." value="${path || ''}">
+    <button type="button" title="Move up">↑</button>
+    <button type="button" title="Move down">↓</button>
+    <button type="button" class="rm" title="Remove">×</button>`;
+  const [thumb, inp, up, down, rm] = row.querySelectorAll('img,input,button');
+  inp.addEventListener('input', () => { thumb.src = inp.value || '/logo.svg'; });
+  up.onclick = () => { const prev = row.previousElementSibling; if(prev) row.parentNode.insertBefore(row, prev); };
+  down.onclick = () => { const next = row.nextElementSibling; if(next) row.parentNode.insertBefore(next, row); };
+  rm.onclick = () => row.remove();
+  return row;
+}
+
+function collectImages(){
+  return Array.from($('f-images-list').querySelectorAll('input'))
+    .map(i => i.value.trim())
+    .filter(Boolean);
+}
+
+// ─── Drag-drop upload ────────────────────────────────────────────────
+const dz = $('dropzone');
+const fi = $('file-input');
+dz.onclick = () => fi.click();
+fi.onchange = () => uploadFiles(fi.files);
+['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
+['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
+dz.addEventListener('drop', e => uploadFiles(e.dataTransfer.files));
+
+async function uploadFiles(files){
+  const list = Array.from(files).filter(f => f.type.startsWith('image/'));
+  if(list.length === 0) return;
+  const slug = ($('f-slug').value || $('f-name').value || 'item').trim();
+  let done = 0;
+  for(const file of list){
+    $('upload-progress').textContent = `Uploading ${done+1} of ${list.length}: ${file.name}…`;
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('slug', slug);
+      const r = await api('/api/upload', { method: 'POST', body: fd });
+      const row = buildImageRow(r.url);
+      $('f-images-list').appendChild(row);
+      done++;
+    } catch(e){
+      $('upload-progress').textContent = `Error: ${e.message}`;
+      toast('Upload failed: ' + e.message, true);
+      return;
+    }
+  }
+  $('upload-progress').textContent = `Uploaded ${done} ${done===1?'photo':'photos'}.`;
+  setTimeout(() => { $('upload-progress').textContent = ''; }, 3000);
+}
+
+$('product-form').onsubmit = async (e) => {
+  e.preventDefault();
+  const origId = $('f-id').value;
+  const slug = $('f-slug').value.trim().toLowerCase();
+  if(!/^[a-z0-9\-]+$/.test(slug)){ toast('Slug must be lowercase letters, numbers, dashes', true); return; }
+  if(!origId && state.data.products.some(x => x.id === slug)){
+    toast('Slug already exists', true); return;
+  }
+  const images = collectImages();
+  const retailPrice = Math.max(0, parseFloat($('f-retail').value) || 0);
+  const wholesaleCost = Math.max(0, parseFloat($('f-wholesale').value) || 0);
+  const prod = {
+    id: origId || slug,
+    name: $('f-name').value.trim(),
+    category: $('f-category').value,
+    price: retailPrice,
+    retail_price: retailPrice,
+    retail_confidence: retailPrice > 0 ? 'confirmed' : 'unknown',
+    wholesale_cost: wholesaleCost,
+    wholesale_confidence: wholesaleCost > 0 ? 'confirmed' : 'unknown',
+    supplier: $('f-supplier').value.trim(),
+    bundle: $('f-bundle').value.trim(),
+    stock: Math.max(0, parseInt($('f-stock').value,10) || 0),
+    images,
+    image: images[0] || '',
+    description: $('f-desc').value.trim()
+  };
+  const wg = parseInt($('f-weight').value, 10);
+  if(wg > 0) prod.weight_grams = wg;
+  if(origId){
+    const i = state.data.products.findIndex(x => x.id === origId);
+    if(i >= 0) state.data.products[i] = prod;
+  } else {
+    state.data.products.push(prod);
+  }
+  scheduleSave();
+  renderAll();
+  closeModal();
+  toast(origId ? 'Product updated' : 'Product added');
+};
+
+$('add-btn').onclick = () => openModal(null);
+$('reload').onclick = () => loadData();
+$('search').oninput = e => { state.query = e.target.value; renderRows(); };
+$('filter-cat').onchange = e => { state.cat = e.target.value; renderRows(); };
+$('filter-stock').onchange = e => { state.stockFilter = e.target.value; renderRows(); };
+if($('bulk-scope')) $('bulk-scope').onchange = () => { updateBulkScopeUI(); previewBulkUpdate(); };
+if($('bulk-mode')) $('bulk-mode').onchange = () => previewBulkUpdate();
+if($('bulk-value')) $('bulk-value').oninput = () => previewBulkUpdate();
+if($('bulk-category')) $('bulk-category').onchange = () => previewBulkUpdate();
+if($('bulk-supplier')) $('bulk-supplier').oninput = () => previewBulkUpdate();
+if($('bulk-preview')) $('bulk-preview').onclick = () => previewBulkUpdate();
+if($('bulk-apply')) $('bulk-apply').onclick = () => applyBulkUpdate();
+if($('confirm-preview')) $('confirm-preview').onclick = () => previewConfirmUpdate();
+if($('confirm-apply')) $('confirm-apply').onclick = () => applyConfirmUpdate();
+if($('confirm-kind')) $('confirm-kind').onchange = () => previewConfirmUpdate();
+if($('bulk-scope')) updateBulkScopeUI();
+
+// ─── Orders ──────────────────────────────────────────────────────────
+async function loadOrders(){
+  try {
+    const r = await api('/api/orders?status=all');
+    state.orders = r.orders || [];
+    const newCount = state.orders.filter(o => o.status === 'new').length;
+    const badge = $('orders-badge');
+    if(newCount > 0){ badge.textContent = newCount; badge.style.display = ''; }
+    else badge.style.display = 'none';
+    if(state.data) renderSummary();
+    renderOrders();
+    renderBusinessDashboard();
+  } catch(e){ /* silently ignore on load */ }
+}
+
+// Build customer-history index keyed by lowercased email. Falls back to lowercased name when no email present.
+function buildCustomerHistory(orders){
+  const idx = new Map();
+  for(const o of orders){
+    const key = (o.customer?.email || '').toLowerCase().trim() ||
+                (o.customer?.name  || '').toLowerCase().trim();
+    if(!key || key === 'in-store customer') continue;
+    const cur = idx.get(key) || { count: 0, spent: 0, lastTs: 0 };
+    cur.count += 1;
+    cur.spent += Number(o.total || 0);
+    const ts = new Date(o.created).getTime();
+    if(ts > cur.lastTs) cur.lastTs = ts;
+    idx.set(key, cur);
+  }
+  return idx;
+}
+
+function renderOrders(){
+  const f = state.ordersFilter;
+  const q = (($('orders-search') && $('orders-search').value) || '').toLowerCase().trim();
+  let list = state.orders.filter(o => f === 'all' || o.status === f);
+  if(q){
+    list = list.filter(o => {
+      const name = (o.customer?.name || '').toLowerCase();
+      const email = (o.customer?.email || '').toLowerCase();
+      const id = (o.id || '').toLowerCase();
+      return name.includes(q) || email.includes(q) || id.includes(q);
+    });
+  }
+  const el = $('orders-list');
+  if(list.length === 0){
+    el.innerHTML = '<div class="empty-state">No ' + (f === 'all' ? '' : f + ' ') + 'orders.</div>';
+    return;
+  }
+  const custIdx = buildCustomerHistory(state.orders || []);
+  el.innerHTML = list.map(o => {
+    const date = new Date(o.created).toLocaleString();
+    const fin = o.financial || { subtotal: o.total || 0, discount: 0, shipping: 0, tax: 0, total: o.total || 0 };
+    const lines = o.lines.map(l => `<div class="ln"><span>${escHtml(l.qty)}× ${escHtml(l.name)}</span><span>$${(l.subtotal).toFixed(2)}</span></div>`).join('');
+    const phone = o.customer.phone ? String(o.customer.phone).replace(/[^0-9+\-() ]/g,'').slice(0,20) : '';
+    const phoneLink = phone ? `<a href="tel:${escHtml(phone)}">${escHtml(phone)}</a>` : '';
+    const payment = o.paymentStatus || 'pending_invoice';
+    const source = escHtml(o.source || 'unknown');
+    const tags = Array.isArray(o.adminTags) && o.adminTags.length ? o.adminTags.map(escHtml).join(', ') : 'none';
+    const isShip = String(o.fulfillment || '').toLowerCase().includes('ship');
+    const addr = o.shippingAddress || {};
+    const addrFormatted = [addr.name, addr.line1, addr.line2, addr.city && `${addr.city}, ${addr.state} ${addr.zip}`].filter(Boolean).map(escHtml);
+    const addrOneline = addrFormatted.join(', ');
+    const addrBlock = isShip && addr.line1 ? `
+      <div class="order-addr">
+        <span class="addr-label">Ship to</span>
+        ${addrFormatted.join('<br>')}
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn ghost" style="font-size:.72rem;padding:3px 10px" data-copy-addr="${o.id}">Copy address</button>
+          <a class="btn ghost" style="font-size:.72rem;padding:3px 10px;text-decoration:none" href="https://tools.usps.com/go/ZipLookupResultsAction!input.action?resultMode=2&companyName=&address1=${encodeURIComponent(addr.line1||'')}&address2=${encodeURIComponent(addr.line2||'')}&city=${encodeURIComponent(addr.city||'')}&state=${encodeURIComponent(addr.state||'')}&urbanCode=&postalCode=${encodeURIComponent(addr.zip||'')}&zip=Verify" target="_blank" rel="noopener">Verify address ↗</a>
+        </div>
+      </div>` : '';
+    const trackingVal = escHtml(o.trackingNumber || '');
+    const trackingBlock = isShip ? `
+      <div class="tracking-row">
+        <input type="text" placeholder="USPS tracking number" data-tracking-input="${o.id}" value="${trackingVal}" style="font-family:monospace">
+        <button class="btn" style="font-size:.78rem;padding:6px 12px;white-space:nowrap" data-act="save-tracking">Save tracking</button>
+        <button class="btn primary" style="font-size:.78rem;padding:6px 12px;white-space:nowrap" data-act="send-tracking">Email &amp; fulfill</button>
+      </div>` : '';
+    const cKey = (o.customer?.email || '').toLowerCase().trim() || (o.customer?.name || '').toLowerCase().trim();
+    const cHist = cKey ? custIdx.get(cKey) : null;
+    const cHistBlock = (cHist && cHist.count > 1) ? `<div style="font-size:.72rem;color:var(--text-dim);margin-top:2px">↻ ${cHist.count} orders · $${cHist.spent.toFixed(2)} lifetime</div>` : '';
+    return `
+      <article class="order-card ${o.status}" data-id="${o.id}">
+        <div class="order-head">
+          <div>
+            <strong>${escHtml(o.customer.name || 'Customer')}</strong>
+            <span class="order-status ${o.status}">${o.status}</span>
+            ${cHistBlock}
+          </div>
+          <div class="order-id">${date}</div>
+        </div>
+        <div class="order-cust">
+          <a href="mailto:${escHtml(o.customer.email)}">${escHtml(o.customer.email)}</a>
+          ${phoneLink ? '· ' + phoneLink : ''}
+          <br><span class="em">Fulfillment:</span> ${escHtml(o.fulfillment)}
+          ${o.notes ? `<br><span class="em">Customer note:</span> ${escHtml(o.notes)}` : ''}
+          <div class="order-meta">
+            <span class="em">Source:</span> ${source} · <span class="em">Payment:</span>
+            <select data-payment="${o.id}" style="margin-left:4px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:3px;padding:2px 6px">
+              <option value="pending" ${payment==='pending'?'selected':''}>pending (Square)</option>
+              <option value="pending_invoice" ${payment==='pending_invoice'?'selected':''}>pending invoice</option>
+              <option value="invoiced" ${payment==='invoiced'?'selected':''}>invoiced</option>
+              <option value="paid" ${payment==='paid'?'selected':''}>paid</option>
+              <option value="abandoned" ${payment==='abandoned'?'selected':''}>abandoned</option>
+              <option value="cancelled" ${payment==='cancelled'?'selected':''}>cancelled</option>
+            </select>
+            <br><span class="em">Tags:</span> ${tags}
+          </div>
+        </div>
+        ${addrBlock}
+        <div class="order-lines">
+          ${lines}
+          <div class="ln"><span>Subtotal</span><span>$${(fin.subtotal || 0).toFixed(2)}</span></div>
+          <div class="ln"><span>Discount</span><span>-$${(fin.discount || 0).toFixed(2)}</span></div>
+          <div class="ln"><span>Shipping</span><span>$${(fin.shipping || 0).toFixed(2)}</span></div>
+          <div class="ln"><span>Tax</span><span>$${(fin.tax || 0).toFixed(2)}</span></div>
+          ${fin.taxEstimate ? `<div class="ln" style="color:var(--text-dim);font-size:.75rem"><span>Tax estimate (MI 6%, Square Reader)</span><span>$${(fin.taxEstimate).toFixed(2)}</span></div>` : ''}
+          <div class="ln total"><span>Total</span><span>$${o.total.toFixed(2)}</span></div>
+          ${o.timeline?.paidAt ? `<div class="ln" style="color:var(--good);font-size:.75rem"><span>✓ Paid</span><span>${new Date(o.timeline.paidAt).toLocaleDateString()}</span></div>` : ''}
+        </div>
+        ${trackingBlock}
+        <div class="order-notes">
+          <textarea data-field="adminNotes" placeholder="Internal notes (tracking, Square invoice #, etc.)">${escHtml(o.adminNotes || '')}</textarea>
+        </div>
+        <div class="order-actions">
+          ${o.paymentStatus === 'pending_invoice' ? '<button class="btn primary" data-act="mark-paid" title="Mark this invoice as paid">Mark paid</button>' : ''}
+          ${o.status !== 'fulfilled' ? '<button class="btn primary" data-act="fulfill">Mark Fulfilled</button>' : ''}
+          ${o.status === 'new' ? '<button class="btn" data-act="cancel">Cancel</button>' : ''}
+          ${o.status !== 'new' ? '<button class="btn ghost" data-act="reopen">Re-open</button>' : ''}
+          <button class="btn ghost" data-act="print-slip">Print slip</button>
+          ${o.customer?.email ? '<button class="btn ghost" data-act="send-receipt" title="Re-send the order confirmation email to the customer">Email receipt</button>' : ''}
+          <button class="btn danger ghost" data-act="del">Delete</button>
+        </div>
+      </article>`;
+  }).join('');
+
+  el.querySelectorAll('.order-card').forEach(card => {
+    const id = card.dataset.id;
+    const ta = card.querySelector('textarea[data-field="adminNotes"]');
+    let t;
+    ta.addEventListener('input', () => {
+      clearTimeout(t);
+      t = setTimeout(() => updateOrder(id, { adminNotes: ta.value }), 800);
+    });
+    card.querySelectorAll('[data-act]').forEach(b => b.onclick = () => orderAction(id, b.dataset.act, card));
+    // Copy address
+    const copyBtn = card.querySelector('[data-copy-addr]');
+    if(copyBtn) copyBtn.onclick = () => {
+      const o = state.orders.find(x => x.id === id);
+      const addr = o?.shippingAddress || {};
+      const text = [addr.name, addr.line1, addr.line2, addr.city && `${addr.city}, ${addr.state} ${addr.zip}`].filter(Boolean).join('\n');
+      navigator.clipboard.writeText(text).then(() => toast('Address copied')).catch(() => toast('Copy failed', true));
+    };
+  });
+  el.querySelectorAll('select[data-payment]').forEach(sel => {
+    sel.onchange = () => updateOrder(sel.dataset.payment, { paymentStatus: sel.value });
+  });
+}
+
+async function updateOrder(id, patch){
+  try {
+    await api('/api/orders/' + encodeURIComponent(id), {
+      method: 'PATCH',
+      body: JSON.stringify(patch)
+    });
+    const o = state.orders.find(x => x.id === id);
+    if(o) Object.assign(o, patch);
+  } catch(e){ toast('Update failed: ' + e.message, true); }
+}
+
+async function orderAction(id, act, card){
+  if(act === 'fulfill') { await updateOrder(id, { status: 'fulfilled' }); }
+  else if(act === 'cancel') { await updateOrder(id, { status: 'cancelled' }); }
+  else if(act === 'reopen') { await updateOrder(id, { status: 'new' }); }
+  else if(act === 'mark-paid'){
+    const o = state.orders.find(x => x.id === id);
+    const who = o?.customer?.name || 'this customer';
+    const amt = o?.total ? `$${Number(o.total).toFixed(2)}` : '';
+    if(!confirm(`Mark ${who}'s invoice ${amt} as paid?`)) return;
+    const note = prompt('Optional payment note (e.g. "check #1234", "Venmo", "cash"):', '') || '';
+    try {
+      const res = await api(`/api/orders/${encodeURIComponent(id)}/mark-paid`, {
+        method: 'POST',
+        body: JSON.stringify({ note: note.trim() })
+      });
+      if(res?.order){
+        const local = state.orders.find(x => x.id === id);
+        if(local) Object.assign(local, res.order);
+      }
+      toast('Invoice marked paid');
+      renderBusinessDashboard();
+    } catch(e){ toast('Failed: ' + e.message, true); return; }
+  }
+  else if(act === 'save-tracking'){
+    const inp = card?.querySelector('[data-tracking-input]');
+    const num = inp?.value.trim();
+    if(!num){ toast('Enter a tracking number first', true); return; }
+    await updateOrder(id, { trackingNumber: num });
+    toast('Tracking number saved');
+    return;
+  }
+  else if(act === 'send-tracking'){
+    const inp = card?.querySelector('[data-tracking-input]');
+    const num = inp?.value.trim();
+    if(!num){ toast('Enter tracking number first', true); return; }
+    try {
+      await api(`/api/orders/${encodeURIComponent(id)}/send-tracking`, {
+        method: 'POST',
+        body: JSON.stringify({ trackingNumber: num })
+      });
+      toast('Tracking email sent — order marked fulfilled');
+    } catch(e){ toast('Failed: ' + e.message, true); return; }
+  }
+  else if(act === 'print-slip'){
+    const o = state.orders.find(x => x.id === id);
+    if(!o) return;
+    printPackingSlip(o);
+    return;
+  }
+  else if(act === 'send-receipt'){
+    const o = state.orders.find(x => x.id === id);
+    if(!o?.customer?.email){ toast('No customer email on this order', true); return; }
+    if(!confirm(`Send order confirmation email to ${o.customer.email}?`)) return;
+    try {
+      await api(`/api/orders/${encodeURIComponent(id)}/send-receipt`, { method: 'POST' });
+      toast('Receipt emailed to ' + o.customer.email);
+    } catch(e){ toast('Email failed: ' + e.message, true); }
+    return;
+  }
+  else if(act === 'del'){
+    if(!confirm('Delete this order permanently?')) return;
+    try {
+      await api('/api/orders/' + encodeURIComponent(id), { method: 'DELETE' });
+      state.orders = state.orders.filter(o => o.id !== id);
+    } catch(e){ toast('Delete failed: ' + e.message, true); return; }
+  }
+  await loadOrders();
+}
+
+function printPackingSlip(o){
+  const addr = o.shippingAddress || {};
+  const addrHtml = [addr.name, addr.line1, addr.line2, addr.city && `${addr.city}, ${addr.state} ${addr.zip}`]
+    .filter(Boolean).map(l => `<div>${l}</div>`).join('');
+  const itemsHtml = (o.lines || []).map(l =>
+    `<tr><td>${l.qty}</td><td>${l.name}</td><td>$${(l.price*l.qty).toFixed(2)}</td></tr>`
+  ).join('');
+  const w = window.open('', '_blank', 'width=600,height=700');
+  w.document.write(`<!DOCTYPE html><html><head><title>Packing Slip — ${o.id}</title>
+  <style>body{font-family:Arial,sans-serif;padding:30px;font-size:14px}
+  h1{font-size:16px;margin-bottom:4px}
+  .from{font-size:12px;color:#666;margin-bottom:20px}
+  .section{margin-bottom:16px}
+  .label{font-size:11px;text-transform:uppercase;color:#999;letter-spacing:.08em;margin-bottom:4px}
+  .addr{line-height:1.7}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th{text-align:left;border-bottom:2px solid #000;padding:4px 6px;font-size:12px}
+  td{padding:5px 6px;border-bottom:1px solid #ddd;font-size:13px}
+  .total{font-weight:bold;border-top:2px solid #000}
+  .meta{font-size:11px;color:#666;margin-top:20px}
+  @media print{button{display:none}}</style></head><body>
+  <h1>Minarealm Crystals — Packing Slip</h1>
+  <div class="from">minarealm.shop · cynthia@minarealm.org</div>
+  <div class="section">
+    <div class="label">Ship to</div>
+    <div class="addr">${addrHtml || '<em>Pickup order</em>'}</div>
+  </div>
+  <div class="section">
+    <div class="label">Order #${o.id}</div>
+    <div style="font-size:12px;color:#666">${new Date(o.created).toLocaleString()}</div>
+  </div>
+  <table>
+    <thead><tr><th>Qty</th><th>Item</th><th>Price</th></tr></thead>
+    <tbody>${itemsHtml}</tbody>
+    <tfoot>
+      <tr class="total"><td colspan="2">Total</td><td>$${Number(o.total).toFixed(2)}</td></tr>
+    </tfoot>
+  </table>
+  <div class="meta">
+    Fulfillment: ${o.fulfillment}${o.trackingNumber ? '<br>Tracking: '+o.trackingNumber : ''}
+  </div>
+  <br><button onclick="window.print()">Print</button>
+  </body></html>`);
+  w.document.close();
+}
+
+$('orders-filter').onchange = (e) => { state.ordersFilter = e.target.value; renderOrders(); };
+$('orders-search').oninput = () => renderOrders();
+$('refresh-orders').onclick = () => loadOrders();
+$('export-orders').onclick = async () => {
+  const today = new Date().toISOString().slice(0,10);
+  const monthAgo = new Date(Date.now() - 31*86400e3).toISOString().slice(0,10);
+  const since = prompt('Export orders since (YYYY-MM-DD). Leave blank for all time.', monthAgo);
+  if(since === null) return;
+  const until = prompt('Through date (YYYY-MM-DD). Leave blank for today.', today);
+  if(until === null) return;
+  const qs = new URLSearchParams();
+  if(since.trim()) qs.set('since', since.trim());
+  if(until.trim()) qs.set('until', until.trim());
+  qs.set('status', state.ordersFilter === 'new' ? 'all' : state.ordersFilter);
+  try {
+    const res = await fetch(API + '/api/orders/export.csv?' + qs.toString(), { credentials: 'include' });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `minarealm-orders-${since||'all'}-to-${until||today}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast('CSV downloaded');
+  } catch(e){ toast('Export failed: ' + e.message, true); }
+};
+
+// ─── Forms ───────────────────────────────────────────────────────────
+async function loadForms(){
+  try {
+    const type = state.formsFilter || 'all';
+    const r = await api('/api/forms?type=' + encodeURIComponent(type) + '&limit=300');
+    state.forms = r.entries || [];
+    renderForms();
+  } catch(e){ toast('Forms failed: ' + e.message, true); }
+}
+
+function formTypeLabel(type){
+  return ({ booking:'Booking', contact:'Contact', newsletter:'Newsletter', subscription:'Subscription' })[type] || type;
+}
+
+function renderForms(){
+  const el = $('forms-list');
+  const list = state.forms || [];
+  if(list.length === 0){
+    el.innerHTML = '<div class="empty-state">No submissions yet for this filter.</div>';
+    return;
+  }
+
+  el.innerHTML = list.map(entry => {
+    const created = entry.created ? new Date(entry.created).toLocaleString() : 'Unknown time';
+    const email = entry.email ? `<a href="mailto:${entry.email}">${entry.email}</a>` : '—';
+    const phone = entry.phone ? ` · <a href="tel:${entry.phone}">${entry.phone}</a>` : '';
+    const badgeColor = ({ booking:'var(--gold)', contact:'var(--purple)', newsletter:'#4aa3e8', subscription:'#6fd08c' })[entry.type] || 'var(--text-dim)';
+
+    let detail = '';
+    if(entry.type === 'booking'){
+      detail = `
+        <div><strong>Service:</strong> ${entry.service || '—'}</div>
+        <div><strong>When:</strong> ${entry.preferred_date || '—'} ${entry.preferred_time || ''}</div>
+        ${entry.notes ? `<div><strong>Notes:</strong> ${entry.notes}</div>` : ''}`;
+    } else if(entry.type === 'contact'){
+      detail = `<div><strong>Message:</strong> ${entry.message || ''}</div>`;
+    } else if(entry.type === 'newsletter'){
+      detail = `<div><strong>Source:</strong> ${entry.source || 'site-signup'}</div>`;
+    } else if(entry.type === 'subscription'){
+      detail = `
+        <div><strong>Tier:</strong> ${entry.tier || '—'}</div>
+        <div><strong>Fulfillment:</strong> ${entry.fulfillment || '—'} · <strong>Spirit message:</strong> ${entry.spirit_message || '—'}</div>
+        ${entry.extras_opt_in ? `<div><strong>Extras:</strong> ${entry.extras_opt_in}</div>` : ''}
+        ${Array.isArray(entry.loves) && entry.loves.length ? `<div><strong>Loves:</strong> ${entry.loves.join(', ')}</div>` : ''}
+        ${entry.avoid ? `<div><strong>Avoid:</strong> ${entry.avoid}</div>` : ''}
+        ${entry.intent ? `<div><strong>Intent:</strong> ${entry.intent}</div>` : ''}`;
+    }
+
+    return `
+      <article class="order-card" style="margin-bottom:14px">
+        <div class="order-head">
+          <div>
+            <strong>${entry.name || 'Email signup'}</strong>
+            <span class="order-status" style="background:${badgeColor};color:#0c0b10">${formTypeLabel(entry.type)}</span>
+          </div>
+          <div class="order-id">${created}</div>
+        </div>
+        <div class="order-cust">
+          ${email}${phone}
+          <br><span class="em">Source:</span> ${entry.source || entry.type}
+        </div>
+        <div class="order-lines" style="display:block">${detail}</div>
+      </article>`;
+  }).join('');
+}
+
+$('forms-filter').onchange = (e) => { state.formsFilter = e.target.value; loadForms(); };
+$('refresh-forms').onclick = () => loadForms();
+
+function toast(msg, err){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.toggle('err', !!err);
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// ─── Users (owner-only) ──────────────────────────────────────────────
+async function loadUsers(){
+  if(!state.user || state.user.role !== 'owner') return;
+  try {
+    const r = await api('/api/users');
+    state.users = r.users || [];
+    renderUsers();
+  } catch(e){ toast(e.message, true); }
+}
+function fmtDate(s){
+  if(!s) return '—';
+  const d = new Date(s);
+  return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+function renderUsers(){
+  $('users-rows').innerHTML = state.users.map(u => {
+    const isMe = u.username === state.user.username;
+    const inactive = u.active === false ? ' style="opacity:.55"' : '';
+    const publishCell = u.role === 'owner'
+      ? '<td style="color:var(--text-dim);font-size:.8rem">always</td>'
+      : `<td><button class="btn ${u.trusted ? 'primary' : ''}" data-act="trust" style="font-size:.75rem;padding:3px 10px" title="${u.trusted ? 'Click to require approval' : 'Click to allow auto-publish'}">${u.trusted ? '\u2713 Auto' : 'Needs OK'}</button></td>`;
+    return `
+      <tr data-u="${u.username}"${inactive}>
+        <td><strong>${u.username}</strong>${isMe ? ' <span style="color:var(--gold);font-size:.7rem">(you)</span>' : ''}</td>
+        <td>${u.name || ''}</td>
+        <td><span style="color:${u.role==='owner'?'var(--gold-light)':'var(--purple)'};font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase">${u.role}</span>${u.active===false?' \u00b7 disabled':''}</td>
+        ${publishCell}
+        <td class="hide-sm" style="color:var(--text-dim);font-size:.82rem">${fmtDate(u.lastLogin)}</td>
+        <td class="hide-sm" style="color:var(--text-dim);font-size:.82rem">${fmtDate(u.created)}<br><span style="font-size:.72rem">by ${u.createdBy||'\u2014'}</span></td>
+        <td>
+          <div class="row-actions">
+            <button class="btn" data-act="edit">Edit</button>
+            <button class="btn" data-act="reset">Reset PW</button>
+            ${isMe ? '' : '<button class="btn danger" data-act="del">Delete</button>'}
+          </div>
+        </td>
+      </tr>`;
+  }).join('');
+  $('users-rows').querySelectorAll('tr').forEach(tr => {
+    const un = tr.dataset.u;
+    tr.querySelectorAll('[data-act]').forEach(b => b.onclick = () => userAction(un, b.dataset.act));
+  });
+}
+async function userAction(un, act){
+  const u = state.users.find(x => x.username === un);
+  if(!u) return;
+  if(act === 'edit'){ openUserModal(u); return; }
+  if(act === 'trust'){
+    const newVal = !u.trusted;
+    try {
+      await api('/api/users/' + un, { method:'PATCH', body: JSON.stringify({ trusted: newVal }) });
+      await loadUsers();
+      toast(newVal ? un + ' can now auto-publish changes' : un + "'s changes will need your approval");
+    } catch(e){ toast(e.message, true); }
+    return;
+  }
+  if(act === 'reset'){
+    const pw = prompt(`Reset password for ${un} to:`, '');
+    if(!pw) return;
+    if(pw.length < 4){ toast('Min 4 characters', true); return; }
+    try {
+      await api('/api/users/' + un, { method:'PATCH', body: JSON.stringify({ password: pw }) });
+      toast('Password reset. Tell ' + un + ' the new password.');
+    } catch(e){ toast(e.message, true); }
+    return;
+  }
+  if(act === 'del'){
+    if(!confirm(`Delete user "${un}"? They will be logged out and cannot sign in again.`)) return;
+    try {
+      await api('/api/users/' + un, { method: 'DELETE' });
+      await loadUsers();
+      toast('User deleted');
+    } catch(e){ toast(e.message, true); }
+  }
+}
+function openUserModal(u){
+  const isNew = !u;
+  $('user-modal-title').textContent = isNew ? 'Add User' : 'Edit User: ' + u.username;
+  $('u-orig').value = isNew ? '' : u.username;
+  $('u-username').value = isNew ? '' : u.username;
+  $('u-username').readOnly = !isNew;
+  $('u-name').value = isNew ? '' : (u.name || '');
+  $('u-role').value = isNew ? 'admin' : u.role;
+  $('u-active').value = isNew ? 'true' : (u.active === false ? 'false' : 'true');
+  $('u-trusted').value = (!isNew && u.trusted) ? 'true' : 'false';
+  $('u-trusted-field').style.display = ($('u-role').value === 'owner') ? 'none' : '';
+  $('u-password').value = '';
+  $('u-pw-label').innerHTML = isNew ? 'Password *' : 'New password (leave blank to keep current)';
+  $('u-pw-hint').textContent = isNew
+    ? 'Tell the user this password \u2014 they can change it themselves after first login.'
+    : 'Only fill in if you want to reset their password right now.';
+  $('user-scrim').classList.add('open');
+  setTimeout(() => $('u-username').focus(), 50);
+}
+$('u-role').onchange = () => {
+  $('u-trusted-field').style.display = ($('u-role').value === 'owner') ? 'none' : '';
+};
+$('add-user-btn').onclick = () => openUserModal(null);
+$('u-cancel').onclick = () => $('user-scrim').classList.remove('open');
+$('user-scrim').onclick = (e) => { if(e.target === $('user-scrim')) $('user-scrim').classList.remove('open'); };
+$('user-form').onsubmit = async (e) => {
+  e.preventDefault();
+  const orig = $('u-orig').value;
+  const isNew = !orig;
+  const body = {
+    username: $('u-username').value.trim().toLowerCase(),
+    name: $('u-name').value.trim(),
+    role: $('u-role').value,
+    active: $('u-active').value === 'true'
+  };
+  if($('u-role').value !== 'owner') body.trusted = $('u-trusted').value === 'true';
+  const pw = $('u-password').value;
+  if(isNew){
+    if(pw.length < 4){ toast('Password required (min 4 chars)', true); return; }
+    body.password = pw;
+  } else if(pw.length >= 4){ body.password = pw; }
+  try {
+    if(isNew){
+      await api('/api/users', { method:'POST', body: JSON.stringify(body) });
+      toast('User created');
+    } else {
+      await api('/api/users/' + orig, { method:'PATCH', body: JSON.stringify(body) });
+      toast('User updated');
+    }
+    $('user-scrim').classList.remove('open');
+    await loadUsers();
+  } catch(e){ toast(e.message, true); }
+};
+
+// ─── Activity log (owner-only) ───────────────────────────────────────
+async function loadAudit(){
+  if(!state.user || state.user.role !== 'owner') return;
+  try {
+    const r = await api('/api/audit?limit=300');
+    state.audit = r.entries || [];
+    renderAudit();
+  } catch(e){ toast(e.message, true); }
+}
+function renderAudit(){
+  const q = state.activityFilter.trim().toLowerCase();
+  const rows = state.audit.filter(e => {
+    if(!q) return true;
+    return [e.user, e.action, e.target, e.summary].join(' ').toLowerCase().includes(q);
+  });
+  const colorFor = (a) => {
+    if(a.startsWith('login')) return 'var(--purple)';
+    if(a.startsWith('user.')) return 'var(--gold)';
+    if(a.startsWith('order.')) return 'var(--good)';
+    if(a.startsWith('catalog')) return 'var(--gold-light)';
+    if(a.startsWith('image')) return 'var(--text-dim)';
+    return 'var(--text)';
+  };
+  $('activity-rows').innerHTML = rows.map(e => `
+    <tr>
+      <td style="color:var(--text-dim);font-size:.78rem;white-space:nowrap">${fmtDate(e.ts)}</td>
+      <td><strong>${e.user}</strong>${e.role ? ` <span style="color:var(--text-dim);font-size:.7rem">(${e.role})</span>` : ''}</td>
+      <td><span style="color:${colorFor(e.action)};font-family:monospace;font-size:.82rem">${e.action}</span></td>
+      <td style="font-family:monospace;font-size:.78rem;color:var(--text-dim)">${e.target||''}</td>
+      <td style="font-size:.85rem">${e.summary||''}</td>
+    </tr>`).join('') || '<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-dim)">No activity yet.</td></tr>';
+}
+$('activity-search').oninput = (e) => { state.activityFilter = e.target.value; renderAudit(); };
+$('refresh-activity').onclick = () => loadAudit();
+
+// ─── Change own password ─────────────────────────────────────────────
+$('change-pw').onclick = () => {
+  $('pw-current').value = ''; $('pw-next').value = '';
+  $('pw-scrim').classList.add('open');
+  setTimeout(() => $('pw-current').focus(), 50);
+};
+$('pw-cancel').onclick = () => $('pw-scrim').classList.remove('open');
+$('pw-scrim').onclick = (e) => { if(e.target === $('pw-scrim')) $('pw-scrim').classList.remove('open'); };
+$('pw-form').onsubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await api('/api/password', {
+      method: 'POST',
+      body: JSON.stringify({ current: $('pw-current').value, next: $('pw-next').value })
+    });
+    toast('Password updated');
+    $('pw-scrim').classList.remove('open');
+  } catch(e){ toast(e.message, true); }
+};
+
+// Auto-poll orders every 60s when on the orders tab
+setInterval(() => {
+  if(document.querySelector('.tab[data-tab="orders"].active')) loadOrders();
+  if(document.querySelector('.tab[data-tab="forms"].active')) loadForms();
+}, 60000);
+
+// Auto-unlock if prior user exists; session validity is checked by /api/whoami.
+try { state.user = JSON.parse(localStorage.getItem(USER_KEY) || 'null'); } catch {}
+
+window.addEventListener('beforeunload', (e) => {
+  const s = $('save-status');
+  if(s && (s.classList.contains('dirty') || s.classList.contains('saving'))){
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
+unlock();
+</script>
+</body>
+</html>

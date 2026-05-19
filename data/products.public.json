@@ -1,0 +1,463 @@
+{
+  "updated": "2026-04-25",
+  "currency": "USD",
+  "note": "Edit via /admin/ (export JSON, replace this file, redeploy).",
+  "categories": [
+    {
+      "id": "crystals",
+      "name": "Crystals & Minerals"
+    },
+    {
+      "id": "jewelry",
+      "name": "Sterling Silver Jewelry"
+    },
+    {
+      "id": "fossils",
+      "name": "Fossils"
+    },
+    {
+      "id": "carvings",
+      "name": "Carvings & Spheres"
+    },
+    {
+      "id": "tools",
+      "name": "Spiritual Tools"
+    },
+    {
+      "id": "mystery",
+      "name": "Mystery & Bundles"
+    }
+  ],
+  "products": [
+    {
+      "id": "crystal-bracelet",
+      "name": "Crystal Bracelet",
+      "category": "jewelry",
+      "price": 12,
+      "bundle": "2 for $20",
+      "stock": 24,
+      "image": "/59ff2e_fb87940e144e43d2adfa1640434fc0b0~mv2.jpg",
+      "description": "Hand-selected crystal bead bracelets. Many varieties — rose quartz, amethyst, tiger's eye, clear quartz, and more.",
+      "retail_price": 12
+    },
+    {
+      "id": "agate-slice",
+      "name": "Agate Slice",
+      "category": "crystals",
+      "price": 6.95,
+      "bundle": "From $6.95",
+      "stock": 40,
+      "image": "/59ff2e_0fc05117135d45cb87ebbd25f538faa7~mv2.jpg",
+      "description": "Natural agate slices in a range of colors and sizes. Small to showpiece.",
+      "retail_price": 6.95
+    },
+    {
+      "id": "crystal-sphere",
+      "name": "Crystal Sphere",
+      "category": "carvings",
+      "price": 14,
+      "bundle": "Starting at $14",
+      "stock": 18,
+      "image": "/59ff2e_6f885fda5ef346da8a32a49c0718c527~mv2.jpg",
+      "description": "Hand-polished crystal spheres. Selection rotates — call for current stock.",
+      "retail_price": 14
+    },
+    {
+      "id": "labradorite-heart",
+      "name": "Labradorite Heart",
+      "category": "carvings",
+      "price": 18,
+      "bundle": "",
+      "stock": 12,
+      "image": "/b2d032603637c3d1c9676d2f65059eda.jpg",
+      "description": "Polished labradorite hearts with vivid blue and gold flash. Palm-sized.",
+      "retail_price": 18
+    },
+    {
+      "id": "polished-sphere",
+      "name": "Polished Crystal Sphere (Premium)",
+      "category": "carvings",
+      "price": 45,
+      "bundle": "",
+      "stock": 8,
+      "image": "/59ff2e_a0aa790d41454cca8d28bd6c85258a7d~mv2.jpg",
+      "description": "Larger, display-grade polished spheres. Call to confirm the exact stone before shipping.",
+      "retail_price": 45
+    },
+    {
+      "id": "mystery-bag",
+      "name": "Mystery Bag",
+      "category": "mystery",
+      "price": 35,
+      "bundle": "Retail value $60–$75",
+      "stock": 15,
+      "image": "/a0c024ea529d50b0d9caacba2f6e1a9c.jpg",
+      "description": "A hand-curated mystery bundle of crystals, jewelry, and small spiritual tools. Always a generous value.",
+      "retail_price": 35
+    },
+    {
+      "id": "tumbled-set",
+      "name": "Tumbled Stone Set",
+      "category": "crystals",
+      "price": 10,
+      "bundle": "",
+      "stock": 30,
+      "image": "/a0c024ea529d50b0d9caacba2f6e1a9c.jpg",
+      "description": "A starter set of tumbled healing stones. Great gift.",
+      "retail_price": 10
+    },
+    {
+      "id": "sterling-ring",
+      "name": "Sterling Silver Crystal Ring",
+      "category": "jewelry",
+      "price": 38,
+      "bundle": "",
+      "stock": 10,
+      "image": "/b2d032603637c3d1c9676d2f65059eda.jpg",
+      "description": "Sterling silver ring set with a natural crystal. Call or visit to see current designs.",
+      "retail_price": 38
+    },
+    {
+      "id": "selenite-dragonfly-plate",
+      "name": "Satin Spar \"Selenite\" Etched Dragonfly Charging Plate",
+      "category": "tools",
+      "price": 22.22,
+      "bundle": "",
+      "stock": 10,
+      "image": "/c6323c_8e6cc2485f4b4939aa631c0d891bc0f9~mv2.jpg",
+      "description": "A powerful tool for cleansing and recharging your crystals, jewelry, and sacred items. Handcrafted in Morocco from satin spar (commonly known as selenite), with soft, glowing fibrous lines that reflect light beautifully. Approximately 5\" wide × 1/2\" thick — ideal for holding multiple crystals or as a centerpiece. Selenite is associated with clarity, peace, and spiritual connection: it cleanses and recharges other crystals, supports a calm environment, and is often used as a constant energy purifier (selenite itself does not need to be cleansed). All orders include a free gift.",
+      "retail_price": 22.22
+    },
+    {
+      "id": "selenite-mushroom-women-plate",
+      "name": "Satin Spar \"Selenite\" Etched Mushroom Women Charging Plate",
+      "category": "tools",
+      "price": 22.22,
+      "bundle": "",
+      "stock": 10,
+      "images": [],
+      "description": "A powerful tool for cleansing and recharging your crystals, jewelry, and sacred items. Handcrafted in Morocco from satin spar selenite, featuring soft, glowing fibrous lines. Approx. 4.75\" tall, 4\" wide, 1/2\" thick. Weighs 0.86 lbs. Selenite is associated with clarity, peace, and spiritual connection — and unlike many other stones, does not need to be cleansed. All orders include a free gift.",
+      "retail_price": 22.22
+    },
+    {
+      "id": "selenite-tower-6in",
+      "name": "Satin Spar \"Selenite\" 6 Inch Tower",
+      "category": "tools",
+      "price": 15.95,
+      "bundle": "",
+      "stock": 20,
+      "images": [],
+      "description": "A charging & cleansing tower handcrafted in Morocco from satin spar selenite. Approx. 6\" tall, 2\" wide — ideal for charging crystal bracelets or as a sacred space centerpiece. Selenite is associated with clarity, peace, and spiritual connection, and serves as a constant energy purifier. All orders include a free gift.",
+      "retail_price": 15.95
+    },
+    {
+      "id": "yellow-calcite-pooh-bear",
+      "name": "Yellow Calcite Crystal Pooh Bear",
+      "category": "carvings",
+      "price": 30.95,
+      "bundle": "",
+      "stock": 20,
+      "images": [],
+      "description": "Hand-shaped from natural yellow calcite with delicate painted accents. Yellow calcite is known for boosting confidence, enhancing motivation, and supporting mental clarity. Approx. 2\" × 2\" × 2\", 0.27 lbs. Each piece is unique. All orders include a free gift.",
+      "retail_price": 30.95
+    },
+    {
+      "id": "yooperlite-owl",
+      "name": "Emberlite \"Yooperlite\" Hand-Carved Owl",
+      "category": "carvings",
+      "price": 39.95,
+      "bundle": "",
+      "stock": 2,
+      "images": [],
+      "description": "Hand-carved from emberlite (Yooperlite) — a Michigan stone famous for its fiery fluorescent glow under UV light. Owls symbolize wisdom, intuition, and protection. Approx. 3\" tall, 2.5\" wide, 2\" thick. Each piece is unique. All orders include a free gift.",
+      "retail_price": 39.95
+    },
+    {
+      "id": "purple-labradorite-palmstone",
+      "name": "Rare Purple Labradorite Palmstone",
+      "category": "crystals",
+      "price": 13.33,
+      "bundle": "",
+      "stock": 1,
+      "images": [],
+      "description": "Rare purple labradorite with beautiful violet flashes and iridescent shimmer (labradorescence). Approx. 1.9\" wide, 1.4\" long, 0.6\" thick. 0.07 lbs. Known as a stone of intuition, protection, and transformation. Clear stand not included. You will receive this exact piece. Includes a free gift.",
+      "retail_price": 13.33
+    },
+    {
+      "id": "chevron-amethyst-sphere",
+      "name": "Chevron Amethyst Sphere",
+      "category": "carvings",
+      "price": 49.95,
+      "bundle": "",
+      "stock": 1,
+      "image": "/assets/start-of-inventory/IMG_4101.jpeg",
+      "images": [
+        "/assets/start-of-inventory/IMG_4101.jpeg",
+        "/assets/start-of-inventory/IMG_4102.jpeg",
+        "/assets/start-of-inventory/IMG_4103.jpeg",
+        "/assets/start-of-inventory/IMG_4104.jpeg",
+        "/assets/start-of-inventory/IMG_4105.jpeg",
+        "/assets/start-of-inventory/IMG_4106.jpeg",
+        "/assets/start-of-inventory/IMG_4107.jpeg",
+        "/assets/start-of-inventory/IMG_4131.jpeg",
+        "/assets/start-of-inventory/IMG_4132.jpeg",
+        "/assets/start-of-inventory/IMG_4133.jpeg",
+        "/assets/start-of-inventory/IMG_4134.jpeg",
+        "/assets/start-of-inventory/IMG_4146.jpeg"
+      ],
+      "weight_lbs": 1.15,
+      "size_mm": "72.52mm diameter",
+      "description": "A stunning hand-polished Chevron Amethyst sphere featuring deep purple amethyst banded with pure white quartz in striking V-shaped (chevron) patterns. Approx. 72.52mm diameter, 1.15 lbs. Chevron amethyst is prized for enhancing intuition, deepening meditation, and amplifying the calming properties of amethyst with the clarity of quartz. Each piece is unique. Includes a free gift.",
+      "retail_price": 49.95
+    },
+    {
+      "id": "flower-agate-sphere",
+      "name": "Flower Agate Sphere",
+      "category": "carvings",
+      "price": 31.95,
+      "bundle": "",
+      "stock": 1,
+      "image": "/assets/start-of-inventory/IMG_4116.jpeg",
+      "images": [
+        "/assets/start-of-inventory/IMG_4116.jpeg",
+        "/assets/start-of-inventory/IMG_4136.jpeg",
+        "/assets/start-of-inventory/IMG_4137.jpeg",
+        "/assets/start-of-inventory/IMG_4138.jpeg",
+        "/assets/start-of-inventory/IMG_4139.jpeg",
+        "/assets/start-of-inventory/IMG_4140.jpeg",
+        "/assets/start-of-inventory/IMG_4141.jpeg",
+        "/assets/start-of-inventory/IMG_4147.jpeg"
+      ],
+      "weight_lbs": 0.39,
+      "size_mm": "50.99mm diameter",
+      "description": "A soft, dreamy Flower Agate sphere with white chalcedony \"flower\" blooms set against a blush-pink translucent base. Approx. 50.99mm diameter, 0.39 lbs. Flower agate is known as a stone of personal growth, encouragement, and blossoming potential — perfect for those working toward manifesting their dreams. Includes a free gift.",
+      "retail_price": 31.95
+    },
+    {
+      "id": "ruby-zoisite-sphere",
+      "name": "Ruby Zoisite Sphere",
+      "category": "carvings",
+      "price": 32.95,
+      "bundle": "",
+      "stock": 1,
+      "image": "/assets/start-of-inventory/IMG_4111.jpeg",
+      "images": [
+        "/assets/start-of-inventory/IMG_4111.jpeg",
+        "/assets/start-of-inventory/IMG_4144.jpeg",
+        "/assets/start-of-inventory/IMG_4145.jpeg",
+        "/assets/start-of-inventory/IMG_4148.jpeg",
+        "/assets/start-of-inventory/IMG_4149.jpeg",
+        "/assets/start-of-inventory/IMG_4150.jpeg",
+        "/assets/start-of-inventory/IMG_4151.jpeg",
+        "/assets/start-of-inventory/IMG_4152.jpeg",
+        "/assets/start-of-inventory/IMG_4153.jpeg",
+        "/assets/start-of-inventory/IMG_4155.jpeg"
+      ],
+      "weight_lbs": 0.43,
+      "size_mm": "48.84mm diameter",
+      "description": "A vibrant hand-polished Ruby Zoisite (Anyolite) sphere combining rich red ruby, deep green zoisite, and black hornblende in bold natural patterns. Approx. 48.84mm diameter, 0.43 lbs. Ruby zoisite is associated with passion, vitality, and spiritual growth — a powerful combination of heart and life-force energy. Includes a free gift.",
+      "retail_price": 32.95
+    },
+    {
+      "id": "blue-coral-sphere",
+      "name": "Blue Coral Sphere",
+      "category": "carvings",
+      "price": 35.95,
+      "bundle": "",
+      "stock": 1,
+      "image": "/assets/start-of-inventory/IMG_4117.jpeg",
+      "images": [
+        "/assets/start-of-inventory/IMG_4117.jpeg",
+        "/assets/start-of-inventory/IMG_4156.jpeg",
+        "/assets/start-of-inventory/IMG_4157.jpeg",
+        "/assets/start-of-inventory/IMG_4158.jpeg",
+        "/assets/start-of-inventory/IMG_4159.jpeg",
+        "/assets/start-of-inventory/IMG_4160.jpeg",
+        "/assets/start-of-inventory/IMG_4161.jpeg"
+      ],
+      "weight_lbs": 0.53,
+      "size_mm": "57.04mm diameter",
+      "description": "A peaceful Blue Coral sphere with soft blue and cream tones from ancient fossilized coral. Approx. 57.04mm diameter, 0.53 lbs. Blue coral is associated with emotional healing, calm communication, and purification — a gentle, soothing companion for sensitive souls. Includes a free gift.",
+      "retail_price": 35.95
+    },
+    {
+      "id": "miriam-stone-sphere",
+      "name": "Miriam Stone Sphere",
+      "category": "carvings",
+      "price": 44.95,
+      "bundle": "",
+      "stock": 1,
+      "image": "/assets/start-of-inventory/IMG_4163.jpeg",
+      "images": [
+        "/assets/start-of-inventory/IMG_4163.jpeg",
+        "/assets/start-of-inventory/IMG_4165.jpeg",
+        "/assets/start-of-inventory/IMG_4166.jpeg",
+        "/assets/start-of-inventory/IMG_4167.jpeg"
+      ],
+      "weight_lbs": 0.83,
+      "size_mm": "63.49mm diameter",
+      "description": "A beautifully banded Miriam Stone sphere (also called Mary's Stone or Miriam Jasper) from Egypt, with warm earth tones and layered patterns. Approx. 63.49mm diameter, 0.83 lbs. Miriam Stone carries deeply grounding, calming energy and is used for patience, inner peace, and connection to ancient wisdom. Includes a free gift.",
+      "retail_price": 44.95
+    },
+    {
+      "id": "larvakite-sphere",
+      "name": "Larvakite Sphere",
+      "category": "carvings",
+      "price": 43.95,
+      "bundle": "",
+      "stock": 1,
+      "image": "/assets/start-of-inventory/IMG_4108.jpeg",
+      "images": [
+        "/assets/start-of-inventory/IMG_4108.jpeg",
+        "/assets/start-of-inventory/IMG_4168.jpeg",
+        "/assets/start-of-inventory/IMG_4169.jpeg",
+        "/assets/start-of-inventory/IMG_4170.jpeg",
+        "/assets/start-of-inventory/IMG_4171.jpeg",
+        "/assets/start-of-inventory/IMG_4172.jpeg",
+        "/assets/start-of-inventory/IMG_4173.jpeg",
+        "/assets/start-of-inventory/IMG_4174.jpeg"
+      ],
+      "weight_lbs": 0.79,
+      "size_mm": "63.11mm diameter",
+      "description": "A striking Larvakite sphere from Norway with dark gray-black base and vivid blue-silver labradorescent shimmer. Approx. 63.11mm diameter, 0.79 lbs. Larvakite is a powerful protective and grounding stone that enhances patience, mental clarity, and psychic vision. Often called \"Black Labradorite\" for its beautiful flash. Includes a free gift.",
+      "retail_price": 43.95
+    },
+    {
+      "id": "labradorite-sphere",
+      "name": "Labradorite Sphere",
+      "category": "carvings",
+      "price": 26.95,
+      "bundle": "",
+      "stock": 1,
+      "image": "/assets/start-of-inventory/IMG_4113.jpeg",
+      "images": [
+        "/assets/start-of-inventory/IMG_4113.jpeg",
+        "/assets/start-of-inventory/IMG_4175.jpeg",
+        "/assets/start-of-inventory/IMG_4176.jpeg",
+        "/assets/start-of-inventory/IMG_4177.jpeg",
+        "/assets/start-of-inventory/IMG_4178.jpeg",
+        "/assets/start-of-inventory/IMG_4179.jpeg",
+        "/assets/start-of-inventory/IMG_4180.jpeg",
+        "/assets/start-of-inventory/IMG_4181.jpeg",
+        "/assets/start-of-inventory/IMG_4182.jpeg"
+      ],
+      "weight_lbs": 0.22,
+      "size_mm": "41.40mm diameter",
+      "description": "A hand-polished Labradorite sphere with dazzling labradorescence — flashes of electric blue, gold, and violet that seem to glow from within. Approx. 41.40mm diameter, 0.22 lbs. Labradorite is known as a stone of magic and transformation, enhancing intuition, psychic ability, and spiritual awareness. Includes a free gift.",
+      "retail_price": 26.95
+    },
+    {
+      "id": "chrome-diopside-sphere",
+      "name": "Chrome Diopside Sphere",
+      "category": "carvings",
+      "price": 35.95,
+      "bundle": "",
+      "stock": 1,
+      "image": "/assets/start-of-inventory/IMG_4115.jpeg",
+      "images": [
+        "/assets/start-of-inventory/IMG_4115.jpeg",
+        "/assets/start-of-inventory/IMG_4183.jpeg",
+        "/assets/start-of-inventory/IMG_4184.jpeg",
+        "/assets/start-of-inventory/IMG_4185.jpeg",
+        "/assets/start-of-inventory/IMG_4186.jpeg",
+        "/assets/start-of-inventory/IMG_4188.jpeg"
+      ],
+      "weight_lbs": 0.52,
+      "size_mm": "51.21mm diameter",
+      "description": "A rich, forest-green Chrome Diopside sphere from Siberia with deep emerald color and a satiny luster. Approx. 51.21mm diameter, 0.52 lbs. Chrome diopside is known for its connection to heart-centered energy, creativity, and love — a stone that invites growth, compassion, and harmony. Includes a free gift.",
+      "retail_price": 35.95
+    },
+    {
+      "id": "goldsheen-obsidian-sphere",
+      "name": "Goldsheen Obsidian Sphere",
+      "category": "carvings",
+      "price": 29.95,
+      "bundle": "",
+      "stock": 1,
+      "image": "/assets/start-of-inventory/IMG_4112.jpeg",
+      "images": [
+        "/assets/start-of-inventory/IMG_4112.jpeg",
+        "/assets/start-of-inventory/IMG_4190.jpeg",
+        "/assets/start-of-inventory/IMG_4191.jpeg",
+        "/assets/start-of-inventory/IMG_4192.jpeg",
+        "/assets/start-of-inventory/IMG_4193.jpeg",
+        "/assets/start-of-inventory/IMG_4194.jpeg",
+        "/assets/start-of-inventory/IMG_4195.jpeg",
+        "/assets/start-of-inventory/IMG_4196.jpeg"
+      ],
+      "weight_lbs": 0.32,
+      "size_mm": "48.75mm diameter",
+      "description": "A mesmerizing Goldsheen Obsidian sphere with a deep black base and a swirling golden sheen that shifts as the light moves. Approx. 48.75mm diameter, 0.32 lbs. Gold sheen obsidian is a stone of new beginnings and personal power — it illuminates the root of problems, dispels ego blocks, and opens the path to purpose. Includes a free gift.",
+      "retail_price": 29.95
+    },
+    {
+      "id": "arfedsonite-sphere",
+      "name": "Arfvedsonite Sphere",
+      "category": "carvings",
+      "price": 58.95,
+      "bundle": "",
+      "stock": 1,
+      "image": "/assets/start-of-inventory/IMG_4214.jpeg",
+      "images": [
+        "/assets/start-of-inventory/IMG_4214.jpeg",
+        "/assets/start-of-inventory/IMG_4220.jpeg",
+        "/assets/start-of-inventory/IMG_4221.jpeg",
+        "/assets/start-of-inventory/IMG_4222.jpeg",
+        "/assets/start-of-inventory/IMG_4223.jpeg",
+        "/assets/start-of-inventory/IMG_4224.jpeg",
+        "/assets/start-of-inventory/IMG_4225.jpeg"
+      ],
+      "weight_lbs": 1.28,
+      "size_mm": "69.07mm diameter",
+      "description": "A dramatic Arfvedsonite sphere with a deep midnight-black base and vivid blue, silver, and gold flashing needles that catch the light like stars. Approx. 69.07mm diameter, 1.28 lbs. Arfvedsonite is a powerful manifestation stone known for reorganizing patterns, clearing confusion, and supporting spiritual evolution. Includes a free gift.",
+      "retail_price": 58.95
+    },
+    {
+      "id": "bloodstone-moon",
+      "name": "Indonesian Bloodstone Moon",
+      "category": "carvings",
+      "price": 33.95,
+      "bundle": "",
+      "stock": 1,
+      "image": "/assets/start-of-inventory/IMG_4216.jpeg",
+      "images": [
+        "/assets/start-of-inventory/IMG_4216.jpeg",
+        "/assets/start-of-inventory/IMG_4217.jpeg",
+        "/assets/start-of-inventory/IMG_4226.jpeg",
+        "/assets/start-of-inventory/IMG_4227.jpeg",
+        "/assets/start-of-inventory/IMG_4228.jpeg",
+        "/assets/start-of-inventory/IMG_4229.jpeg",
+        "/assets/start-of-inventory/IMG_4230.jpeg",
+        "/assets/start-of-inventory/IMG_4231.jpeg",
+        "/assets/start-of-inventory/IMG_4232.jpeg",
+        "/assets/start-of-inventory/IMG_4233.jpeg"
+      ],
+      "weight_lbs": 0.44,
+      "size_mm": "91.07mm × 107.06mm × 17.61mm",
+      "description": "A stunning hand-carved Indonesian Bloodstone moon, deep forest green with red and yellow jasper inclusions. Approx. 91mm wide, 107mm tall, 17.6mm thick — a bold display piece. Bloodstone (Heliotrope) is an ancient stone of courage, vitality, and purification, long used to strengthen the blood and protect the spirit. Includes a free gift.",
+      "retail_price": 33.95
+    },
+    {
+      "id": "unicorn-heart-carving",
+      "name": "Unicorn Heart Carving",
+      "category": "carvings",
+      "price": 25.95,
+      "bundle": "",
+      "stock": 1,
+      "image": "/assets/start-of-inventory/IMG_4236.jpeg",
+      "images": [
+        "/assets/start-of-inventory/IMG_4236.jpeg",
+        "/assets/start-of-inventory/IMG_4237.jpeg",
+        "/assets/start-of-inventory/IMG_4238.jpeg",
+        "/assets/start-of-inventory/IMG_4239.jpeg",
+        "/assets/start-of-inventory/IMG_4240.jpeg"
+      ],
+      "weight_lbs": 0.18,
+      "size_mm": "52mm × 46mm × 23.52mm",
+      "description": "A whimsical and enchanting hand-carved Unicorn Heart — a crystal heart with a sculpted unicorn in relief. Approx. 52mm wide, 46mm long, 23.52mm thick, 0.18 lbs. A magical statement piece and meaningful gift for anyone who loves fantasy, wonder, and crystal healing. Includes a free gift.",
+      "retail_price": 25.95
+    }
+  ]
+}
+
+

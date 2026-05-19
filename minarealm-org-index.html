@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6M44R4WB73"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6M44R4WB73');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minarealm.org</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #0c0b10;
+      color: #e8e4d6;
+    }
+    .top-half {
+      flex: 1 1 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0c0b10;
+      padding: 32px 16px;
+    }
+    .hero-img {
+      max-width: 480px;
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .bottom-half {
+      flex: 1 1 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #14121c;
+      border-top: 2px solid #d4a94a;
+      padding: 32px 16px 40px;
+    }
+    .shop-link {
+      display: block;
+      text-decoration: none;
+    }
+    .shop-link img {
+      max-width: 180px;
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 20px;
+      transition: transform 0.2s, filter 0.2s;
+      filter: drop-shadow(0 4px 16px rgba(212,169,74,0.3));
+    }
+    .shop-link:hover img {
+      transform: translateY(-4px) scale(1.05);
+      filter: drop-shadow(0 8px 24px rgba(212,169,74,0.6));
+    }
+    .shop-label {
+      text-align: center;
+      font-size: 1.3rem;
+      letter-spacing: 0.18em;
+      color: #d4a94a;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+    }
+    @media (max-width: 600px) {
+      .hero-img { max-width: 320px; }
+      .shop-link img { max-width: 120px; }
+      .shop-label { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-half">
+    <img class="hero-img" src="org-logo.jpg" alt="Minarealm Crystals">
+    <div style="margin-top:16px;font-size:1rem;letter-spacing:0.12em;color:#a89060;font-family:Georgia,serif;font-style:italic;">MinaRealm.org coming soon...</div>
+  </div>
+  <div class="bottom-half">
+    <a class="shop-link" href="https://minarealm.shop">
+      <img src="logo.svg" alt="Minarealm Logo">
+      <div class="shop-label">minarealm.shop →</div>
+    </a>
+    <div style="display:flex;gap:24px;margin-top:20px;">
+      <a href="https://www.facebook.com/Minarealm.Crystals" target="_blank" rel="noopener" title="Facebook" style="font-size:2rem;text-decoration:none;color:#d4a94a;"><i class="fa-brands fa-facebook"></i></a>
+      <a href="https://www.instagram.com/minarealm_crystals/" target="_blank" rel="noopener" title="Instagram" style="font-size:2rem;text-decoration:none;color:#d4a94a;"><i class="fa-brands fa-instagram"></i></a>
+    </div>
+  </div>
+</body>
+</html>
