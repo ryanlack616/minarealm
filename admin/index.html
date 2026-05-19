@@ -719,21 +719,25 @@ const state = {
 };
 
 const USER_KEY  = 'minarealm_admin_user';
+const TOKEN_KEY = 'minarealm_admin_token';
 const isMissingWholesaleCost = (p) => !Number.isFinite(Number(p.wholesale_cost)) || Number(p.wholesale_cost) <= 0;
 
 async function api(path, opts = {}){
   const allow401 = !!opts.allow401;
+  const token = localStorage.getItem(TOKEN_KEY);
   const res = await fetch(API + path, {
     ...opts,
     credentials: 'include',
     headers: {
       ...(opts.body && !(opts.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
+      ...(token ? { 'Authorization': 'Bearer ' + token } : {}),
       ...(opts.headers || {})
     }
   });
   if(res.status === 401){
     if(allow401) return null;
     localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(TOKEN_KEY);
     location.reload();
     throw new Error('Session expired');
   }
@@ -760,6 +764,9 @@ $('login-form').onsubmit = async (e) => {
     });
     const j = await r.json();
     if(!r.ok) throw new Error(j.error || 'Login failed');
+    if(j.token){
+      localStorage.setItem(TOKEN_KEY, j.token);
+    }
     if(j.user){
       state.user = j.user;
       localStorage.setItem(USER_KEY, JSON.stringify(j.user));
@@ -807,6 +814,7 @@ async function initSessionUser(){
 $('logout').onclick = async () => {
   try { await api('/api/logout', { method: 'POST' }); } catch {}
   localStorage.removeItem(USER_KEY);
+  localStorage.removeItem(TOKEN_KEY);
   location.reload();
 };
 
