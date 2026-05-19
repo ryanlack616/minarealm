@@ -8,3 +8,5 @@ worker/node_modules/
 worker/.wrangler/
 *.log
 .pass.local
+.live-snapshot/
+
