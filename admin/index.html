@@ -727,7 +727,6 @@ async function api(path, opts = {}){
   const token = localStorage.getItem(TOKEN_KEY);
   const res = await fetch(API + path, {
     ...opts,
-    credentials: 'include',
     headers: {
       ...(opts.body && !(opts.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
       ...(token ? { 'Authorization': 'Bearer ' + token } : {}),
@@ -758,7 +757,6 @@ $('login-form').onsubmit = async (e) => {
   try {
     const r = await fetch(API + '/api/login', {
       method: 'POST',
-      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: $('un').value.trim().toLowerCase(), password: $('pw').value })
     });
