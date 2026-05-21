@@ -156,6 +156,12 @@ async function checkRateLimit(env, key, limit, windowSec){
   return count <= limit;
 }
 
+async function bumpLoginRateLimit(env, ipKey, comboKey){
+  const okIp = await checkRateLimit(env, ipKey, RATE_LIMITS.loginIp.limit, RATE_LIMITS.loginIp.windowSec);
+  const okCombo = await checkRateLimit(env, comboKey, RATE_LIMITS.loginUserIp.limit, RATE_LIMITS.loginUserIp.windowSec);
+  return okIp && okCombo;
+}
+
 function isWeakBootstrapPassword(pw){
   const v = String(pw || '').toLowerCase().trim();
   return ['rocks', 'password', 'admin', '123456', 'changeme'].includes(v) || v.length < 10;
@@ -1051,9 +1057,6 @@ export default {
         const ip = getClientIp(req);
         const ipKey = `rl:login:ip:${ip}`;
         const comboKey = `rl:login:user:${username}:${ip}`;
-        const okIp = await checkRateLimit(env, ipKey, RATE_LIMITS.loginIp.limit, RATE_LIMITS.loginIp.windowSec);
-        const okCombo = await checkRateLimit(env, comboKey, RATE_LIMITS.loginUserIp.limit, RATE_LIMITS.loginUserIp.windowSec);
-        if(!okIp || !okCombo) return err(429, 'Too many login attempts. Try again later.', env, req);
 
         // Bootstrap: if no users exist and caller used ADMIN_PASSWORD,
         // create the cynthia owner account on the fly.
@@ -1065,6 +1068,8 @@ export default {
           }
           if(pw !== env.ADMIN_PASSWORD){
             await new Promise(r => setTimeout(r, 400));
+            const ok = await bumpLoginRateLimit(env, ipKey, comboKey);
+            if(!ok) return err(429, 'Too many login attempts. Try again later.', env, req);
             return err(401, 'Bootstrap password incorrect', env, req);
           }
           // Use whichever username they typed (or default "cynthia") as the owner
@@ -1085,18 +1090,24 @@ export default {
         const u = await getUser(env, username);
         if(!u || u.active === false){
           await new Promise(r => setTimeout(r, 400));
+          const ok = await bumpLoginRateLimit(env, ipKey, comboKey);
+          if(!ok) return err(429, 'Too many login attempts. Try again later.', env, req);
           return err(401, 'Invalid login', env, req);
         }
         const candidate = await hashPw(pw, u.salt);
         if(!constantTimeEq(candidate, u.hash)){
           await new Promise(r => setTimeout(r, 400));
           await audit(env, null, 'login.fail', username, 'Wrong password');
+          const ok = await bumpLoginRateLimit(env, ipKey, comboKey);
+          if(!ok) return err(429, 'Too many login attempts. Try again later.', env, req);
           return err(401, 'Invalid login', env, req);
         }
         const token = newToken();
         await env.STORE.put(`session:${token}`,
           JSON.stringify({ username: u.username, role: u.role }),
           { expirationTtl: SESSION_TTL_SECONDS });
+        await env.STORE.delete(ipKey);
+        await env.STORE.delete(comboKey);
         u.lastLogin = new Date().toISOString();
         await putUser(env, u);
         await audit(env, { username: u.username, role: u.role }, 'login.ok', u.username, '');
