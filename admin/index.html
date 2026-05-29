@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex,nofollow">
 <title>Admin · Minarealm</title>
-<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg">
 <style>
   :root{
     --bg:#0c0b10;--surface:#14121c;--surface2:#1c1926;
@@ -236,7 +236,7 @@
 
   <nav class="tabs">
     <button class="tab active" data-tab="dashboard">Dashboard</button>
-    <button class="tab" data-tab="inventory">Inventory <span class="badge" id="inv-badge" style="display:none" title="Low or out-of-stock items">0</span></button>
+    <button class="tab" data-tab="inventory">Inventory</button>
     <button class="tab" data-tab="orders">Orders <span class="badge" id="orders-badge" style="display:none">0</span></button>
     <button class="tab" data-tab="forms">Forms</button>
     <button class="tab owner-only" data-tab="users" style="display:none">Users</button>
@@ -246,13 +246,6 @@
   <main>
     <!-- Dashboard pane -->
     <div class="pane active" id="pane-dashboard">
-      <details class="help" style="margin-bottom:14px">
-        <summary>Welcome — what is this page? (read me once)</summary>
-        <p><strong>This is your back‑office for minarealm.shop.</strong> The tabs at the top are the only things you need: <code>Dashboard</code> (today's numbers), <code>Inventory</code> (your products & stock), <code>Orders</code> (web sales + in‑store sales), and <code>Forms</code> (contact / booking messages).</p>
-        <p><strong>Two shops, separate inventory.</strong> Each product belongs to <em>Hartland</em> or <em>Fenton</em>. They are tracked independently. If the same piece exists at both, add it twice (once per location). Inventory and the Sold/Ring‑up flow let you filter / choose which shop.</p>
-        <p><strong>Saving is automatic.</strong> Anything you change saves to the cloud after a short pause. Watch the badge in the top‑right corner: <em>Saving…</em> → <em>Saved ✓</em>. If you ever see a red status, just hit reload.</p>
-        <p><strong>Daily rhythm.</strong> Morning: glance at Dashboard, scan <em>What Needs Attention</em>. Throughout the day: hit the purple <em>Sold</em> button on Inventory rows for in‑person sales. Evening: skim Orders for any new web orders that need fulfilling.</p>
-      </details>
       <div class="summary" id="biz-summary"></div>
       <div class="dashboard-grid">
         <section class="panel">
@@ -268,16 +261,6 @@
         <section class="panel">
           <h3>Inventory Risk</h3>
           <div id="inventory-risk"></div>
-        </section>
-
-        <section class="panel">
-          <h3>Today’s Close-out</h3>
-          <div id="todays-closeout"></div>
-        </section>
-
-        <section class="panel">
-          <h3>Outstanding Invoices</h3>
-          <div id="outstanding-invoices"></div>
         </section>
 
         <section class="panel">
@@ -309,13 +292,6 @@
 
     <!-- Inventory pane -->
     <div class="pane" id="pane-inventory">
-      <details class="help" style="margin-bottom:14px">
-        <summary>How Inventory works (Hartland vs. Fenton, prices, photos)</summary>
-        <p><strong>Two shops, separate inventory.</strong> Every product has a <em>Location</em>: Hartland or Fenton. They are independent counts — selling a piece at Hartland does <em>not</em> change Fenton stock. Use the <em>Both locations</em> dropdown above the table to filter. The little <span style="font-size:.62rem;font-weight:700;background:#1f3a2a;color:#a8e6c1;padding:1px 5px;border-radius:3px">HRT</span> / <span style="font-size:.62rem;font-weight:700;background:#3a2240;color:#f3c4ff;padding:1px 5px;border-radius:3px">FEN</span> badge next to each name shows where the piece lives.</p>
-        <p><strong>Adding a product.</strong> Click <em>+ Add Product</em>. Required: Name, Category, Slug (auto‑lowercase), Retail Price, Stock, Location. Optional but recommended: Wholesale Cost (unlocks margin tracking), Weight in grams (used at checkout for shipping), and at least one photo (drag onto the dropzone).</p>
-        <p><strong>Editing in place.</strong> Retail, Wholesale, and Stock columns are editable directly in the row. Tab between cells; auto‑save handles the rest. Use the row buttons: <em>Sold</em> (purple) for an in‑store sale, <em>+1 / −1</em> for non‑sale stock adjustments (damage, samples), <em>Edit</em> for the full modal, <em>Delete</em> to remove permanently.</p>
-        <p><strong>Filters.</strong> Search by name or slug; filter by Category, Stock level (in stock / low / out), or Location. Filters stack.</p>
-      </details>
       <div id="approval-box"></div>
       <div id="rollback-box"></div>
       <div class="summary" id="summary"></div>
@@ -328,11 +304,6 @@
           <option value="instock">In stock</option>
           <option value="low">Low (≤ 3)</option>
           <option value="out">Out of stock</option>
-        </select>
-        <select id="filter-location" title="Filter by shop location">
-          <option value="all">Both locations</option>
-          <option value="hartland">Hartland only</option>
-          <option value="fenton">Fenton only</option>
         </select>
         <div class="spacer"></div>
         <span id="count" style="color:var(--text-dim);font-size:.85rem"></span>
@@ -393,7 +364,6 @@
         <summary>How saving &amp; images work</summary>
         <p><strong>Auto-save:</strong> retail price, wholesale cost, stock, and product edits save automatically to the cloud after a brief pause. The status badge in the top-right shows <em>Saving…</em> → <em>Saved ✓</em>.</p>
         <p><strong>Margin tracking:</strong> set both <em>Retail</em> and <em>Wholesale</em> to unlock per-item margin and portfolio gross-profit KPIs in Dashboard.</p>
-        <p><strong>Location:</strong> every product belongs to either <em>Hartland</em> or <em>Fenton</em>. Stock counts are kept separate. If a piece exists at both shops, create two product entries (one per location).</p>
         <p><strong>Images:</strong> drag a photo onto the dropzone (or tap to choose). It uploads to the cloud and the URL is filled in automatically. The first image is the cover; reorder with the ↑ ↓ buttons.</p>
         <p><strong>Orders:</strong> the Orders tab shows incoming customer orders. Mark them <em>Fulfilled</em> when shipped/picked up. New orders also email <code>cynthia@minarealm.org</code>.</p>
       </details>
@@ -401,15 +371,6 @@
 
     <!-- Orders pane -->
     <div class="pane" id="pane-orders">
-      <details class="help" style="margin-bottom:14px">
-        <summary>How Orders work (web orders + in‑store sales)</summary>
-        <p><strong>What lands here.</strong> Two kinds of orders: <em>web orders</em> from minarealm.shop (Stripe‑paid) and <em>in‑store sales</em> you rang up from the Inventory tab. Both decrement stock automatically.</p>
-        <p><strong>Filter.</strong> Default view is <em>New only</em> (anything not yet fulfilled). Switch to <em>All</em> to see history, or <em>Fulfilled</em> / <em>Cancelled</em> for specific status.</p>
-        <p><strong>Fulfilling a web order.</strong> Open the order, print the packing slip, ship or hand off the items, then click <em>Mark Fulfilled</em>. The customer gets an automatic shipping email.</p>
-        <p><strong>Pending invoices.</strong> If you rang up a sale as <em>Pending invoice</em>, the order shows <em>PENDING INVOICE</em>. When the customer pays, open the order and click <em>Mark Paid</em>. That moves the money from “pending” to “collected” on Dashboard.</p>
-        <p><strong>Which shop made the sale?</strong> In‑store sales prepend <code>[Hartland]</code> or <code>[Fenton]</code> to the order note — you can see it in the order detail.</p>
-        <p><strong>Export CSV</strong> is for accounting/tax time.</p>
-      </details>
       <div class="toolbar">
         <select id="orders-filter">
           <option value="new">New only</option>
@@ -419,7 +380,6 @@
         </select>
         <input type="search" id="orders-search" placeholder="Search name / email / order #" style="flex:1;min-width:140px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 11px;border-radius:var(--radius);font:inherit;font-size:.85rem">
         <div class="spacer"></div>
-        <button class="btn ghost" id="export-orders" title="Download orders for the date range as CSV">Export CSV</button>
         <button class="btn ghost" id="refresh-orders">Refresh</button>
       </div>
       <div id="orders-list"></div>
@@ -427,11 +387,6 @@
 
     <!-- Forms pane -->
     <div class="pane" id="pane-forms">
-      <details class="help" style="margin-bottom:14px">
-        <summary>How Forms work (contact &amp; booking messages)</summary>
-        <p><strong>What lands here.</strong> Anything submitted through the public contact form or booking form on minarealm.shop. Also emails <code>cynthia@minarealm.org</code> so you never miss one.</p>
-        <p><strong>Triage.</strong> Use the filter to focus on <em>Bookings</em> (likely time‑sensitive) or <em>Contact</em>. Click an entry to expand and read the message. Mark it <em>Handled</em> when you've replied.</p>
-      </details>
       <div class="toolbar">
         <select id="forms-filter">
           <option value="all">All submissions</option>
@@ -516,18 +471,9 @@
           <input id="f-wholesale" type="number" step="0.01" min="0" placeholder="0.00">
         </div>
       </div>
-      <div class="field-row">
-        <div class="field">
-          <label>Stock *</label>
-          <input id="f-stock" type="number" min="0" step="1" required>
-        </div>
-        <div class="field">
-          <label>Location * <span style="color:var(--text-dim);font-weight:400;text-transform:none;letter-spacing:0;font-size:.75rem">(which shop this piece lives at)</span></label>
-          <select id="f-location" required>
-            <option value="hartland">Hartland (1218 N Lincoln)</option>
-            <option value="fenton">Fenton</option>
-          </select>
-        </div>
+      <div class="field">
+        <label>Stock *</label>
+        <input id="f-stock" type="number" min="0" step="1" required>
       </div>
       <div class="field">
         <label>Weight (grams) <span style="color:var(--text-dim);text-transform:none;letter-spacing:0;font-size:.75rem">(for shipping — weigh with kitchen scale)</span></label>
@@ -627,74 +573,6 @@
   </div>
 </div>
 
-<!-- In-store sale modal (multi-line cart) -->
-<div class="scrim" id="sold-scrim">
-  <div class="modal" style="max-width:680px">
-    <h2 id="sold-title">Ring up sale</h2>
-    <div id="sold-lines" style="margin-bottom:14px"></div>
-    <div style="display:flex;gap:6px;align-items:flex-end;padding:10px 12px;background:var(--surface2);border-radius:6px;margin-bottom:14px">
-      <div style="flex:1">
-        <label style="display:block;font-size:.72rem;color:var(--text-dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">Add another item</label>
-        <select id="sold-add-product" style="width:100%"></select>
-      </div>
-      <div style="width:72px">
-        <label style="display:block;font-size:.72rem;color:var(--text-dim);margin-bottom:4px">Qty</label>
-        <input id="sold-add-qty" type="number" min="1" step="1" value="1" style="width:100%;text-align:center">
-      </div>
-      <button type="button" class="btn" id="sold-add-btn" style="white-space:nowrap">+ Add</button>
-    </div>
-    <form id="sold-form">
-      <div class="field-row">
-        <div class="field">
-          <label>Where</label>
-          <select id="sold-location">
-            <option value="hartland">Hartland</option>
-            <option value="fenton">Fenton</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Payment</label>
-          <select id="sold-payment">
-            <option value="paid_in_store">Paid now (cash / Square Reader)</option>
-            <option value="invoice">Pending invoice (customer pays later)</option>
-          </select>
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label>Customer name <span style="color:var(--text-dim);font-weight:400">(optional)</span></label>
-          <input id="sold-customer-name" type="text" placeholder="Walk-in customer">
-        </div>
-        <div class="field">
-          <label>Email <span style="color:var(--text-dim);font-weight:400">(optional, for receipt)</span></label>
-          <input id="sold-customer-email" type="email">
-        </div>
-      </div>
-      <div class="field">
-        <label>Note <span style="color:var(--text-dim);font-weight:400">(optional)</span></label>
-        <input id="sold-note" type="text" maxlength="200" placeholder="e.g. discount given, event, etc.">
-      </div>
-      <div id="sold-total" style="font-size:1.2rem;margin:14px 0;padding:10px 12px;background:var(--surface2);border-radius:6px;text-align:center">Total: <strong>$0.00</strong></div>
-      <div class="modal-actions">
-        <button type="button" class="btn" id="sold-cancel">Cancel</button>
-        <button type="submit" class="btn primary" id="sold-submit">Record sale</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div class="scrim" id="receipt-scrim">
-  <div class="modal" style="max-width:420px;text-align:center">
-    <h2 id="receipt-title" style="margin-bottom:6px">✓ Sale recorded</h2>
-    <div id="receipt-summary" style="color:var(--text-dim);margin-bottom:18px"></div>
-    <div style="display:flex;flex-direction:column;gap:8px">
-      <button type="button" class="btn primary" id="receipt-print">Print receipt</button>
-      <button type="button" class="btn" id="receipt-email" style="display:none">Email receipt to <span id="receipt-email-addr"></span></button>
-      <button type="button" class="btn ghost" id="receipt-done">Done</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script>
@@ -714,29 +592,26 @@ const state = {
   ordersFilter: 'new',
   formsFilter: 'all',
   activityFilter: '',
-  query: '', cat: 'all', stockFilter: 'all', locationFilter: 'all',
+  query: '', cat: 'all', stockFilter: 'all',
   saveTimer: null, saving: false
 };
 
 const USER_KEY  = 'minarealm_admin_user';
-const TOKEN_KEY = 'minarealm_admin_token';
 const isMissingWholesaleCost = (p) => !Number.isFinite(Number(p.wholesale_cost)) || Number(p.wholesale_cost) <= 0;
 
 async function api(path, opts = {}){
   const allow401 = !!opts.allow401;
-  const token = localStorage.getItem(TOKEN_KEY);
   const res = await fetch(API + path, {
     ...opts,
+    credentials: 'include',
     headers: {
       ...(opts.body && !(opts.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
-      ...(token ? { 'Authorization': 'Bearer ' + token } : {}),
       ...(opts.headers || {})
     }
   });
   if(res.status === 401){
     if(allow401) return null;
     localStorage.removeItem(USER_KEY);
-    localStorage.removeItem(TOKEN_KEY);
     location.reload();
     throw new Error('Session expired');
   }
@@ -757,14 +632,12 @@ $('login-form').onsubmit = async (e) => {
   try {
     const r = await fetch(API + '/api/login', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: $('un').value.trim().toLowerCase(), password: $('pw').value })
     });
     const j = await r.json();
     if(!r.ok) throw new Error(j.error || 'Login failed');
-    if(j.token){
-      localStorage.setItem(TOKEN_KEY, j.token);
-    }
     if(j.user){
       state.user = j.user;
       localStorage.setItem(USER_KEY, JSON.stringify(j.user));
@@ -812,7 +685,6 @@ async function initSessionUser(){
 $('logout').onclick = async () => {
   try { await api('/api/logout', { method: 'POST' }); } catch {}
   localStorage.removeItem(USER_KEY);
-  localStorage.removeItem(TOKEN_KEY);
   location.reload();
 };
 
@@ -929,17 +801,6 @@ function renderBusinessDashboard(){
   const orders30 = liveOrders.filter(o => inDays(o, 30)).length;
   const aov30 = orders30 ? (rev30 / orders30) : 0;
 
-  // Today (calendar day, local — uses created timestamp's date portion)
-  const todayDate = new Date(); todayDate.setHours(0, 0, 0, 0);
-  const todayStart = todayDate.getTime();
-  const isToday = o => new Date(o.created).getTime() >= todayStart;
-  const todays = liveOrders.filter(isToday);
-  const revToday = todays.reduce((s, o) => s + (o.total || 0), 0);
-  const todaysShop = todays.filter(o => o.source === 'in-store');
-  const todaysWeb  = todays.filter(o => o.source !== 'in-store');
-  const revTodayShop = todaysShop.reduce((s, o) => s + (o.total || 0), 0);
-  const revTodayWeb  = todaysWeb.reduce((s, o) => s + (o.total || 0), 0);
-
   const open = allOrders.filter(o => o.status === 'new');
   const fulfilled = allOrders.filter(o => o.status === 'fulfilled').length;
   const cancelled = allOrders.filter(o => o.status === 'cancelled').length;
@@ -960,8 +821,6 @@ function renderBusinessDashboard(){
   const salesIndex = buildSalesIndex(liveOrders);
 
   summaryEl.innerHTML = `
-    <div class="stat ${todays.length ? 'good' : ''}"><div class="k">Today · Orders</div><div class="v">${todays.length}</div><div style="font-size:.72rem;color:var(--text-dim);margin-top:2px">${todaysWeb.length} online · ${todaysShop.length} in-store</div></div>
-    <div class="stat ${revToday > 0 ? 'good' : ''}"><div class="k">Today · Revenue</div><div class="v">${money(revToday)}</div><div style="font-size:.72rem;color:var(--text-dim);margin-top:2px">${money(revTodayWeb)} online · ${money(revTodayShop)} shop</div></div>
     <div class="stat"><div class="k">Revenue (7d)</div><div class="v">${money(rev7)}</div></div>
     <div class="stat"><div class="k">Revenue (30d)</div><div class="v">${money(rev30)}</div></div>
     <div class="stat ${open.length ? 'warn' : 'good'}"><div class="k">Open Orders</div><div class="v">${open.length}</div></div>
@@ -1017,85 +876,6 @@ function renderBusinessDashboard(){
     <div class="kpi"><span class="label">Dead-stock cost risk</span><span class="value">${money(deadStockCost)}</span></div>
     <div style="margin-top:10px;color:var(--text-dim);font-size:.84rem">${lowStock.length ? ('Low: ' + lowStock.map(p => `${p.name} (${p.stock})`).join(' • ')) : 'No low-stock alerts.'}</div>
     <div style="margin-top:8px;color:var(--text-dim);font-size:.84rem">${outStock.length ? ('Out: ' + outStock.map(p => p.name).join(' • ')) : 'No out-of-stock alerts.'}</div>`;
-
-  // ── Today's Close-out ────────────────────────────────────────────
-  const closeoutEl = $('todays-closeout');
-  if(closeoutEl){
-    if(todays.length === 0){
-      closeoutEl.innerHTML = '<div class="empty-state" style="padding:20px">No sales yet today.</div>';
-    } else {
-      const byProduct = new Map();
-      todays.forEach(o => (o.lines || []).forEach(l => {
-        const cur = byProduct.get(l.id) || { name: l.name || l.id, qty: 0, revenue: 0 };
-        cur.qty += Number(l.qty || 0);
-        cur.revenue += Number(l.subtotal || 0);
-        byProduct.set(l.id, cur);
-      }));
-      const productRows = [...byProduct.values()].sort((a,b) => b.revenue - a.revenue);
-      const paid    = todays.filter(o => o.paymentStatus === 'paid' || o.paymentStatus === 'paid_in_store');
-      const pending = todays.filter(o => o.paymentStatus === 'pending_invoice' || o.paymentStatus === 'invoiced');
-      const paidTotal    = paid.reduce((s,o)=>s+(o.total||0), 0);
-      const pendingTotal = pending.reduce((s,o)=>s+(o.total||0), 0);
-      const itemsCount = todays.reduce((s,o)=>s + (o.lines||[]).reduce((q,l)=>q+Number(l.qty||0),0), 0);
-      closeoutEl.innerHTML = `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-          <div class="kpi"><span class="label">Items sold</span><span class="value">${itemsCount}</span></div>
-          <div class="kpi"><span class="label">Orders</span><span class="value">${todays.length}</span></div>
-          <div class="kpi good"><span class="label">Collected</span><span class="value">${money(paidTotal)}</span></div>
-          <div class="kpi ${pendingTotal > 0 ? 'warn' : ''}"><span class="label">Pending invoice</span><span class="value">${money(pendingTotal)}</span></div>
-        </div>
-        <table class="tiny-table">
-          <thead><tr><th style="text-align:left">Product</th><th>Qty</th><th style="text-align:right">Revenue</th></tr></thead>
-          <tbody>${productRows.map(r => `<tr><td>${escHtml(r.name)}</td><td>${r.qty}</td><td style="text-align:right">${money(r.revenue)}</td></tr>`).join('')}</tbody>
-        </table>
-        ${pending.length ? `<div style="margin-top:10px;font-size:.82rem;color:var(--warn)">⚠ ${pending.length} pending invoice${pending.length===1?'':'s'} — ${pending.map(o=>escHtml(o.customer?.name||'?')).join(', ')}</div>` : ''}`;
-    }
-  }
-
-  // ── Outstanding Invoices (all-time, not just today) ──────────────
-  const outstandingEl = $('outstanding-invoices');
-  if(outstandingEl){
-    const outstanding = liveOrders
-      .filter(o => o.paymentStatus === 'pending_invoice')
-      .sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime());
-    if(outstanding.length === 0){
-      outstandingEl.innerHTML = '<div class="empty-state" style="padding:20px">No outstanding invoices. ✓</div>';
-    } else {
-      const total = outstanding.reduce((s, o) => s + Number(o.total || 0), 0);
-      const ageDays = o => Math.floor((Date.now() - new Date(o.created).getTime()) / 86400000);
-      const buckets = {
-        fresh:  outstanding.filter(o => ageDays(o) < 7).length,
-        a7to30: outstanding.filter(o => { const d = ageDays(o); return d >= 7 && d < 30; }).length,
-        over30: outstanding.filter(o => ageDays(o) >= 30).length
-      };
-      const rows = outstanding.slice(0, 20).map(o => {
-        const d = ageDays(o);
-        const tone = d >= 30 ? 'danger' : d >= 7 ? 'warn' : '';
-        return `<tr>
-          <td>${escHtml(o.customer?.name || '?')}${o.customer?.email ? `<div style="font-size:.7rem;color:var(--text-dim)">${escHtml(o.customer.email)}</div>` : ''}</td>
-          <td style="text-align:right;font-variant-numeric:tabular-nums">${money(o.total || 0)}</td>
-          <td style="text-align:right;font-size:.78rem"><span class="${tone}" style="${tone === 'danger' ? 'color:var(--danger)' : tone === 'warn' ? 'color:var(--warn)' : ''}">${d}d</span></td>
-          <td style="text-align:right"><button class="btn ghost" style="padding:2px 10px;font-size:.72rem" data-mark-paid="${escHtml(o.id)}" title="Mark paid">paid</button></td>
-        </tr>`;
-      }).join('');
-      outstandingEl.innerHTML = `
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:10px">
-          <div class="kpi"><span class="label">Count</span><span class="value">${outstanding.length}</span></div>
-          <div class="kpi ${buckets.fresh > 0 ? 'good' : ''}"><span class="label">&lt; 7d</span><span class="value">${buckets.fresh}</span></div>
-          <div class="kpi ${buckets.a7to30 > 0 ? 'warn' : ''}"><span class="label">7–30d</span><span class="value">${buckets.a7to30}</span></div>
-          <div class="kpi ${buckets.over30 > 0 ? 'danger' : ''}"><span class="label">&gt; 30d</span><span class="value">${buckets.over30}</span></div>
-        </div>
-        <div class="kpi" style="margin-bottom:8px"><span class="label">Total outstanding</span><span class="value">${money(total)}</span></div>
-        <table class="tiny-table">
-          <thead><tr><th style="text-align:left">Customer</th><th style="text-align:right">Amount</th><th style="text-align:right">Age</th><th></th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-        ${outstanding.length > 20 ? `<div style="margin-top:8px;font-size:.75rem;color:var(--text-dim)">Showing oldest 20 of ${outstanding.length}.</div>` : ''}`;
-      outstandingEl.querySelectorAll('[data-mark-paid]').forEach(b => {
-        b.onclick = () => orderAction(b.dataset.markPaid, 'mark-paid');
-      });
-    }
-  }
 
   const slowMovers = products
     .filter(p => (p.stock || 0) > 0)
@@ -1251,12 +1031,6 @@ function renderSummary(){
     <div class="stat"><div class="k">Cost Basis</div><div class="v">$${costValue.toFixed(0)}</div></div>
     <div class="stat ${grossValue >= 0 ? 'good' : 'danger'}"><div class="k">Potential Gross</div><div class="v">$${grossValue.toFixed(0)}</div></div>
     <div class="stat ${newOrders>0?'good':''}"><div class="k">New Orders</div><div class="v">${newOrders}</div></div>`;
-  const invBadge = $('inv-badge');
-  if(invBadge){
-    const attention = low + out;
-    if(attention > 0){ invBadge.textContent = attention; invBadge.style.display = ''; invBadge.title = `${low} low · ${out} out of stock`; }
-    else invBadge.style.display = 'none';
-  }
 }
 
 function renderFilters(){
@@ -1289,8 +1063,6 @@ function getFilteredProducts(){
     if(state.stockFilter === 'instock' && s <= 0) return false;
     if(state.stockFilter === 'low' && !(s > 0 && s <= 3)) return false;
     if(state.stockFilter === 'out' && s > 0) return false;
-    const loc = p.location || 'hartland';
-    if(state.locationFilter !== 'all' && loc !== state.locationFilter) return false;
     return true;
   });
 }
@@ -1440,17 +1212,13 @@ function renderRows(){
     const retailConf = normalizeConfidence(p.retail_confidence, 'legacy');
     const wholesaleConf = normalizeConfidence(p.wholesale_confidence, 'estimated');
     const confColor = c => c === 'confirmed' ? 'var(--good)' : (c === 'estimated' ? 'var(--warn)' : 'var(--text-dim)');
-    const cover = (Array.isArray(p.images) && p.images[0]) || p.image || '/logo.svg';
+    const cover = (Array.isArray(p.images) && p.images[0]) || p.image || '/assets/logo.svg';
     const extra = (Array.isArray(p.images) && p.images.length > 1)
       ? `<div style="color:var(--text-dim);font-size:.7rem;text-align:center;margin-top:2px">+${p.images.length-1}</div>` : '';
-    const loc = p.location === 'fenton' ? 'fenton' : 'hartland';
-    const locBadge = loc === 'fenton'
-      ? '<span title="At Fenton" style="display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.06em;padding:1px 5px;border-radius:3px;background:#3a2240;color:#f3c4ff;margin-left:6px;vertical-align:middle">FEN</span>'
-      : '<span title="At Hartland" style="display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.06em;padding:1px 5px;border-radius:3px;background:#1f3a2a;color:#a8e6c1;margin-left:6px;vertical-align:middle">HRT</span>';
     return `
       <tr data-id="${p.id}" class="${rowClass}">
         <td><img class="thumb" src="${cover}" alt="">${extra}</td>
-        <td><strong>${p.name}</strong>${locBadge}<br><span style="color:var(--text-dim);font-size:.75rem">${p.id}</span><br><span style="font-size:.68rem;color:${confColor(retailConf)}">R:${retailConf}</span> · <span style="font-size:.68rem;color:${confColor(wholesaleConf)}">C:${wholesaleConf}</span></td>
+        <td><strong>${p.name}</strong><br><span style="color:var(--text-dim);font-size:.75rem">${p.id}</span><br><span style="font-size:.68rem;color:${confColor(retailConf)}">R:${retailConf}</span> · <span style="font-size:.68rem;color:${confColor(wholesaleConf)}">C:${wholesaleConf}</span></td>
         <td class="hide-sm">${catName(p.category)}</td>
         <td class="cell-price"><input type="number" step="0.01" min="0" value="${retail}" data-field="retail_price"></td>
         <td class="cell-price hide-sm"><input type="number" step="0.01" min="0" value="${wholesale}" data-field="wholesale_cost"></td>
@@ -1464,9 +1232,8 @@ function renderRows(){
         <td>
           <div class="row-actions">
             <button class="btn" data-act="edit">Edit</button>
-            <button class="btn purple" data-act="sold" title="Ring up an in-store sale: creates a fulfilled order, decrements stock, logs to activity">Sold</button>
-            <button class="btn" data-act="-1" title="Adjust stock down without logging a sale (use for damage, samples, corrections)">−1</button>
-            <button class="btn" data-act="+1" title="Adjust stock up (restocking)">+1</button>
+            <button class="btn" data-act="-1">−1</button>
+            <button class="btn" data-act="+1">+1</button>
             <button class="btn danger" data-act="del">Delete</button>
           </div>
         </td>
@@ -1505,248 +1272,13 @@ function rowAction(id, act){
   const p = state.data.products.find(x => x.id === id);
   if(!p) return;
   if(act === 'edit'){ openModal(p); return; }
-  if(act === '+1'){ adjustStock(p, +1); return; }
-  if(act === '-1'){ adjustStock(p, -1); return; }
-  if(act === 'sold'){ sellInStore(p); return; }
+  if(act === '+1'){ p.stock = (p.stock||0) + 1; scheduleSave(); renderSummary(); renderRows(); return; }
+  if(act === '-1'){ p.stock = Math.max(0,(p.stock||0) - 1); scheduleSave(); renderSummary(); renderRows(); return; }
   if(act === 'del'){
     if(!confirm(`Delete "${p.name}"?`)) return;
     state.data.products = state.data.products.filter(x => x.id !== id);
     scheduleSave(); renderAll();
   }
-}
-
-async function adjustStock(p, delta){
-  // Optimistic local update for snappy UI, then audited server call.
-  const before = p.stock || 0;
-  const after = Math.max(0, before + delta);
-  if(before === after) return;
-  p.stock = after;
-  renderSummary(); renderRows();
-  try {
-    const reason = delta > 0 ? 'restock' : 'manual decrement';
-    const res = await api('/api/inventory/adjust', {
-      method: 'POST',
-      body: JSON.stringify({ productId: p.id, delta, reason })
-    });
-    if(!res || res.ok === false) throw new Error(res?.error || 'adjust failed');
-    // Reconcile with server truth (covers concurrent edits)
-    if(typeof res.after === 'number' && res.after !== p.stock){
-      p.stock = res.after;
-      renderSummary(); renderRows();
-    }
-  } catch(e){
-    // Roll back on failure
-    p.stock = before;
-    renderSummary(); renderRows();
-    toast('Stock change failed: ' + (e?.message || e), true);
-  }
-}
-
-function sellInStore(p){
-  const stock = p.stock || 0;
-  if(stock <= 0){ toast(`"${p.name}" is out of stock.`); return; }
-  // Start a new cart with this product as the first line.
-  state.cart = [{
-    productId: p.id,
-    name: p.name,
-    qty: 1,
-    price: Number(getRetail(p) || 0),
-    maxStock: stock
-  }];
-  $('sold-payment').value = 'paid_in_store';
-  const lastLoc = localStorage.getItem('mr_last_location') || 'hartland';
-  $('sold-location').value = lastLoc === 'fenton' ? 'fenton' : 'hartland';
-  $('sold-customer-name').value = '';
-  $('sold-customer-email').value = '';
-  $('sold-note').value = '';
-  populateSoldAddPicker();
-  renderSoldLines();
-  $('sold-scrim').style.display = 'block';
-}
-
-function populateSoldAddPicker(){
-  const sel = $('sold-add-product');
-  if(!sel) return;
-  const products = (state.data?.products || [])
-    .filter(p => (p.stock || 0) > 0)
-    .sort((a,b) => (a.name||'').localeCompare(b.name||''));
-  sel.innerHTML = '<option value="">— pick a product —</option>' +
-    products.map(p => `<option value="${escHtml(p.id)}" data-price="${getRetail(p)||0}" data-stock="${p.stock||0}">${escHtml(p.name)} · ${p.stock} left · ${money(getRetail(p)||0)}</option>`).join('');
-  sel.value = '';
-  $('sold-add-qty').value = 1;
-}
-
-function renderSoldLines(){
-  const el = $('sold-lines');
-  if(!el) return;
-  if(state.cart.length === 0){
-    el.innerHTML = '<div class="empty-state" style="padding:14px">No items in cart. Add one below.</div>';
-  } else {
-    el.innerHTML = `
-      <table class="tiny-table" style="width:100%">
-        <thead><tr>
-          <th style="text-align:left">Item</th>
-          <th style="width:70px">Qty</th>
-          <th style="width:90px">Price</th>
-          <th style="width:80px;text-align:right">Subtotal</th>
-          <th style="width:36px"></th>
-        </tr></thead>
-        <tbody>
-        ${state.cart.map((ln, i) => `
-          <tr>
-            <td>${escHtml(ln.name)}<div style="font-size:.7rem;color:var(--text-dim)">${ln.maxStock} in stock</div></td>
-            <td><input data-cart-qty="${i}" type="number" min="1" step="1" max="${ln.maxStock}" value="${ln.qty}" style="width:100%;text-align:center"></td>
-            <td><input data-cart-price="${i}" type="number" min="0" step="0.01" value="${ln.price.toFixed(2)}" style="width:100%"></td>
-            <td style="text-align:right;font-variant-numeric:tabular-nums">${money(ln.qty * ln.price)}</td>
-            <td><button type="button" class="btn danger ghost" data-cart-remove="${i}" title="Remove line" style="padding:2px 8px">×</button></td>
-          </tr>`).join('')}
-        </tbody>
-      </table>`;
-    el.querySelectorAll('[data-cart-qty]').forEach(inp => {
-      inp.oninput = () => {
-        const i = +inp.dataset.cartQty;
-        const v = Math.max(1, Math.min(state.cart[i].maxStock, parseInt(inp.value,10) || 1));
-        state.cart[i].qty = v;
-        updateSoldTotal();
-      };
-    });
-    el.querySelectorAll('[data-cart-price]').forEach(inp => {
-      inp.oninput = () => {
-        const i = +inp.dataset.cartPrice;
-        state.cart[i].price = Math.max(0, parseFloat(inp.value) || 0);
-        updateSoldTotal();
-      };
-    });
-    el.querySelectorAll('[data-cart-remove]').forEach(b => {
-      b.onclick = () => {
-        const i = +b.dataset.cartRemove;
-        state.cart.splice(i, 1);
-        renderSoldLines();
-      };
-    });
-  }
-  updateSoldTotal();
-}
-
-function addLineFromPicker(){
-  const sel = $('sold-add-product');
-  const productId = sel.value;
-  if(!productId){ toast('Pick a product first'); return; }
-  const p = state.data.products.find(x => x.id === productId);
-  if(!p) return;
-  const qty = Math.max(1, parseInt($('sold-add-qty').value, 10) || 1);
-  const stock = p.stock || 0;
-  // If product already in cart, increment that line instead of duplicating
-  const existing = state.cart.find(ln => ln.productId === productId);
-  if(existing){
-    existing.qty = Math.min(stock, existing.qty + qty);
-  } else {
-    state.cart.push({
-      productId, name: p.name,
-      qty: Math.min(stock, qty),
-      price: Number(getRetail(p) || 0),
-      maxStock: stock
-    });
-  }
-  sel.value = '';
-  $('sold-add-qty').value = 1;
-  renderSoldLines();
-}
-
-function updateSoldTotal(){
-  const total = state.cart.reduce((s, ln) => s + (ln.qty * ln.price), 0);
-  const isInvoice = $('sold-payment').value === 'invoice';
-  $('sold-total').innerHTML = `Total: <strong>${money(total)}</strong>` +
-    (isInvoice ? ' <span style="color:var(--warn);font-size:.78rem;font-weight:600;letter-spacing:.04em;margin-left:8px">PENDING INVOICE</span>' : '') +
-    (state.cart.length > 1 ? ` <span style="font-size:.72rem;color:var(--text-dim);margin-left:6px">(${state.cart.length} items)</span>` : '');
-  const btn = $('sold-submit');
-  if(btn) btn.textContent = isInvoice ? 'Reserve & invoice' : 'Record sale';
-}
-
-async function submitInStoreSale(e){
-  e.preventDefault();
-  if(state.cart.length === 0){ toast('Cart is empty'); return; }
-  const paymentMethod = $('sold-payment').value;
-  const saleLocation = $('sold-location').value === 'fenton' ? 'fenton' : 'hartland';
-  try { localStorage.setItem('mr_last_location', saleLocation); } catch(_){}
-  const customerName = $('sold-customer-name').value.trim();
-  const customerEmail = $('sold-customer-email').value.trim();
-  const rawNote = $('sold-note').value.trim();
-  const locTag = '[' + (saleLocation === 'fenton' ? 'Fenton' : 'Hartland') + ']';
-  const note = rawNote ? (locTag + ' ' + rawNote) : locTag;
-  // Validate stock once more
-  for(const ln of state.cart){
-    if(ln.qty > ln.maxStock){ toast(`Only ${ln.maxStock} of ${ln.name} in stock.`); return; }
-    if(ln.qty < 1){ toast(`Quantity must be at least 1 for ${ln.name}.`); return; }
-  }
-  const btn = $('sold-submit');
-  const orig = btn.textContent;
-  btn.disabled = true; btn.textContent = 'Recording…';
-  try {
-    const res = await api('/api/orders/in-store', {
-      method: 'POST',
-      body: JSON.stringify({
-        lines: state.cart.map(ln => ({ productId: ln.productId, qty: ln.qty, price: ln.price })),
-        paymentMethod, customerName, customerEmail, note
-      })
-    });
-    if(!res || res.ok === false) throw new Error(res?.error || 'Sale failed');
-    $('sold-scrim').style.display = 'none';
-    const verb = paymentMethod === 'invoice' ? 'Reserved' : 'Sold';
-    const total = res.order?.total || state.cart.reduce((s,ln)=>s+ln.qty*ln.price,0);
-    const itemCount = state.cart.reduce((s,ln)=>s+ln.qty, 0);
-    state.cart = [];
-    await loadData();
-    await loadOrders();
-    renderBusinessDashboard();
-    openReceiptPrompt(res.order, verb, itemCount, total);
-  } catch(err){
-    toast('Sale failed: ' + (err?.message || err), true);
-  } finally {
-    btn.disabled = false; btn.textContent = orig;
-  }
-}
-
-function openReceiptPrompt(order, verb, itemCount, total){
-  if(!order){ toast(`${verb}: ${itemCount} item${itemCount===1?'':'s'} (${money(total)})`); return; }
-  $('receipt-title').textContent = `✓ ${verb} ${itemCount} item${itemCount===1?'':'s'} · ${money(total)}`;
-  $('receipt-summary').textContent = order.customer?.name && order.customer.name !== 'In-store customer'
-    ? `${order.customer.name} · ${new Date(order.created).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}`
-    : `Order ${order.id.slice(-6)} · ${new Date(order.created).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}`;
-  const email = order.customer?.email || '';
-  const emailBtn = $('receipt-email');
-  if(email){
-    $('receipt-email-addr').textContent = email;
-    emailBtn.style.display = '';
-    emailBtn.disabled = false;
-    emailBtn.onclick = async () => {
-      emailBtn.disabled = true;
-      emailBtn.textContent = 'Sending…';
-      try {
-        await api(`/api/orders/${encodeURIComponent(order.id)}/send-receipt`, { method: 'POST' });
-        emailBtn.textContent = '✓ Sent to ' + email;
-      } catch(e){
-        emailBtn.disabled = false;
-        emailBtn.textContent = 'Email receipt to ' + email;
-        toast('Email failed: ' + e.message, true);
-      }
-    };
-  } else {
-    emailBtn.style.display = 'none';
-  }
-  $('receipt-print').onclick = () => printPackingSlip(order);
-  $('receipt-done').onclick = () => { $('receipt-scrim').style.display = 'none'; };
-  $('receipt-scrim').style.display = 'block';
-}
-
-if($('sold-form')){
-  $('sold-form').addEventListener('submit', submitInStoreSale);
-  $('sold-cancel').onclick = () => { $('sold-scrim').style.display = 'none'; state.cart = []; };
-  $('sold-add-btn').onclick = addLineFromPicker;
-  $('sold-payment').addEventListener('change', updateSoldTotal);
-  $('sold-scrim').addEventListener('click', e => {
-    if(e.target.id === 'sold-scrim'){ $('sold-scrim').style.display = 'none'; state.cart = []; }
-  });
 }
 
 // ─── Auto-save ───────────────────────────────────────────────────────
@@ -1935,9 +1467,6 @@ function openModal(p){
   $('f-supplier').value = isNew ? '' : (p.supplier || '');
   $('f-bundle').value = isNew ? '' : (p.bundle||'');
   $('f-desc').value = isNew ? '' : (p.description||'');
-  $('f-location').value = isNew
-    ? (localStorage.getItem('mr_last_location') || 'hartland')
-    : (p.location === 'fenton' ? 'fenton' : 'hartland');
   const initImgs = isNew ? [] :
     (Array.isArray(p.images) && p.images.length ? p.images.slice() :
       (p.image ? [p.image] : []));
@@ -1964,13 +1493,13 @@ function buildImageRow(path){
   const row = document.createElement('div');
   row.className = 'image-row';
   row.innerHTML = `
-    <img class="thumb-sm" src="${path || '/logo.svg'}" alt="">
+    <img class="thumb-sm" src="${path || '/assets/logo.svg'}" alt="">
     <input type="text" placeholder="https://..." value="${path || ''}">
     <button type="button" title="Move up">↑</button>
     <button type="button" title="Move down">↓</button>
     <button type="button" class="rm" title="Remove">×</button>`;
   const [thumb, inp, up, down, rm] = row.querySelectorAll('img,input,button');
-  inp.addEventListener('input', () => { thumb.src = inp.value || '/logo.svg'; });
+  inp.addEventListener('input', () => { thumb.src = inp.value || '/assets/logo.svg'; });
   up.onclick = () => { const prev = row.previousElementSibling; if(prev) row.parentNode.insertBefore(row, prev); };
   down.onclick = () => { const next = row.nextElementSibling; if(next) row.parentNode.insertBefore(next, row); };
   rm.onclick = () => row.remove();
@@ -2040,14 +1569,12 @@ $('product-form').onsubmit = async (e) => {
     supplier: $('f-supplier').value.trim(),
     bundle: $('f-bundle').value.trim(),
     stock: Math.max(0, parseInt($('f-stock').value,10) || 0),
-    location: $('f-location').value === 'fenton' ? 'fenton' : 'hartland',
     images,
     image: images[0] || '',
     description: $('f-desc').value.trim()
   };
   const wg = parseInt($('f-weight').value, 10);
   if(wg > 0) prod.weight_grams = wg;
-  try { localStorage.setItem('mr_last_location', prod.location); } catch(_){}
   if(origId){
     const i = state.data.products.findIndex(x => x.id === origId);
     if(i >= 0) state.data.products[i] = prod;
@@ -2065,7 +1592,6 @@ $('reload').onclick = () => loadData();
 $('search').oninput = e => { state.query = e.target.value; renderRows(); };
 $('filter-cat').onchange = e => { state.cat = e.target.value; renderRows(); };
 $('filter-stock').onchange = e => { state.stockFilter = e.target.value; renderRows(); };
-$('filter-location').onchange = e => { state.locationFilter = e.target.value; renderRows(); };
 if($('bulk-scope')) $('bulk-scope').onchange = () => { updateBulkScopeUI(); previewBulkUpdate(); };
 if($('bulk-mode')) $('bulk-mode').onchange = () => previewBulkUpdate();
 if($('bulk-value')) $('bulk-value').oninput = () => previewBulkUpdate();
@@ -2093,23 +1619,6 @@ async function loadOrders(){
   } catch(e){ /* silently ignore on load */ }
 }
 
-// Build customer-history index keyed by lowercased email. Falls back to lowercased name when no email present.
-function buildCustomerHistory(orders){
-  const idx = new Map();
-  for(const o of orders){
-    const key = (o.customer?.email || '').toLowerCase().trim() ||
-                (o.customer?.name  || '').toLowerCase().trim();
-    if(!key || key === 'in-store customer') continue;
-    const cur = idx.get(key) || { count: 0, spent: 0, lastTs: 0 };
-    cur.count += 1;
-    cur.spent += Number(o.total || 0);
-    const ts = new Date(o.created).getTime();
-    if(ts > cur.lastTs) cur.lastTs = ts;
-    idx.set(key, cur);
-  }
-  return idx;
-}
-
 function renderOrders(){
   const f = state.ordersFilter;
   const q = (($('orders-search') && $('orders-search').value) || '').toLowerCase().trim();
@@ -2127,7 +1636,6 @@ function renderOrders(){
     el.innerHTML = '<div class="empty-state">No ' + (f === 'all' ? '' : f + ' ') + 'orders.</div>';
     return;
   }
-  const custIdx = buildCustomerHistory(state.orders || []);
   el.innerHTML = list.map(o => {
     const date = new Date(o.created).toLocaleString();
     const fin = o.financial || { subtotal: o.total || 0, discount: 0, shipping: 0, tax: 0, total: o.total || 0 };
@@ -2157,16 +1665,12 @@ function renderOrders(){
         <button class="btn" style="font-size:.78rem;padding:6px 12px;white-space:nowrap" data-act="save-tracking">Save tracking</button>
         <button class="btn primary" style="font-size:.78rem;padding:6px 12px;white-space:nowrap" data-act="send-tracking">Email &amp; fulfill</button>
       </div>` : '';
-    const cKey = (o.customer?.email || '').toLowerCase().trim() || (o.customer?.name || '').toLowerCase().trim();
-    const cHist = cKey ? custIdx.get(cKey) : null;
-    const cHistBlock = (cHist && cHist.count > 1) ? `<div style="font-size:.72rem;color:var(--text-dim);margin-top:2px">↻ ${cHist.count} orders · $${cHist.spent.toFixed(2)} lifetime</div>` : '';
     return `
       <article class="order-card ${o.status}" data-id="${o.id}">
         <div class="order-head">
           <div>
             <strong>${escHtml(o.customer.name || 'Customer')}</strong>
             <span class="order-status ${o.status}">${o.status}</span>
-            ${cHistBlock}
           </div>
           <div class="order-id">${date}</div>
         </div>
@@ -2195,21 +1699,17 @@ function renderOrders(){
           <div class="ln"><span>Discount</span><span>-$${(fin.discount || 0).toFixed(2)}</span></div>
           <div class="ln"><span>Shipping</span><span>$${(fin.shipping || 0).toFixed(2)}</span></div>
           <div class="ln"><span>Tax</span><span>$${(fin.tax || 0).toFixed(2)}</span></div>
-          ${fin.taxEstimate ? `<div class="ln" style="color:var(--text-dim);font-size:.75rem"><span>Tax estimate (MI 6%, Square Reader)</span><span>$${(fin.taxEstimate).toFixed(2)}</span></div>` : ''}
           <div class="ln total"><span>Total</span><span>$${o.total.toFixed(2)}</span></div>
-          ${o.timeline?.paidAt ? `<div class="ln" style="color:var(--good);font-size:.75rem"><span>✓ Paid</span><span>${new Date(o.timeline.paidAt).toLocaleDateString()}</span></div>` : ''}
         </div>
         ${trackingBlock}
         <div class="order-notes">
           <textarea data-field="adminNotes" placeholder="Internal notes (tracking, Square invoice #, etc.)">${escHtml(o.adminNotes || '')}</textarea>
         </div>
         <div class="order-actions">
-          ${o.paymentStatus === 'pending_invoice' ? '<button class="btn primary" data-act="mark-paid" title="Mark this invoice as paid">Mark paid</button>' : ''}
           ${o.status !== 'fulfilled' ? '<button class="btn primary" data-act="fulfill">Mark Fulfilled</button>' : ''}
           ${o.status === 'new' ? '<button class="btn" data-act="cancel">Cancel</button>' : ''}
           ${o.status !== 'new' ? '<button class="btn ghost" data-act="reopen">Re-open</button>' : ''}
           <button class="btn ghost" data-act="print-slip">Print slip</button>
-          ${o.customer?.email ? '<button class="btn ghost" data-act="send-receipt" title="Re-send the order confirmation email to the customer">Email receipt</button>' : ''}
           <button class="btn danger ghost" data-act="del">Delete</button>
         </div>
       </article>`;
@@ -2253,25 +1753,6 @@ async function orderAction(id, act, card){
   if(act === 'fulfill') { await updateOrder(id, { status: 'fulfilled' }); }
   else if(act === 'cancel') { await updateOrder(id, { status: 'cancelled' }); }
   else if(act === 'reopen') { await updateOrder(id, { status: 'new' }); }
-  else if(act === 'mark-paid'){
-    const o = state.orders.find(x => x.id === id);
-    const who = o?.customer?.name || 'this customer';
-    const amt = o?.total ? `$${Number(o.total).toFixed(2)}` : '';
-    if(!confirm(`Mark ${who}'s invoice ${amt} as paid?`)) return;
-    const note = prompt('Optional payment note (e.g. "check #1234", "Venmo", "cash"):', '') || '';
-    try {
-      const res = await api(`/api/orders/${encodeURIComponent(id)}/mark-paid`, {
-        method: 'POST',
-        body: JSON.stringify({ note: note.trim() })
-      });
-      if(res?.order){
-        const local = state.orders.find(x => x.id === id);
-        if(local) Object.assign(local, res.order);
-      }
-      toast('Invoice marked paid');
-      renderBusinessDashboard();
-    } catch(e){ toast('Failed: ' + e.message, true); return; }
-  }
   else if(act === 'save-tracking'){
     const inp = card?.querySelector('[data-tracking-input]');
     const num = inp?.value.trim();
@@ -2296,16 +1777,6 @@ async function orderAction(id, act, card){
     const o = state.orders.find(x => x.id === id);
     if(!o) return;
     printPackingSlip(o);
-    return;
-  }
-  else if(act === 'send-receipt'){
-    const o = state.orders.find(x => x.id === id);
-    if(!o?.customer?.email){ toast('No customer email on this order', true); return; }
-    if(!confirm(`Send order confirmation email to ${o.customer.email}?`)) return;
-    try {
-      await api(`/api/orders/${encodeURIComponent(id)}/send-receipt`, { method: 'POST' });
-      toast('Receipt emailed to ' + o.customer.email);
-    } catch(e){ toast('Email failed: ' + e.message, true); }
     return;
   }
   else if(act === 'del'){
@@ -2367,32 +1838,6 @@ function printPackingSlip(o){
 $('orders-filter').onchange = (e) => { state.ordersFilter = e.target.value; renderOrders(); };
 $('orders-search').oninput = () => renderOrders();
 $('refresh-orders').onclick = () => loadOrders();
-$('export-orders').onclick = async () => {
-  const today = new Date().toISOString().slice(0,10);
-  const monthAgo = new Date(Date.now() - 31*86400e3).toISOString().slice(0,10);
-  const since = prompt('Export orders since (YYYY-MM-DD). Leave blank for all time.', monthAgo);
-  if(since === null) return;
-  const until = prompt('Through date (YYYY-MM-DD). Leave blank for today.', today);
-  if(until === null) return;
-  const qs = new URLSearchParams();
-  if(since.trim()) qs.set('since', since.trim());
-  if(until.trim()) qs.set('until', until.trim());
-  qs.set('status', state.ordersFilter === 'new' ? 'all' : state.ordersFilter);
-  try {
-    const res = await fetch(API + '/api/orders/export.csv?' + qs.toString(), { credentials: 'include' });
-    if(!res.ok) throw new Error('HTTP ' + res.status);
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `minarealm-orders-${since||'all'}-to-${until||today}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    toast('CSV downloaded');
-  } catch(e){ toast('Export failed: ' + e.message, true); }
-};
 
 // ─── Forms ───────────────────────────────────────────────────────────
 async function loadForms(){

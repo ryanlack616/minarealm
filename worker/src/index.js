@@ -156,12 +156,6 @@ async function checkRateLimit(env, key, limit, windowSec){
   return count <= limit;
 }
 
-async function bumpLoginRateLimit(env, ipKey, comboKey){
-  const okIp = await checkRateLimit(env, ipKey, RATE_LIMITS.loginIp.limit, RATE_LIMITS.loginIp.windowSec);
-  const okCombo = await checkRateLimit(env, comboKey, RATE_LIMITS.loginUserIp.limit, RATE_LIMITS.loginUserIp.windowSec);
-  return okIp && okCombo;
-}
-
 function isWeakBootstrapPassword(pw){
   const v = String(pw || '').toLowerCase().trim();
   return ['rocks', 'password', 'admin', '123456', 'changeme'].includes(v) || v.length < 10;
@@ -265,6 +259,55 @@ async function createSquarePaymentLink(env, { orderId, lines, shippingCost, taxA
   const data = await resp.json();
   return data.payment_link;
 }
+
+// ── Email delivery ────────────────────────────────────────────────────
+// Single send path for all transactional mail. Prefers Resend when
+// RESEND_API_KEY is set (reliable; MailChannels ended its free Workers tier
+// in 2024), and falls back to MailChannels otherwise. Failures are logged
+// (visible via `wrangler tail`) instead of being silently swallowed.
+async function deliverEmail(env, { to, toName, subject, text, fromEmail, fromName, replyTo, replyToName }){
+  const from = { email: fromEmail || 'orders@minarealm.shop', name: fromName || 'Minarealm Shop' };
+  if(!to){ return false; }
+
+  if(env.RESEND_API_KEY){
+    try {
+      const r = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: `${from.name} <${env.EMAIL_FROM || from.email}>`,
+          to: [to],
+          subject,
+          text,
+          ...(replyTo ? { reply_to: replyTo } : {})
+        })
+      });
+      if(r.ok) return true;
+      console.error('Resend send failed', r.status, (await r.text().catch(() => '')).slice(0, 200));
+    } catch(e){ console.error('Resend send error', e && e.message); }
+    // fall through to MailChannels as a last resort
+  }
+
+  try {
+    const r = await fetch('https://api.mailchannels.net/tx/v1/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email: to, name: toName || '' }] }],
+        from,
+        ...(replyTo ? { reply_to: { email: replyTo, name: replyToName || '' } } : {}),
+        subject,
+        content: [{ type: 'text/plain', value: text }]
+      })
+    });
+    if(!r.ok){
+      console.error('MailChannels send failed', r.status, (await r.text().catch(() => '')).slice(0, 200));
+      return false;
+    }
+    return true;
+  } catch(e){ console.error('Email send error', e && e.message); return false; }
+}
+
 async function sendOrderNotification(env, order){
   const notifyEmail = env.NOTIFY_EMAIL || 'cynthia@minarealm.org';
   const itemsList = (order.lines || [])
@@ -292,18 +335,12 @@ async function sendOrderNotification(env, order){
     '',
     'View orders: https://minarealm.shop/admin/'
   ].filter(s => s !== null).join('\n');
-  try {
-    await fetch('https://api.mailchannels.net/tx/v1/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        personalizations: [{ to: [{ email: notifyEmail, name: 'Cynthia' }] }],
-        from: { email: 'orders@minarealm.shop', name: 'Minarealm Shop' },
-        subject: `New order from ${order.customer.name || 'customer'} — $${Number(order.financial.total).toFixed(2)}`,
-        content: [{ type: 'text/plain', value: lines }]
-      })
-    });
-  } catch(_){ /* non-fatal — Square also notifies Cynthia */ }
+  await deliverEmail(env, {
+    to: notifyEmail, toName: 'Cynthia',
+    fromEmail: 'orders@minarealm.shop', fromName: 'Minarealm Shop',
+    subject: `New order from ${order.customer.name || 'customer'} — $${Number(order.financial.total).toFixed(2)}`,
+    text: lines
+  });
 }
 async function sendCustomerConfirmation(env, order){
   const { customer, lines, financial, fulfillment, shippingAddress, id } = order;
@@ -344,19 +381,13 @@ async function sendCustomerConfirmation(env, order){
     '',
     '— Cynthia @ Minarealm'
   ].filter(s => s !== null).join('\n');
-  try {
-    await fetch('https://api.mailchannels.net/tx/v1/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        personalizations: [{ to: [{ email: customer.email, name: customer.name || '' }] }],
-        from: { email: 'orders@minarealm.shop', name: 'Minarealm Crystals' },
-        reply_to: { email: env.NOTIFY_EMAIL || 'cynthia@minarealm.org', name: 'Cynthia @ Minarealm' },
-        subject: `Your Minarealm order is confirmed (#${id})`,
-        content: [{ type: 'text/plain', value: body }]
-      })
-    });
-  } catch(_){ /* non-fatal */ }
+  await deliverEmail(env, {
+    to: customer.email, toName: customer.name || '',
+    fromEmail: 'orders@minarealm.shop', fromName: 'Minarealm Crystals',
+    replyTo: env.NOTIFY_EMAIL || 'cynthia@minarealm.org', replyToName: 'Cynthia @ Minarealm',
+    subject: `Your Minarealm order is confirmed (#${id})`,
+    text: body
+  });
 }
 async function sendLowStockAlert(env, items){
   const notifyEmail = env.NOTIFY_EMAIL || 'cynthia@minarealm.org';
@@ -367,18 +398,12 @@ async function sendLowStockAlert(env, items){
     '',
     'Check inventory: https://minarealm.shop/admin/'
   ].join('\n');
-  try {
-    await fetch('https://api.mailchannels.net/tx/v1/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        personalizations: [{ to: [{ email: notifyEmail, name: 'Cynthia' }] }],
-        from: { email: 'orders@minarealm.shop', name: 'Minarealm Shop' },
-        subject: `Low stock alert: ${items.join(', ').slice(0, 60)}`,
-        content: [{ type: 'text/plain', value: body }]
-      })
-    });
-  } catch(_){}
+  await deliverEmail(env, {
+    to: notifyEmail, toName: 'Cynthia',
+    fromEmail: 'orders@minarealm.shop', fromName: 'Minarealm Shop',
+    subject: `Low stock alert: ${items.join(', ').slice(0, 60)}`,
+    text: body
+  });
 }
 async function sendTrackingEmail(env, order, trackingNumber){
   const { customer, lines, financial, id } = order;
@@ -404,16 +429,12 @@ async function sendTrackingEmail(env, order, trackingNumber){
     '— Cynthia @ Minarealm',
     'https://minarealm.shop'
   ].join('\n');
-  await fetch('https://api.mailchannels.net/tx/v1/send', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      personalizations: [{ to: [{ email: customer.email, name: customer.name || '' }] }],
-      from: { email: 'orders@minarealm.shop', name: 'Minarealm Crystals' },
-      reply_to: { email: env.NOTIFY_EMAIL || 'cynthia@minarealm.org', name: 'Cynthia @ Minarealm' },
-      subject: `Your Minarealm order has shipped — tracking: ${trackingNumber}`,
-      content: [{ type: 'text/plain', value: body }]
-    })
+  await deliverEmail(env, {
+    to: customer.email, toName: customer.name || '',
+    fromEmail: 'orders@minarealm.shop', fromName: 'Minarealm Crystals',
+    replyTo: env.NOTIFY_EMAIL || 'cynthia@minarealm.org', replyToName: 'Cynthia @ Minarealm',
+    subject: `Your Minarealm order has shipped — tracking: ${trackingNumber}`,
+    text: body
   });
 }
 
@@ -427,18 +448,12 @@ async function sendPendingCatalogAlert(env, submitter, productCount){
     '',
     '— Minarealm Shop'
   ].join('\n');
-  try {
-    await fetch('https://api.mailchannels.net/tx/v1/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        personalizations: [{ to: [{ email: notifyEmail, name: 'Cynthia' }] }],
-        from: { email: 'orders@minarealm.shop', name: 'Minarealm Shop' },
-        subject: `Shop update pending approval — ${productCount} product${productCount === 1 ? '' : 's'} from ${submitter}`,
-        content: [{ type: 'text/plain', value: body }]
-      })
-    });
-  } catch(_){}
+  await deliverEmail(env, {
+    to: notifyEmail, toName: 'Cynthia',
+    fromEmail: 'orders@minarealm.shop', fromName: 'Minarealm Shop',
+    subject: `Shop update pending approval — ${productCount} product${productCount === 1 ? '' : 's'} from ${submitter}`,
+    text: body
+  });
 }
 
 function sanitizeCatalogForPublic(catalog){
@@ -1057,6 +1072,9 @@ export default {
         const ip = getClientIp(req);
         const ipKey = `rl:login:ip:${ip}`;
         const comboKey = `rl:login:user:${username}:${ip}`;
+        const okIp = await checkRateLimit(env, ipKey, RATE_LIMITS.loginIp.limit, RATE_LIMITS.loginIp.windowSec);
+        const okCombo = await checkRateLimit(env, comboKey, RATE_LIMITS.loginUserIp.limit, RATE_LIMITS.loginUserIp.windowSec);
+        if(!okIp || !okCombo) return err(429, 'Too many login attempts. Try again later.', env, req);
 
         // Bootstrap: if no users exist and caller used ADMIN_PASSWORD,
         // create the cynthia owner account on the fly.
@@ -1068,8 +1086,6 @@ export default {
           }
           if(pw !== env.ADMIN_PASSWORD){
             await new Promise(r => setTimeout(r, 400));
-            const ok = await bumpLoginRateLimit(env, ipKey, comboKey);
-            if(!ok) return err(429, 'Too many login attempts. Try again later.', env, req);
             return err(401, 'Bootstrap password incorrect', env, req);
           }
           // Use whichever username they typed (or default "cynthia") as the owner
@@ -1090,24 +1106,18 @@ export default {
         const u = await getUser(env, username);
         if(!u || u.active === false){
           await new Promise(r => setTimeout(r, 400));
-          const ok = await bumpLoginRateLimit(env, ipKey, comboKey);
-          if(!ok) return err(429, 'Too many login attempts. Try again later.', env, req);
           return err(401, 'Invalid login', env, req);
         }
         const candidate = await hashPw(pw, u.salt);
         if(!constantTimeEq(candidate, u.hash)){
           await new Promise(r => setTimeout(r, 400));
           await audit(env, null, 'login.fail', username, 'Wrong password');
-          const ok = await bumpLoginRateLimit(env, ipKey, comboKey);
-          if(!ok) return err(429, 'Too many login attempts. Try again later.', env, req);
           return err(401, 'Invalid login', env, req);
         }
         const token = newToken();
         await env.STORE.put(`session:${token}`,
           JSON.stringify({ username: u.username, role: u.role }),
           { expirationTtl: SESSION_TTL_SECONDS });
-        await env.STORE.delete(ipKey);
-        await env.STORE.delete(comboKey);
         u.lastLogin = new Date().toISOString();
         await putUser(env, u);
         await audit(env, { username: u.username, role: u.role }, 'login.ok', u.username, '');
@@ -1287,150 +1297,6 @@ export default {
         orders.sort((a,b) => (b.created || '').localeCompare(a.created || ''));
         return json({ orders: orders.slice(0, limit), total: orders.length }, {}, env, req);
       }
-
-      // ── Orders CSV export (bookkeeping / taxes) ──────────────────
-      if(path === '/api/orders/export.csv' && req.method === 'GET'){
-        const since = url.searchParams.get('since') || '';   // YYYY-MM-DD
-        const until = url.searchParams.get('until') || '';   // YYYY-MM-DD
-        const status = url.searchParams.get('status') || 'all';
-        const list = await env.STORE.list({ prefix: 'order:' });
-        const rows = [];
-        for(const k of list.keys){
-          const raw = await env.STORE.get(k.name);
-          if(!raw) continue;
-          try {
-            const o = JSON.parse(raw);
-            const d = (o.created || '').slice(0, 10);
-            if(since && d < since) continue;
-            if(until && d > until) continue;
-            if(status !== 'all' && o.status !== status) continue;
-            rows.push(o);
-          } catch {}
-        }
-        rows.sort((a,b) => (a.created || '').localeCompare(b.created || ''));
-        const csvEsc = v => {
-          const s = v == null ? '' : String(v);
-          return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
-        };
-        const header = [
-          'order_id','created','status','payment_status','source','fulfillment',
-          'customer_name','customer_email','customer_phone',
-          'ship_name','ship_line1','ship_line2','ship_city','ship_state','ship_zip',
-          'item_count','items','subtotal','discount','shipping','tax','total',
-          'tracking','admin_notes','customer_notes'
-        ];
-        const lines = [header.join(',')];
-        for(const o of rows){
-          const fin = o.financial || {};
-          const addr = o.shippingAddress || {};
-          const items = (o.lines || []).map(l => `${l.qty}x ${l.name} @${Number(l.price).toFixed(2)}`).join(' | ');
-          const itemCount = (o.lines || []).reduce((s, l) => s + (Number(l.qty)||0), 0);
-          lines.push([
-            o.id, o.created, o.status, o.paymentStatus, o.source, o.fulfillment,
-            o.customer?.name, o.customer?.email, o.customer?.phone,
-            addr.name, addr.line1, addr.line2, addr.city, addr.state, addr.zip,
-            itemCount, items,
-            Number(fin.subtotal||0).toFixed(2), Number(fin.discount||0).toFixed(2),
-            Number(fin.shipping||0).toFixed(2), Number(fin.tax||0).toFixed(2),
-            Number(fin.total||o.total||0).toFixed(2),
-            o.trackingNumber, o.adminNotes, o.notes
-          ].map(csvEsc).join(','));
-        }
-        const csv = lines.join('\n');
-        const fname = `minarealm-orders-${since || 'all'}-to-${until || 'now'}.csv`;
-        await audit(env, sess, 'orders.export', '', `${rows.length} orders, ${since||'-'}..${until||'-'}, status=${status}`);
-        return new Response(csv, {
-          status: 200,
-          headers: {
-            'Content-Type': 'text/csv; charset=utf-8',
-            'Content-Disposition': `attachment; filename="${fname}"`,
-            'Cache-Control': 'no-store',
-            ...corsHeaders(env, req)
-          }
-        });
-      }
-      // ── In-store sale (one-tap POS for brick-and-mortar) ─────────
-      if(path === '/api/orders/in-store' && req.method === 'POST'){
-        if(!sess) return err(401, 'Unauthorized', env, req);
-        const body = await req.json().catch(() => null);
-        if(!body) return err(400, 'body required', env, req);
-
-        // Normalize to multi-line shape. Legacy single-line: {productId, qty, price}
-        let rawLines = Array.isArray(body.lines) && body.lines.length
-          ? body.lines
-          : (body.productId ? [{ productId: body.productId, qty: body.qty, price: body.price }] : []);
-        if(rawLines.length === 0) return err(400, 'lines or productId required', env, req);
-        if(rawLines.length > 50) return err(400, 'too many lines (max 50)', env, req);
-
-        const cat = await getCatalog(env);
-        const lines = [];
-        const stockDelta = new Map();
-        for(const rl of rawLines){
-          if(!rl || !rl.productId) return err(400, 'each line needs productId', env, req);
-          const p = cat.products.find(x => x.id === rl.productId);
-          if(!p) return err(404, `Product not found: ${rl.productId}`, env, req);
-          const qty = Math.max(1, Math.min(99, parseInt(rl.qty, 10) || 1));
-          const stock = Number(p.stock);
-          const already = stockDelta.get(p.id) || 0;
-          if(!Number.isFinite(stock) || stock < (qty + already)){
-            return err(409, `Out of stock: ${p.name}`, env, req);
-          }
-          const price = rl.price != null
-            ? Math.max(0, Number(rl.price))
-            : Number(p.price || p.retail_price || 0);
-          const subtotal = Math.round(price * qty * 100) / 100;
-          lines.push({ id: p.id, name: p.name, price, qty, subtotal, _ref: p });
-          stockDelta.set(p.id, already + qty);
-        }
-
-        const subtotal = Math.round(lines.reduce((s, l) => s + l.subtotal, 0) * 100) / 100;
-        // In-store sales: tax is collected at point-of-sale via Square Reader receipts.
-        // We record the gross sale here for unified reporting; Square holds the tax record.
-        // taxEstimate is informational only — what Square *should* have collected at MI 6%.
-        const taxEstimate = Math.round(subtotal * 0.06 * 100) / 100;
-        const total = subtotal;
-        const orderId = `${Date.now()}-${newId()}`;
-        const nowIso = new Date().toISOString();
-        const isInvoice = String(body.paymentMethod || '') === 'invoice';
-        const order = {
-          id: orderId,
-          created: nowIso,
-          status: isInvoice ? 'new' : 'fulfilled',
-          customer: {
-            name:  String(body.customerName || 'In-store customer').slice(0, 120),
-            email: String(body.customerEmail || '').slice(0, 200),
-            phone: ''
-          },
-          source: 'in-store',
-          fulfillment: 'In-store',
-          paymentStatus: isInvoice ? 'pending_invoice' : 'paid_in_store',
-          financial: { subtotal, discount: 0, shipping: 0, tax: 0, taxEstimate, total },
-          timeline: isInvoice
-            ? { createdAt: nowIso }
-            : { createdAt: nowIso, fulfilledAt: nowIso },
-          notes: '',
-          lines: lines.map(({ id, name, price, qty, subtotal }) => ({ id, name, price, qty, subtotal })),
-          total,
-          adminNotes: String(body.note || '').slice(0, 400),
-          adminTags: isInvoice ? ['in-store', 'invoice'] : ['in-store']
-        };
-        await env.STORE.put(`order:${orderId}`, JSON.stringify(order));
-
-        cat.products = cat.products.map(x => {
-          const dec = stockDelta.get(x.id);
-          if(!dec) return x;
-          return { ...x, stock: Math.max(0, Number(x.stock || 0) - dec) };
-        });
-        cat.updated = new Date().toISOString().slice(0,10);
-        await env.STORE.put('catalog', JSON.stringify(cat));
-
-        const summary = lines.map(l => `${l.name} ×${l.qty}`).join(', ');
-        await audit(env, sess, isInvoice ? 'order.in-store.invoice' : 'order.in-store',
-          orderId,
-          `${summary} = $${total.toFixed(2)}${isInvoice ? ' (pending invoice)' : ''} (${sess.username})`);
-        return json({ ok: true, order }, {}, env, req);
-      }
-
       if(path === '/api/forms' && req.method === 'GET'){
         const kind = clampText(url.searchParams.get('type') || 'all', 20);
         const limit = Math.min(500, parseInt(url.searchParams.get('limit') || '100', 10));
@@ -1499,80 +1365,6 @@ export default {
         await sendTrackingEmail(env, order, tracking);
         await audit(env, sess, 'order.tracking', id, `tracking=${tracking}`);
         return json({ ok: true, tracking }, {}, env, req);
-      }
-
-      // ── Resend receipt / order confirmation ──────────────────────
-      const receiptM = path.match(/^\/api\/orders\/([^/]+)\/send-receipt$/);
-      if(receiptM && req.method === 'POST'){
-        const id = receiptM[1];
-        const raw = await env.STORE.get(`order:${id}`);
-        if(!raw) return err(404, 'Order not found', env, req);
-        const order = JSON.parse(raw);
-        if(!order.customer?.email) return err(400, 'Order has no customer email', env, req);
-        await sendCustomerConfirmation(env, order);
-        order.timeline = { ...(order.timeline||{}), receiptSentAt: new Date().toISOString() };
-        await env.STORE.put(`order:${id}`, JSON.stringify(order));
-        await audit(env, sess, 'order.receipt', id, `to ${order.customer.email}`);
-        return json({ ok: true, email: order.customer.email }, {}, env, req);
-      }
-
-      // ── Mark invoice paid (closes the pending_invoice loop) ──────
-      const paidM = path.match(/^\/api\/orders\/([^/]+)\/mark-paid$/);
-      if(paidM && req.method === 'POST'){
-        const id = paidM[1];
-        const raw = await env.STORE.get(`order:${id}`);
-        if(!raw) return err(404, 'Order not found', env, req);
-        const order = JSON.parse(raw);
-        if(order.paymentStatus === 'paid' || order.paymentStatus === 'paid_in_store'){
-          return err(409, 'Order is already paid', env, req);
-        }
-        const body = await req.json().catch(() => ({}));
-        const note = String(body.note || '').slice(0, 200);
-        const prevPayment = order.paymentStatus || 'unknown';
-        order.paymentStatus = 'paid';
-        order.timeline = { ...(order.timeline || {}), paidAt: new Date().toISOString() };
-        // For in-store invoice sales the goods already left; auto-fulfill on payment.
-        if(order.source === 'in-store' && order.status === 'new'){
-          order.status = 'fulfilled';
-          order.timeline.fulfilledAt = order.timeline.paidAt;
-        }
-        if(note){
-          order.adminNotes = (order.adminNotes ? order.adminNotes + ' · ' : '') + `Paid: ${note}`;
-        }
-        order.updated = order.timeline.paidAt;
-        order.updatedBy = sess.username;
-        await env.STORE.put(`order:${id}`, JSON.stringify(order));
-        await audit(env, sess, 'order.paid', id,
-          `${prevPayment} → paid · $${Number(order.total || 0).toFixed(2)}${note ? ' · ' + note : ''} (${sess.username})`);
-        return json({ ok: true, order }, {}, env, req);
-      }
-
-      // ── Inventory adjust (audited +1/-1, restock log) ────────────
-      if(path === '/api/inventory/adjust' && req.method === 'POST'){
-        const body = await req.json().catch(() => null);
-        if(!body || !body.productId || body.delta == null){
-          return err(400, 'productId and delta required', env, req);
-        }
-        const delta = Math.trunc(Number(body.delta));
-        if(!Number.isFinite(delta) || delta === 0 || Math.abs(delta) > 9999){
-          return err(400, 'invalid delta', env, req);
-        }
-        const reason = String(body.reason || '').slice(0, 80) ||
-          (delta > 0 ? 'restock' : 'adjust');
-        const cat = await getCatalog(env);
-        const p = cat.products.find(x => x.id === body.productId);
-        if(!p) return err(404, 'Product not found', env, req);
-        const before = Number(p.stock || 0);
-        const after  = Math.max(0, before + delta);
-        cat.products = cat.products.map(x =>
-          x.id === p.id ? { ...x, stock: after } : x
-        );
-        cat.updated = new Date().toISOString().slice(0,10);
-        await env.STORE.put('catalog', JSON.stringify(cat));
-        await audit(env, sess, delta > 0 ? 'inventory.restock' : 'inventory.adjust',
-          p.id,
-          `${p.name}: ${before} → ${after} (${delta > 0 ? '+' : ''}${delta}) · ${reason} · ${sess.username}`);
-        return json({ ok: true, productId: p.id, before, after, delta }, {}, env, req);
       }
 
       // ────────── Owner-only routes ────────────────────────────────
@@ -1646,7 +1438,8 @@ export default {
 
       return err(404, 'Not found', env, req);
     } catch(e){
-      return err(500, e.message || 'Server error', env, req);
+      console.error('Worker error', req.method, new URL(req.url).pathname, e && e.message);
+      return err(500, 'Server error', env, req);
     }
   }
 };

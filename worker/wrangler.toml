@@ -26,3 +26,8 @@ DAILY_CAP = "500"
 # SQUARE_ACCESS_TOKEN
 # SQUARE_WEBHOOK_SIGNATURE_KEY
 # SQUARE_LOCATION_ID
+# RESEND_API_KEY            (optional) enables reliable transactional email via Resend.
+#                           Without it, the worker falls back to MailChannels (free Workers
+#                           tier ended 2024 — likely undelivered). Set EMAIL_FROM below to a
+#                           Resend-verified sender on a domain you control.
+# EMAIL_FROM = "orders@minarealm.shop"   # add under [vars] once the domain is verified in Resend

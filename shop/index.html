@@ -14,7 +14,7 @@
 <meta name="theme-color" content="#0c0b10">
 <title>Shop · Minarealm Crystals</title>
 <meta name="description" content="Shop crystals, jewelry, fossils, and spiritual tools from Minarealm. Free local pickup in Fenton and Hartland, Michigan.">
-<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg">
 <style>
   :root {
     --bg:#0c0b10; --surface:#14121c; --surface2:#1c1926;
@@ -406,7 +406,7 @@ function imagesOf(p){
   if(Array.isArray(p.images) && p.images.length > 0) return p.images.map(fixImgUrl).filter(Boolean);
   const img = fixImgUrl(p.image);
   if(img) return [img];
-  return ['/logo.svg'];
+  return ['/assets/logo.svg'];
 }
 
 const money = n => '$' + Number(n).toFixed(2);
