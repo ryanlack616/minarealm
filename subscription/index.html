@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Crystal Subscription Box · Minarealm Crystals</title>
 <meta name="description" content="Hand-curated monthly crystal boxes from Minarealm. Every box is personalized to your preferences — no gimmicks, just genuine crystals chosen for you.">
-<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg">
 <style>
   :root {
     --bg:#0c0b10; --surface:#14121c; --surface2:#1c1926;
@@ -32,6 +32,16 @@
   .nav-links { list-style:none; display:flex; gap:22px; }
   .nav-links a { text-decoration:none; color:var(--text); font-size:0.92rem; transition:color 0.2s; }
   .nav-links a:hover { color:var(--gold-light); }
+  .nav-hamburger { display:none; background:none; border:none; cursor:pointer; padding:8px; min-width:44px; min-height:44px; color:var(--text-dim); flex-direction:column; gap:5px; align-items:center; justify-content:center; }
+  .nav-hamburger span { display:block; width:22px; height:2px; background:currentColor; border-radius:2px; transition:transform .25s,opacity .25s; }
+  .nav-hamburger.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2){ opacity:0; }
+  .nav-hamburger.open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+  .mobile-nav { display:none; position:fixed; inset:0; padding-top:72px; padding-left:24px; padding-right:24px; background:rgba(12,11,16,0.97); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); z-index:49; flex-direction:column; overflow-y:auto; }
+  .mobile-nav.open { display:flex; }
+  .mobile-nav a { color:var(--text); font-family:Arial,sans-serif; font-size:1rem; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; padding:16px 0; border-bottom:1px solid rgba(212,169,74,0.15); display:block; }
+  .mobile-nav a:hover { color:var(--gold-light); }
+  .mobile-nav .mobile-nav-phone { color:var(--gold-light); font-size:1.15rem; margin-top:20px; border-bottom:none; letter-spacing:0.04em; text-transform:none; }
   .hero { padding:80px 24px 60px; text-align:center; max-width:780px; margin:0 auto; }
   .hero-eyebrow { color:var(--accent); letter-spacing:0.3em; text-transform:uppercase; font-size:0.78rem; margin-bottom:18px; }
   .hero h1 { font-size:3rem; line-height:1.15; margin-bottom:20px; color:var(--gold-light); }
@@ -93,7 +103,10 @@
   @media (max-width:600px){
     .hero h1 { font-size:2rem; }
     .nav-links { display:none; }
+    .nav-hamburger { display:flex; }
     .form-row { grid-template-columns:1fr; }
+    /* Prevent iOS Safari auto-zoom on input focus (needs font-size >= 16px) */
+    .form-grid input, .form-grid select, .form-grid textarea { font-size:16px; }
   }
 </style>
 </head>
@@ -114,7 +127,19 @@
     <li><a href="/#services">Services</a></li>
     <li><a href="/#contact">Contact</a></li>
   </ul>
+  <button class="nav-hamburger" id="nav-hamburger" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-nav">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<div class="mobile-nav" id="mobile-nav">
+  <a href="/">Home</a>
+  <a href="/shop/">Shop</a>
+  <a href="/subscription/">Boxes</a>
+  <a href="/#services">Services</a>
+  <a href="/#contact">Contact</a>
+  <a class="mobile-nav-phone" href="tel:5176722880">📞 517-672-2880</a>
+</div>
 
 <section class="hero">
   <span class="badge">Now Accepting Founding Members</span>
@@ -372,5 +397,20 @@
   });
 </script>
 
-</body>
-</html>
+  <script>
+  // Mobile hamburger nav
+  (function(){
+    var ham = document.getElementById('nav-hamburger');
+    var menu = document.getElementById('mobile-nav');
+    if(!ham || !menu) return;
+    function closeMenu(){ ham.classList.remove('open'); menu.classList.remove('open'); ham.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+    ham.addEventListener('click', function(){
+      var open = ham.classList.toggle('open');
+      menu.classList.toggle('open', open);
+      ham.setAttribute('aria-expanded', open ? 'true' : 'false');
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+    menu.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+  })();
+  </script>
+

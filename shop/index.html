@@ -204,6 +204,13 @@
   .addr-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .shipping-preview{font-size:.82rem;color:var(--gold);background:rgba(212,169,74,.08);border:1px solid var(--gold-dim);border-radius:var(--radius);padding:8px 12px;line-height:1.5}
 
+  /* Trust / sourcing / shipping info */
+  .info-section{max-width:1100px;margin:40px auto 0;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .info-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+  .info-card h3{margin:0 0 8px;font-size:1.02rem;color:var(--gold);font-weight:500}
+  .info-card p{margin:0;font-size:.9rem;color:var(--text-dim);line-height:1.6}
+  .info-card a{color:var(--gold);text-decoration:underline}
+
   /* Toast notifications */
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
     background:var(--gold);color:#0c0b10;padding:12px 24px;border-radius:var(--radius);
@@ -217,6 +224,30 @@
   footer a{color:var(--gold);text-decoration:underline;transition:color .2s}
   footer a:hover{color:var(--gold-light)}
 
+  /* Right-side nav actions (cart + hamburger) */
+  .nav-actions{display:flex;align-items:center;gap:8px}
+
+  /* Hamburger / mobile nav */
+  .nav-hamburger{display:none;background:none;border:none;cursor:pointer;padding:8px;
+    min-width:44px;min-height:44px;color:var(--text-dim);flex-direction:column;gap:5px;
+    align-items:center;justify-content:center}
+  .nav-hamburger span{display:block;width:22px;height:2px;background:currentColor;border-radius:2px;
+    transition:transform .25s,opacity .25s}
+  .nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .nav-hamburger.open span:nth-child(2){opacity:0}
+  .nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+  .mobile-nav{display:none;position:fixed;top:56px;left:0;right:0;bottom:0;background:var(--nav-bg);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:99;
+    padding:8px 24px 100px;overflow-y:auto;flex-direction:column}
+  .mobile-nav.open{display:flex}
+  .mobile-nav a{color:var(--text);font-family:Arial,sans-serif;font-size:1rem;letter-spacing:.08em;
+    text-transform:uppercase;text-decoration:none;padding:16px 0;border-bottom:1px solid var(--border);
+    display:block;transition:color .2s}
+  .mobile-nav a:hover{color:var(--gold)}
+  .mobile-nav .mobile-nav-phone{color:var(--gold);font-size:1.15rem;margin-top:20px;border-bottom:none;
+    letter-spacing:.04em;text-transform:none}
+
   /* Responsive */
   @media(max-width:900px){
     .grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
@@ -224,9 +255,11 @@
   }
 
   @media(max-width:768px){
-    nav{padding:0 20px;height:56px}
+    nav{padding:0 16px;height:56px}
     .nav-logo span{font-size:.6rem}
-    .cart-btn{padding:8px 14px;font-size:.85rem}
+    .nav-links{display:none}
+    .nav-hamburger{display:flex}
+    .cart-btn{padding:9px 14px;font-size:.85rem;min-height:42px}
     header.head{padding:40px 16px 24px}
     header.head h1{font-size:1.8rem}
     header.head p{font-size:.95rem}
@@ -235,17 +268,25 @@
     .grid{padding:16px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
     .card .body{padding:12px}
     .drawer{width:100%}
+    /* Prevent iOS Safari auto-zoom on input focus (needs font-size >= 16px) */
+    .search,.checkout input,.checkout textarea,.checkout select,.add,.cart-btn{font-size:16px}
+    /* Larger touch targets in the cart */
+    .qty button{width:40px;height:40px}
+    .qty span{min-width:32px;font-size:1rem}
+    .rm{padding:6px 0}
+    .add{padding:12px 14px}
+    .drawer .close{width:44px;height:44px}
   }
 
   @media(max-width:480px){
     nav{padding:0 12px;height:52px}
+    .mobile-nav{top:52px}
     .nav-logo{font-size:1.2rem}
-    .cart-btn{padding:6px 10px;font-size:.8rem}
+    .cart-btn{padding:8px 12px;min-height:40px}
     header.head h1{font-size:1.4rem;margin:8px 0 12px}
     header.head p{font-size:.9rem}
     .controls{padding:12px;gap:8px;flex-direction:column}
-    .search{font-size:.85rem}
-    .pill{padding:6px 14px;font-size:.8rem}
+    .pill{padding:9px 16px;font-size:.85rem}
     .grid{padding:12px;gap:10px}
     .card{border-radius:6px}
     .card .img{border-radius:6px}
@@ -257,6 +298,9 @@
     .lb .lb-thumbs{bottom:74px;gap:6px;padding:7px 8px}
     .lb .lb-thumb{width:46px;height:46px}
     .lb .lb-caption{font-size:.85rem;padding:10px 14px;bottom:16px;max-width:92vw}
+    .lb .lb-close{top:12px;right:12px;width:44px;height:44px;font-size:2rem}
+    .lb .lb-nav{width:46px;height:46px}
+    .addr-row{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -271,11 +315,25 @@
     <li><a href="/#events">Events</a></li>
     <li><a href="/#contact">Contact</a></li>
   </ul>
-  <button class="cart-btn" id="cart-btn" aria-label="Open shopping cart">
-    <span>🛒</span>
-    <span>Cart (<span id="cart-count">0</span>)</span>
-  </button>
+  <div class="nav-actions">
+    <button class="cart-btn" id="cart-btn" aria-label="Open shopping cart">
+      <span>🛒</span>
+      <span>Cart (<span id="cart-count">0</span>)</span>
+    </button>
+    <button class="nav-hamburger" id="nav-hamburger" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </nav>
+
+<div class="mobile-nav" id="mobile-nav">
+  <a href="/">Home</a>
+  <a href="/shop/">Shop</a>
+  <a href="/#services">Services</a>
+  <a href="/#events">Events</a>
+  <a href="/#contact">Contact</a>
+  <a class="mobile-nav-phone" href="tel:5176722880">📞 517-672-2880</a>
+</div>
 
 <header class="head">
   <p class="eyebrow">Online Shop</p>
@@ -289,6 +347,25 @@
 </div>
 
 <div class="grid" id="grid"></div>
+
+<section class="info-section" aria-label="Our promise, sourcing, shipping, and returns">
+  <div class="info-card">
+    <h3>Ethically sourced</h3>
+    <p>Every crystal, fossil, and stone is hand-selected from trusted suppliers and small-scale dealers we know by name. We favor responsibly mined and reclaimed pieces — and we'll always share what we know about where something came from. Just ask.</p>
+  </div>
+  <div class="info-card">
+    <h3>Shipping</h3>
+    <p>Orders ship USPS from Michigan, usually within 2–3 business days. Flat-rate shipping is calculated by weight at checkout, and <strong>orders over $100 ship free</strong>. Local pickup in Fenton &amp; Hartland is always free — just choose pickup at checkout.</p>
+  </div>
+  <div class="info-card">
+    <h3>Returns &amp; care</h3>
+    <p>Natural stones vary in color, shape, and inclusions — that's part of their character. If something arrives damaged or isn't right, reach out within 14 days and we'll make it right with a replacement or refund: <a href="mailto:info@minarealm.shop">info@minarealm.shop</a>.</p>
+  </div>
+  <div class="info-card">
+    <h3>Secure checkout</h3>
+    <p>Payment is handled by <strong>Square</strong> on their secure, PCI-compliant pages — we never see or store your card details. You'll receive an emailed confirmation for every order.</p>
+  </div>
+</section>
 
 <footer>
   © <span id="yr"></span> Minarealm · Fenton &amp; Hartland, MI · <a href="tel:5176722880">517-672-2880</a> · <a href="mailto:info@minarealm.shop">info@minarealm.shop</a>
@@ -833,6 +910,26 @@ window.addEventListener('keydown', (e) => {
 });
 
 $('yr').textContent = new Date().getFullYear();
+
+// ── Mobile nav / hamburger ──
+(function(){
+  var hamburger = document.getElementById('nav-hamburger');
+  var mobileNav = document.getElementById('mobile-nav');
+  if(!hamburger || !mobileNav) return;
+  function closeMenu(){
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded','false');
+    mobileNav.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  hamburger.addEventListener('click', function(){
+    var isOpen = hamburger.classList.toggle('open');
+    hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    mobileNav.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+  mobileNav.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+})();
 
 // Initialize
 (async () => {
