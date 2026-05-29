@@ -2571,124 +2571,36 @@ All Formspree `action="..."`, `_subject`, `_gotcha` removed from: `index.html`, 
 4. Build Step 2 (Worker routes) — can start in sandbox mode immediately
 
 ---
-## §38 — Gap analysis & next-phase roadmap (May 18, 2026)
 
-After the multi-line POS cart + close-out panel + audited stock + email-receipt batch (commit `c47b6b1`, deploy `25c66516`), the system is a functional sales-recorder but missing several pieces that turn it into an actual books-keeping system.
+### Part 11 — Launch readiness audit (May 29, 2026, CH-260529-2)
 
-### Critical — meeting blockers (May 19)
+Independent audit of the live deployment. **The store is live and functionally
+complete.** The remaining gap to a real launch is credentials/business config,
+not code.
 
-| # | Gap | Why it matters | Owner |
-| --- | --- | --- | --- |
-| C1 | Production Square creds + DNS (SPF/DKIM/DMARC) | Receipts may go to spam; payments still sandbox | Cynthia |
-| C2 | In-store `tax: 0` recorded | Square Reader tax + admin records will never reconcile | Code |
-| C3 | No "mark invoice paid" button | Pending-invoice orders sit forever; close-the-loop missing | Code |
-| C4 | admin/index.html not yet on Porkbun | She''ll demo stale UI | Cynthia (FTP blocked here) |
+| Layer | Status |
+| --- | --- |
+| Storefront (`minarealm.shop/shop/`) | ✅ Live, HTTP 200 |
+| Site root + admin | ✅ Live, HTTP 200 (admin Bearer-gated) |
+| Catalog API `/api/products` | ✅ Live — 26 products, 6 categories (updated May 19) |
+| Worker `/api/checkout/create-payment-link` | ✅ Built |
+| Worker `/api/webhooks/square` | ✅ Built |
+| `shop/order-success.html` | ✅ Built |
+| Square credentials | ⬜ **Sandbox only** — `SQUARE_ENV="sandbox"`. Needs production creds (Cynthia) |
+| Email delivery | ⚠️ **Broken on live** — MailChannels free Workers tier ended 2024; order/contact emails likely undelivered |
+| Email fix (Resend) | ✅ Coded — `deliverEmail()` Resend-first helper committed locally (`99c4f28`), ⬜ not deployed; needs `RESEND_API_KEY` + domain verification |
 
-### High-impact — 2-week horizon
+**Launch blockers (in order):**
 
-| # | Gap | Build sketch |
-| --- | --- | --- |
-| H1 | No customer entity | Embed only on orders for now; add `GET /api/customers/lookup?q=` that aggregates from order history. Real `customer:<id>` KV entity comes in phase 2. |
-| H2 | Invoice lifecycle incomplete | `POST /api/orders/:id/mark-paid` + "Outstanding Invoices" dashboard panel with aging buckets. Square Invoice API integration deferred. |
-| H3 | Refunds & returns | `POST /api/orders/:id/refund {lines:[{id,qty}], restock:bool, reason}` reverses stock, records credit entry, optional Square refund. |
-| H4 | Multi-location (Fenton vs Hartland) | DECISION POINT for Cynthia. If split: add `location` to orders + per-location stock. If shared: explicit policy + small "fulfillment location" tag on orders. |
-| H5 | Discounts / comp | Explicit discount line per cart (% or $), audited as `order.discount`, keeps margin reports honest. |
-| H6 | No POS receipt | "Print receipt" + "Email receipt" buttons appear immediately after `submitInStoreSale` success, alongside the existing post-sale toast. |
+1. **Square production** — get production credentials (Cynthia decision), set
+   `wrangler secret put SQUARE_ACCESS_TOKEN` / `SQUARE_LOCATION_ID` /
+   `SQUARE_WEBHOOK_SIGNATURE_KEY`, flip `SQUARE_ENV="production"`, `wrangler deploy`.
+2. **Email delivery** — create Resend account, verify `minarealm.shop` domain,
+   `wrangler secret put RESEND_API_KEY`, add `EMAIL_FROM="orders@minarealm.shop"`
+   to `[vars]`, deploy local commit `99c4f28`.
+3. **Live test order** — place one real order end-to-end after 1 & 2.
 
-### Medium — month-out
-
-- M1: Staff/shift sales rollup (audit `who` exists; need view)
-- M2: Physical-count reconciliation (variance entry → audit + stock update)
-- M3: Cost layering (FIFO or moving average)
-- M4: Reorder workflow (PO create + mark-ordered + waybill receive)
-- M5: Bookings & services (Reiki/Tarot/etc — currently Formspree-only)
-- M6: Mobile admin UX audit (cart modal at 414px width)
-- M7: Catalog backup / KV time-series snapshots
-- M8: Image lifecycle (delete orphans, alt-text, reorder)
-
-### Strategic — quarter-out
-
-- S1: Customer-facing order status page
-- S2: Marketing channel (newsletter to past buyers)
-- S3: Analytics history (month-over-month, GA4 still pending)
-- S4: Gift cards / store credit
-- S5: 2FA on owner account
-
-### Polish (batch in one pass)
-
-- Cart picker → autocomplete search
-- Recent-products row in cart picker
-- "1 in stock" warning badge in picker
-- Receipt-sent ✓ indicator on order card (timeline.receiptSentAt already stored)
-- Order list filter: source / status / date range
-- Bulk restock entry
-
-### One question for Cynthia tomorrow
-
-**"Do you want Fenton and Hartland to share inventory, or count them separately?"** — answer determines whether H4 is small or large, and it gets harder the longer we wait.
+Full report: `LAUNCH_AUDIT_2026-05-29.md`. Steps 1–2 are credential/business
+gated; once in hand, deploy is ~15 min of mechanical work.
 
 ---
-
-### §38 Build plan — this session
-
-Building before tomorrow''s meeting:
-
-1. **C3 invoice mark-paid** — `POST /api/orders/:id/mark-paid {note?}` flips `paymentStatus: 'pending_invoice' → 'paid'`, stamps `timeline.paidAt`, audits `order.paid`. Admin order card shows "Mark paid" button when status is pending.
-2. **Outstanding Invoices dashboard panel** — companion to today''s close-out; lists all `pending_invoice` orders across all time with customer, age, amount, click to mark paid.
-3. **H6 POS receipt** — after-sale modal with "Print receipt" + (if email present) "Email receipt" + Done. Reuses existing packing-slip print function and send-receipt route.
-4. **C2 tax estimate field on in-store orders** — record `financial.taxEstimate` at MI 6% for reporting parity even though Square Reader actually collects.
-5. **H1 customer history (read-only)** — order card shows "N past orders · $X total" when customer email/name matches another order. No new entity needed.
-
-Deploy worker, commit, hand off file to Cynthia for Porkbun upload.
-
-
-### §38B Status update (May 18 — late session, after first build pass)
-
-**Shipped this session (commit `01ff661`, worker version `7e35389b`):**
-- ✅ C3 mark-paid route + button + audit
-- ✅ C2 tax-estimate field on in-store orders
-- ✅ H1 customer-history pill (client-side index, no new entity)
-- ✅ H6 POS post-sale receipt modal (print / email-if-present / done)
-- ✅ Outstanding Invoices dashboard panel with aging buckets (<7d / 7-30d / >30d)
-
-**Must-do before May 19 meeting:**
-1. **Upload `admin/index.html` to Porkbun** — FTP blocked from this machine. Either hand file to Cynthia or try `ftplib.FTP_TLS` port-21 workaround (see howell-help memory note).
-2. **Live end-to-end test with real cynthia/rocks session** — mark-paid has only been verified at the 401 layer; need to exercise against a real `pending_invoice` order, confirm `timeline.paidAt`, audit entry, and 409-on-already-paid path.
-
-**Critical for actual production tomorrow (still C1-C2 from §38):**
-3. **Square production credentials** — still on test creds. Without real creds no card-present sales work.
-4. **DNS for admin domain** — confirm where `admin.minarealm.com` (or equivalent) is pointing.
-5. **Receipt email deliverability check** — send `send-receipt` to a real inbox; verify not in spam.
-
-**Bring to meeting (do not pre-build):**
-6. **Question: Fenton vs Hartland shared inventory?** — already in §38 "One question for Cynthia" but pull into meeting notes so it does not stay buried.
-7. **Print path for POS receipt modal** — `printPackingSlip` reused; layout may not be receipt-shaped on thermal/letter. Demo it with Cynthia rather than guessing format.
-
-**Deferred (not blockers):**
-- H1 full customer entity (current pill is read-only over orders — sufficient for now)
-- H3 refunds
-- H5 discounts
-
-**Risk posture:** working system exists. Tonight''s risk is regression, not missing features. Stop building after item 2 above; everything else is meeting-driven.
-
-### §38B addendum — H4 separate-inventory decision (resolved)
-
-**Decision:** Each product belongs to **one** location — `hartland` or `fenton`. Stock counts are independent. If a piece exists at both shops, create two product entries (one per location). No "shared" or "both" mode.
-
-**Rationale:** Cynthia's mental model: each shelf at each shop is its own thing. Shared-stock semantics (single SKU, two stock counts) would either confuse the count or require shop-specific decrements on every sale — more UI surface than benefit for the early stage. Two entries keeps every screen (Inventory, Sold-modal, Orders) trivially correct.
-
-**Schema:**
-- `product.location: 'fenton' | 'hartland'` (defaults to `'hartland'` when absent — all pre-existing pieces).
-- Worker pass-through preserves the field on `PUT /api/products` without code change.
-- Sale-source location is prepended to the order note as `[Hartland]` / `[Fenton]` (no worker-side schema change needed for May 19).
-
-**UI surface added:**
-- Product edit modal: `Location` select (required).
-- Inventory toolbar: `filter-location` dropdown (Both / Hartland / Fenton).
-- Inventory rows: small `HRT` / `FEN` badge next to product name.
-- Ring-up-sale modal: `Where` select (remembers last choice in `localStorage.mr_last_location`).
-
-**Future (if/when promoted to first-class):**
-- Worker `/api/orders/in-store` should accept and persist `saleLocation` on the order envelope (currently lives only in the note).
-- Dashboard split by location (today's close-out per shop).
-- Per-location margin / dead-stock KPIs.
