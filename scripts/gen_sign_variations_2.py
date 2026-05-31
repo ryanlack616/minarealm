@@ -4,7 +4,7 @@ Generate 50 MORE ROCK SHOP storefront sign variations via Replicate recraft-v4-s
 Batch 2: signs numbered 11–60, diverse styles/palettes/themes.
 
 Usage:
-    export REPLICATE_API_TOKEN=r8_...
+    # Put REPLICATE_API_TOKEN in ~/rje/dev/.env (untracked), then:
     python3 scripts/gen_sign_variations_2.py
 
 Cost: ~$0.08 per image × 50 = ~$4.00 USD
@@ -21,8 +21,33 @@ try:
 except ImportError:
     sys.exit("replicate not installed — run: pip install replicate")
 
+
+def _load_env():
+    """Load KEY=VALUE pairs from untracked .env files (no dependency).
+
+    Reads ~/rje/dev/.env then the repo-local .env; never overrides a value
+    already set in the environment. Keeps secrets out of inline commands.
+    """
+    candidates = [
+        Path.home() / "rje" / "dev" / ".env",
+        Path(__file__).resolve().parent.parent / ".env",
+    ]
+    for envf in candidates:
+        if not envf.is_file():
+            continue
+        for line in envf.read_text().splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, val = line.partition("=")
+            key, val = key.strip(), val.strip().strip('"').strip("'")
+            os.environ.setdefault(key, val)
+
+
+_load_env()
+
 if not os.getenv("REPLICATE_API_TOKEN"):
-    sys.exit("REPLICATE_API_TOKEN not set — export it first")
+    sys.exit("REPLICATE_API_TOKEN not set — add it to ~/rje/dev/.env")
 
 MODEL = "recraft-ai/recraft-v4-svg"
 ASPECT_RATIO = "2:1"
