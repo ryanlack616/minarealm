@@ -1,104 +1,101 @@
-# Cynthia Meeting Brief — May 18, 2026 (4:30 PM)
+# Minarealm 90-Day Growth Plan
 
-One-page brief for the in-person meeting today.
-Owner: Cynthia · Support: Ryan
-Budget cap: $1,000 / 90 days (unchanged)
+One-page meeting brief for Cynthia
+Date: 2026-04-12
+Plan owner: Cynthia
+Budget cap: $1,000 total (90 days)
 
----
+Funding note: A planned $1,000 in-shop purchase before rollout creates near-term working room without increasing the total budget cap.
 
-## What's actually built and working today
+Authority note: Cynthia has final say. Ryan is support and marketing help.
 
-The full internal order management system Cynthia asked for is **live**:
+## 1) What We Are Solving
 
-- Customers can browse, add to cart, choose pickup or ship, and pay
-  online via Square (sandbox today — flips to production in 1 minute
-  once Square creds are entered).
-- Every order lands in the admin under Orders, with status, payment
-  status, shipping address (with copy + USPS verify), packing-slip
-  print, tracking-number entry, and an "Email & fulfill" button that
-  emails the customer their tracking and marks the order shipped.
-- Stock auto-decrements when Square confirms payment. Low-stock alert
-  emails Cynthia when an item drops to 2 or fewer.
-- Customer gets an automatic confirmation email on order, and a
-  tracking email when Cynthia marks shipped.
-- New today: **Orders CSV export** for monthly bookkeeping / taxes.
-- Inventory tab has +1 / −1 buttons → that's the "I just sold one in
-  the shop" workflow (no extra step needed).
-- Multi-user staff accounts work, with a trust toggle so untrusted
-  staff edits go to Cynthia for approval before going live.
-- Audit log of every change.
+- Increase local trust and conversion from website/Google traffic.
+- Turn more visitors into calls, directions clicks, and service inquiries.
+- Build a lightweight weekly system that does not overload operations.
 
----
+## 2) Success By Day 90
 
-## Decisions / inputs needed from Cynthia today
+- Call clicks: +15-20%
+- Directions clicks: +10-15%
+- Service inquiries: +10 or more per month
+- New contacts (email/SMS): 60-100
+- Content cadence: 12 updates published
 
-These are the only things still blocking a full production launch.
+## 3) Budget Snapshot ($1,000)
 
-1. **Square production credentials.** Access token, location ID,
-   webhook signature key. We'll set them via Cloudflare dashboard
-   together. ~10 min.
-2. **MailChannels DNS record.** Add one TXT record to minarealm.shop
-   and one to minarealm.org via Porkbun DNS. Without this, NO
-   automated emails go out (silent failure). ~10 min.
-3. **Owner password.** Cynthia logs in once with the bootstrap
-   password (Ryan has it); system forces a new one. ~2 min.
-4. **Inventory question.** When you sell a crystal at the counter
-   via Square POS, do you want online inventory to update
-   automatically (requires Square Items sync work, days of effort),
-   or is the current "tap −1 on the admin page" workflow fine?
-5. **Refund flow.** Today: mark cancelled in admin + refund manually
-   in Square. Acceptable, or want a one-button refund?
+- Initial working room is expected before rollout.
 
----
+- Brand + print collateral: $320
+- Web + infrastructure: $210
+- Rebranding assets: $170
+- Local growth engine: $200
+- Contingency reserve: $100
 
-## Demo plan for the meeting (~15 min)
+Spend timing:
 
-1. Place a real $1 sandbox test order from minarealm.shop
-2. Show the email she receives (Cynthia notification)
-3. Show the email the customer receives (confirmation)
-4. Walk through the Orders tab → print packing slip
-5. Enter a fake tracking number → click "Email & fulfill"
-6. Show the tracking email the customer gets
-7. Show CSV export
-8. Show inventory −1 button for in-store sale workflow
+- Days 1-30: up to $450
+- Days 31-60: up to $300
+- Days 61-90: up to $250
 
-If MailChannels DNS isn't set yet, the emails won't actually arrive
-during the demo — we'll add the DNS record live and re-test.
+## 4) 90-Day Priorities
 
----
+### Days 1-30: Trust + conversion foundation
 
-## What's queued next (not for today, just visibility)
+- FAQ, testimonials, and first-visit clarity on website
+- Clear CTAs: Call, Directions, Book
+- Review QR setup in store
+- Baseline KPI tracking locked
 
-See `PROJECT_PLAN.md` for the full roadmap. Highlights:
+### Days 31-60: Local discoverability
 
-- Pirate Ship / Shippo integration for buying postage inside the
-  system (currently external)
-- Daily summary email to Cynthia
-- Newsletter list export UI
-- Customer order-status page polish
-- Coupon codes
-- FAQ + testimonials on minarealm.org (90-day growth plan)
-- Local SEO + Google Business Profile work
+- Local SEO pass (Fenton/South Lyon intent)
+- Schema + Google Business Profile alignment
+- Offer materials and shelf talkers
 
----
+### Days 61-90: Offers + retention
 
-## 90-day growth plan (status from April brief)
+- Launch 3 offer bundles
+- Weekly updates (new arrivals, service spotlight, staff pick)
+- Welcome + weekly audience update flow
 
-The original April 12 plan is still the operating frame:
+## 5) Non-Negotiables
 
-- Days 1-30: Trust + conversion foundation
-- Days 31-60: Local discoverability
-- Days 61-90: Offers + retention
+- No paid ads until tracking is stable for 2-3 weeks.
+- Any spend over $100 requires expected KPI outcome + owner.
+- No offer launches without margin check.
+- Keep $100 contingency unless clear ROI case appears.
 
-The infrastructure investment ("Web + infrastructure: $210") has
-delivered well over its budget value — an internal order system that
-would have cost $30-50/month on Shopify ($1,000+ across 90 days).
-The system runs on Cloudflare for under $5/month.
+## 6) Weekly Operating Rhythm (30 Minutes)
 
----
+- Review KPIs (calls, directions, inquiries, reviews, contacts)
+- Decide one keep, one stop, one change
+- Approve next-week spend and owner assignments
 
-## Bottom line
+## 7) Decisions Needed In This Meeting
 
-The store can take live online orders **today** once Cynthia provides
-Square production credentials and adds the MailChannels DNS record.
-Everything else is incremental.
+- Confirm Cynthia final approval across web, reviews, content, reporting, and spend
+- Set Week 1 start date and weekly review time
+- Approve margin floor percent for offers
+- Approve spend workflow (>$100 approver: Cynthia)
+
+Recommended defaults for quick approval:
+
+- Week 1 start date: Monday, 2026-04-20
+- Weekly review: Friday, 10:00 AM, 30 minutes
+- Margin floor: 65%
+- Starter planning baseline if actuals are not yet captured: 5 calls/week, 8 directions clicks/week, 3 inquiries/week, 1 new review/week
+
+## 8) Immediate Next 7 Days
+
+- Fill baseline KPI table
+- Fill owner assignment table
+- Fill week-by-week date grid
+- Publish FAQ/testimonial updates
+- Start review QR asks in-store
+
+## 9) Bottom Line
+
+This plan is practical, budget-safe, and execution-ready.
+If we run it weekly with discipline, we should see measurable lift in calls, visits, and service demand within 90 days.
