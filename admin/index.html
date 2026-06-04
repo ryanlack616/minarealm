@@ -387,6 +387,23 @@
 
     <!-- Forms pane -->
     <div class="pane" id="pane-forms">
+      <section class="panel owner-only" id="broadcast-panel" style="display:none;margin-bottom:14px">
+        <h3>Send a Newsletter</h3>
+        <p style="color:var(--text-dim);font-size:.82rem;margin:0 0 12px">One email is sent per recipient, so addresses stay private. Requires an email provider configured on the Worker (RESEND_API_KEY).</p>
+        <div class="toolbar" style="margin-bottom:10px">
+          <select id="bc-audience">
+            <option value="newsletter">Newsletter subscribers</option>
+            <option value="subscription">Subscription members</option>
+          </select>
+          <span id="bc-status" style="color:var(--text-dim);font-size:.82rem"></span>
+        </div>
+        <div class="field"><label for="bc-subject">Subject</label><input id="bc-subject" type="text" placeholder="A note from Minarealm…"></div>
+        <div class="field"><label for="bc-body">Message</label><textarea id="bc-body" rows="7" placeholder="Write your message…"></textarea></div>
+        <div class="toolbar">
+          <div class="spacer"></div>
+          <button class="btn primary" id="bc-send">Send Newsletter</button>
+        </div>
+      </section>
       <div class="toolbar">
         <select id="forms-filter">
           <option value="all">All submissions</option>
@@ -801,6 +818,11 @@ function renderBusinessDashboard(){
   const orders30 = liveOrders.filter(o => inDays(o, 30)).length;
   const aov30 = orders30 ? (rev30 / orders30) : 0;
 
+  const startToday = new Date(); startToday.setHours(0, 0, 0, 0);
+  const ordersTodayList = liveOrders.filter(o => new Date(o.created).getTime() >= startToday.getTime());
+  const ordersToday = ordersTodayList.length;
+  const revToday = ordersTodayList.reduce((s, o) => s + (o.total || 0), 0);
+
   const open = allOrders.filter(o => o.status === 'new');
   const fulfilled = allOrders.filter(o => o.status === 'fulfilled').length;
   const cancelled = allOrders.filter(o => o.status === 'cancelled').length;
@@ -821,6 +843,8 @@ function renderBusinessDashboard(){
   const salesIndex = buildSalesIndex(liveOrders);
 
   summaryEl.innerHTML = `
+    <div class="stat"><div class="k">Today</div><div class="v">${ordersToday} order${ordersToday === 1 ? '' : 's'}</div></div>
+    <div class="stat"><div class="k">Revenue (today)</div><div class="v">${money(revToday)}</div></div>
     <div class="stat"><div class="k">Revenue (7d)</div><div class="v">${money(rev7)}</div></div>
     <div class="stat"><div class="k">Revenue (30d)</div><div class="v">${money(rev30)}</div></div>
     <div class="stat ${open.length ? 'warn' : 'good'}"><div class="k">Open Orders</div><div class="v">${open.length}</div></div>
@@ -1907,6 +1931,25 @@ function renderForms(){
 
 $('forms-filter').onchange = (e) => { state.formsFilter = e.target.value; loadForms(); };
 $('refresh-forms').onclick = () => loadForms();
+
+$('bc-send').onclick = async () => {
+  const subject = $('bc-subject').value.trim();
+  const text = $('bc-body').value.trim();
+  const audience = $('bc-audience').value;
+  if(!subject || !text){ toast('Subject and message are required', true); return; }
+  if(!confirm(`Send this to all ${audience} recipients? This cannot be undone.`)) return;
+  const btn = $('bc-send'); btn.disabled = true;
+  $('bc-status').textContent = 'Sending…';
+  try {
+    const r = await api('/api/admin/broadcast', { method: 'POST', body: JSON.stringify({ subject, text, audience }) });
+    $('bc-status').textContent = `Sent ${r.sent}/${r.recipients}${r.failed ? ' · ' + r.failed + ' failed' : ''}${r.truncated ? ' · capped at 500' : ''}`;
+    if(r.sent) toast(`Newsletter sent to ${r.sent} recipient(s)`);
+    if(r.failed && !r.sent) toast('All sends failed — is an email provider configured?', true);
+    if(r.recipients === 0) toast('No recipients in that audience yet', true);
+    $('bc-subject').value = ''; $('bc-body').value = '';
+  } catch(e){ $('bc-status').textContent = ''; toast('Send failed: ' + e.message, true); }
+  finally { btn.disabled = false; }
+};
 
 function toast(msg, err){
   const t = $('toast');

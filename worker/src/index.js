@@ -963,6 +963,25 @@ export default {
           consent: true
         }, email);
         await audit(env, null, 'form.newsletter', email, record.source);
+        // Welcome email — non-blocking; logs on failure, no-op until an email
+        // provider is configured. This is what makes the list "do something".
+        await deliverEmail(env, {
+          to: email,
+          fromEmail: 'orders@minarealm.shop', fromName: 'Minarealm',
+          replyTo: env.NOTIFY_EMAIL || 'cynthia@minarealm.org', replyToName: 'Cynthia @ Minarealm',
+          subject: 'Welcome to the Minarealm circle',
+          text: [
+            'Welcome to the Minarealm circle.',
+            '',
+            "Thank you for joining us. You'll be among the first to hear about new",
+            'crystals, restocks, and the occasional note from the shop \u2014 sent with',
+            'care, never spam.',
+            '',
+            'With gratitude,',
+            'Cynthia @ Minarealm',
+            'Fenton & Hartland, MI \u00b7 https://minarealm.shop'
+          ].join('\n')
+        });
         return json({ ok: true, id: record.id }, {}, env, req);
       }
 
@@ -1059,6 +1078,26 @@ export default {
           source: clampText(body.source || 'subscription-page', 60)
         }, email);
         await audit(env, null, 'form.subscription', email, `${name} — ${tier}`);
+        // Welcome / confirmation email — non-blocking.
+        await deliverEmail(env, {
+          to: email, toName: name,
+          fromEmail: 'orders@minarealm.shop', fromName: 'Minarealm Crystals',
+          replyTo: env.NOTIFY_EMAIL || 'cynthia@minarealm.org', replyToName: 'Cynthia @ Minarealm',
+          subject: 'Your Minarealm subscription request is in',
+          text: [
+            `Hi ${name},`,
+            '',
+            'Your Minarealm subscription request is in — thank you for trusting us',
+            'to curate for you.',
+            '',
+            `Tier: ${tier}`,
+            "We'll be in touch shortly to confirm the details and your first delivery.",
+            '',
+            'With gratitude,',
+            'Cynthia @ Minarealm',
+            'https://minarealm.shop'
+          ].join('\n')
+        });
         return json({ ok: true, id: record.id }, {}, env, req);
       }
 
@@ -1301,6 +1340,47 @@ export default {
         const kind = clampText(url.searchParams.get('type') || 'all', 20);
         const limit = Math.min(500, parseInt(url.searchParams.get('limit') || '100', 10));
         return json({ entries: await listFormEntries(env, kind, limit) }, {}, env, req);
+      }
+
+      // ── Newsletter / subscription broadcast (owner-only) ──────────
+      // Sends one personalized email per recipient (no shared To/BCC, so
+      // addresses are never exposed to each other). Capped to protect the
+      // Workers subrequest budget; needs an email provider configured to land.
+      if(path === '/api/admin/broadcast' && req.method === 'POST'){
+        if(sess.role !== 'owner') return err(403, 'Owner only', env, req);
+        const body = await req.json().catch(() => ({}));
+        const subject = clampText(body.subject, 200);
+        const text = clampText(body.text, 20000);
+        const audience = ['newsletter', 'subscription'].includes(body.audience) ? body.audience : 'newsletter';
+        if(!subject || !text) return err(400, 'Subject and message are required', env, req);
+
+        const MAX_RECIPIENTS = 500;
+        const entries = await listFormEntries(env, audience, 1000);
+        const seen = new Set();
+        const recipients = [];
+        for(const e of entries){
+          const em = normalizeEmail(e.email);
+          if(em && em.includes('@') && !seen.has(em)){
+            seen.add(em);
+            recipients.push({ email: em, name: e.name || '' });
+          }
+        }
+        const truncated = recipients.length > MAX_RECIPIENTS;
+        const targets = recipients.slice(0, MAX_RECIPIENTS);
+
+        let sent = 0, failed = 0;
+        for(const r of targets){
+          const ok = await deliverEmail(env, {
+            to: r.email, toName: r.name,
+            fromEmail: 'orders@minarealm.shop', fromName: 'Minarealm',
+            replyTo: env.NOTIFY_EMAIL || 'cynthia@minarealm.org', replyToName: 'Cynthia @ Minarealm',
+            subject, text
+          });
+          if(ok) sent++; else failed++;
+        }
+        await audit(env, sess, 'broadcast.send', audience,
+          `${sent} sent / ${failed} failed of ${recipients.length} \u2014 "${subject.slice(0, 60)}"`);
+        return json({ ok: true, audience, recipients: recipients.length, sent, failed, truncated }, {}, env, req);
       }
       const om = path.match(/^\/api\/orders\/([^/]+)$/);
       if(om){

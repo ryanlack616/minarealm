@@ -2,7 +2,7 @@
 """Site audit: missing images, broken local refs, placeholder text."""
 import re, os, json
 
-base = r"C:\rje\dev\minarealm"
+base = os.path.dirname(os.path.abspath(__file__))
 
 with open(os.path.join(base, "index.html"), encoding="utf-8") as f:
     html = f.read()
