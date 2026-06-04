@@ -42,7 +42,8 @@
       "wholesale_cost": 5.4,
       "supplier": "",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 25
     },
     {
       "id": "agate-slice",
@@ -57,7 +58,8 @@
       "wholesale_cost": 3.13,
       "supplier": "",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 80
     },
     {
       "id": "crystal-sphere",
@@ -72,7 +74,8 @@
       "wholesale_cost": 6.58,
       "supplier": "",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 150
     },
     {
       "id": "labradorite-heart",
@@ -87,7 +90,8 @@
       "wholesale_cost": 8.46,
       "supplier": "",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 100
     },
     {
       "id": "polished-sphere",
@@ -102,7 +106,8 @@
       "wholesale_cost": 21.15,
       "supplier": "",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 450
     },
     {
       "id": "mystery-bag",
@@ -117,7 +122,8 @@
       "wholesale_cost": 12.25,
       "supplier": "",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 350
     },
     {
       "id": "tumbled-set",
@@ -132,7 +138,8 @@
       "wholesale_cost": 4.5,
       "supplier": "",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 80
     },
     {
       "id": "sterling-ring",
@@ -147,7 +154,8 @@
       "wholesale_cost": 15.2,
       "supplier": "",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 15
     },
     {
       "id": "selenite-dragonfly-plate",
@@ -162,7 +170,8 @@
       "wholesale_cost": 9.33,
       "supplier": "",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 250
     },
     {
       "id": "selenite-mushroom-women-plate",
@@ -177,7 +186,8 @@
       "wholesale_cost": 9.33,
       "supplier": "",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 250
     },
     {
       "id": "selenite-tower-6in",
@@ -192,7 +202,8 @@
       "wholesale_cost": 7.02,
       "supplier": "",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 350
     },
     {
       "id": "yellow-calcite-pooh-bear",
@@ -207,7 +218,8 @@
       "wholesale_cost": 14.55,
       "supplier": "",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 300
     },
     {
       "id": "yooperlite-owl",
@@ -222,7 +234,8 @@
       "wholesale_cost": 18.78,
       "supplier": "",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 250
     },
     {
       "id": "purple-labradorite-palmstone",
@@ -237,7 +250,8 @@
       "wholesale_cost": 6,
       "supplier": "",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 120
     },
     {
       "id": "chevron-amethyst-sphere",
@@ -268,7 +282,8 @@
       "wholesale_cost": 23.48,
       "supplier": "Spiritfolk Psychic Readings",
       "retail_confidence": "legacy",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 522
     },
     {
       "id": "flower-agate-sphere",
@@ -295,7 +310,8 @@
       "wholesale_cost": 15.02,
       "supplier": "Spiritfolk Psychic Readings",
       "retail_confidence": "estimated",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 177
     },
     {
       "id": "ruby-zoisite-sphere",
@@ -324,7 +340,8 @@
       "wholesale_cost": 15.49,
       "supplier": "Spiritfolk Psychic Readings",
       "retail_confidence": "estimated",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 195
     },
     {
       "id": "blue-coral-sphere",
@@ -350,7 +367,8 @@
       "wholesale_cost": 16.9,
       "supplier": "Spiritfolk Psychic Readings",
       "retail_confidence": "estimated",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 240
     },
     {
       "id": "miriam-stone-sphere",
@@ -373,7 +391,8 @@
       "wholesale_cost": 21.13,
       "supplier": "Spiritfolk Psychic Readings",
       "retail_confidence": "estimated",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 376
     },
     {
       "id": "larvakite-sphere",
@@ -400,7 +419,8 @@
       "wholesale_cost": 20.66,
       "supplier": "Spiritfolk Psychic Readings",
       "retail_confidence": "estimated",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 358
     },
     {
       "id": "labradorite-sphere",
@@ -428,7 +448,8 @@
       "wholesale_cost": 12.67,
       "supplier": "Spiritfolk Psychic Readings",
       "retail_confidence": "estimated",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 100
     },
     {
       "id": "chrome-diopside-sphere",
@@ -453,7 +474,8 @@
       "wholesale_cost": 16.9,
       "supplier": "Spiritfolk Psychic Readings",
       "retail_confidence": "estimated",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 236
     },
     {
       "id": "goldsheen-obsidian-sphere",
@@ -480,7 +502,8 @@
       "wholesale_cost": 14.08,
       "supplier": "Spiritfolk Psychic Readings",
       "retail_confidence": "estimated",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 145
     },
     {
       "id": "arfedsonite-sphere",
@@ -506,7 +529,8 @@
       "wholesale_cost": 27.71,
       "supplier": "Spiritfolk Psychic Readings",
       "retail_confidence": "estimated",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 581
     },
     {
       "id": "bloodstone-moon",
@@ -535,7 +559,8 @@
       "wholesale_cost": 15.96,
       "supplier": "Spiritfolk Psychic Readings",
       "retail_confidence": "estimated",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 200
     },
     {
       "id": "unicorn-heart-carving",
@@ -559,9 +584,8 @@
       "wholesale_cost": 12.2,
       "supplier": "Spiritfolk Psychic Readings",
       "retail_confidence": "estimated",
-      "wholesale_confidence": "estimated"
+      "wholesale_confidence": "estimated",
+      "weight_grams": 82
     }
   ]
 }
-
-
