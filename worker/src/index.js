@@ -1105,7 +1105,7 @@ export default {
       // ── Public: login ────────────────────────────────────────────
       if(path === '/api/login' && req.method === 'POST'){
         const body = await req.json().catch(() => ({}));
-        const username = sanitizeUsername(body.username);
+        let username = sanitizeUsername(body.username);
         const pw = String(body.password || '');
         if(!username || !pw) return err(400, 'Username and password required', env, req);
 
@@ -1141,6 +1141,7 @@ export default {
           }
           await audit(env, { username: ownerName, role: 'owner' },
             'user.create', ownerName, 'Initial owner account created via bootstrap');
+          username = ownerName;
         }
 
         const u = await getUser(env, username);
