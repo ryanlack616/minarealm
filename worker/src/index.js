@@ -36,6 +36,7 @@ function corsHeaders(env, req){
     'Access-Control-Allow-Origin': ok ? origin : env.ALLOWED_ORIGIN,
     'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+    'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Max-Age': '86400',
     'Vary': 'Origin'
   };
@@ -1116,20 +1117,15 @@ export default {
         const okCombo = await checkRateLimit(env, comboKey, RATE_LIMITS.loginUserIp.limit, RATE_LIMITS.loginUserIp.windowSec);
         if(!okIp || !okCombo) return err(429, 'Too many login attempts. Try again later.', env, req);
 
-        // Bootstrap: if no users exist and caller used ADMIN_PASSWORD,
-        // create the cynthia owner account on the fly.
-        const usersExist = await anyUserExists(env);
-        if(!usersExist){
+        // Bootstrap: if caller used the ADMIN_PASSWORD and the account
+        // doesn't exist yet, create the owner account on the fly.
+        const ownerName = username === 'owner' ? 'cynthia' : username;
+        const existingUser = await getUser(env, ownerName);
+        if(!existingUser && pw === env.ADMIN_PASSWORD){
           if(!env.ADMIN_PASSWORD) return err(500, 'Bootstrap requires ADMIN_PASSWORD secret', env, req);
           if(isWeakBootstrapPassword(env.ADMIN_PASSWORD)){
             return err(500, 'ADMIN_PASSWORD is too weak. Set a stronger secret before bootstrap.', env, req);
           }
-          if(pw !== env.ADMIN_PASSWORD){
-            await new Promise(r => setTimeout(r, 400));
-            return err(401, 'Bootstrap password incorrect', env, req);
-          }
-          // Use whichever username they typed (or default "cynthia") as the owner
-          const ownerName = username === 'owner' ? 'cynthia' : username;
           await createUser(env, {
             username: ownerName, name: 'Cynthia', password: pw,
             role: 'owner', createdBy: 'bootstrap'
