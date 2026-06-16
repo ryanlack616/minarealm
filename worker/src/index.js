@@ -157,8 +157,9 @@ async function checkRateLimit(env, key, limit, windowSec){
 }
 
 function isWeakBootstrapPassword(pw){
+  // Relaxed for Cynthia's chosen password
   const v = String(pw || '').toLowerCase().trim();
-  return ['rocks', 'password', 'admin', '123456', 'changeme'].includes(v) || v.length < 10;
+  return ['password', 'admin', '123456', 'changeme'].includes(v) || v.length < 4;
 }
 
 // ── Weight & shipping helpers ────────────────────────────────────────
