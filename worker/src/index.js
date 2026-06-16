@@ -1337,6 +1337,7 @@ export default {
         return json({ orders: orders.slice(0, limit), total: orders.length }, {}, env, req);
       }
       if(path === '/api/forms' && req.method === 'GET'){
+        if(!sess) return err(401, 'Login required', env, req);
         const kind = clampText(url.searchParams.get('type') || 'all', 20);
         const limit = Math.min(500, parseInt(url.searchParams.get('limit') || '100', 10));
         return json({ entries: await listFormEntries(env, kind, limit) }, {}, env, req);
