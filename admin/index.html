@@ -694,6 +694,35 @@ async function api(path, opts = {}){
   return data;
 }
 
+// ─── Authenticated CSV download ──────────────────────────────────────
+// window.open() can't send the Authorization header, so fetch with the
+// Bearer token, then trigger a download from the returned blob.
+async function downloadExport(type, filename){
+  const token = localStorage.getItem('api_token') || '';
+  try {
+    const res = await fetch(API + '/api/admin/export/' + type, {
+      credentials: 'omit',
+      headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+    });
+    if(res.status === 401){
+      localStorage.removeItem(USER_KEY);
+      localStorage.removeItem('api_token');
+      location.reload();
+      return;
+    }
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename || (type + '-export.csv');
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  } catch(e){ toast('Export failed: ' + e.message, true); }
+}
+
 // ─── Login ───────────────────────────────────────────────────────────
 $('login-form').onsubmit = async (e) => {
   e.preventDefault();
@@ -2283,7 +2312,9 @@ $('cust-notes-save').onclick = async () => {
 };
 $('refresh-customers').onclick = () => loadCustomers();
 $('cust-search').oninput = () => renderCustomers();
-$('export-customers').onclick = () => { window.open(API + '/api/admin/export/customers', '_blank'); };
+$('export-customers').onclick = () => downloadExport('customers');
+$('export-inventory').onclick = () => downloadExport('inventory');
+$('export-orders').onclick = () => downloadExport('orders');
 
 // ─── Subscriptions ──────────────────────────────────────────
 async function loadSubscriptions(){
@@ -2340,7 +2371,7 @@ async function updateSub(el){
 }
 $('sub-status-filter').onchange = () => renderSubscriptions();
 $('refresh-subs').onclick = () => loadSubscriptions();
-$('export-subs').onclick = () => { window.open(API + '/api/admin/export/subscriptions', '_blank'); };
+$('export-subs').onclick = () => downloadExport('subscriptions');
 
 async function loadAudit(){
   if(!state.user || state.user.role !== 'owner') return;

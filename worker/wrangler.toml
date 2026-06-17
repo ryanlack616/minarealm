@@ -17,6 +17,7 @@ id = "0696a03269e14723ba616e885e6144e9"
 PUBLIC_IMAGE_BASE = "https://pub-8d9037b9df7a4082ab5ace47eb40f7de.r2.dev"
 ALLOWED_ORIGIN = "https://minarealm.shop"
 NOTIFY_EMAIL = "cynthia@minarealm.org"
+EMAIL_FROM = "orders@minarealm.shop"
 SQUARE_ENV = "sandbox"
 FREE_SHIPPING_THRESHOLD = "100"
 DAILY_CAP = "500"
@@ -26,8 +27,7 @@ DAILY_CAP = "500"
 # SQUARE_ACCESS_TOKEN
 # SQUARE_WEBHOOK_SIGNATURE_KEY
 # SQUARE_LOCATION_ID
-# RESEND_API_KEY            (optional) enables reliable transactional email via Resend.
+# RESEND_API_KEY            enables reliable transactional email via Resend.
 #                           Without it, the worker falls back to MailChannels (free Workers
-#                           tier ended 2024 — likely undelivered). Set EMAIL_FROM below to a
-#                           Resend-verified sender on a domain you control.
-# EMAIL_FROM = "orders@minarealm.shop"   # add under [vars] once the domain is verified in Resend
+#                           tier ended 2024 — likely undelivered). EMAIL_FROM is set under
+#                           [vars] above; verify minarealm.shop in Resend so it can send as it.

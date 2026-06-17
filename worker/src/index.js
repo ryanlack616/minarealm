@@ -19,9 +19,11 @@
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
 const AUDIT_RETENTION_DAYS = 365;
 const MI_TAX_RATE = 0.06; // Michigan 6% sales tax (applied to product subtotal; shipping taxability varies)
+const MIN_PASSWORD_LEN = 8;
 const RATE_LIMITS = {
-  loginIp: { limit: 10000, windowSec: 60 * 10 },
-  loginUserIp: { limit: 10000, windowSec: 60 * 10 },
+  // Admin-login brute-force guard (do not disable — this was the account-takeover hole).
+  loginIp: { limit: 40, windowSec: 60 * 10 },
+  loginUserIp: { limit: 10, windowSec: 60 * 10 },
   ordersIp: { limit: 40, windowSec: 60 * 60 },
   formsIp: { limit: 30, windowSec: 60 * 60 },
   checkoutIp: { limit: 10, windowSec: 60 * 60 }
@@ -596,7 +598,7 @@ async function anyUserExists(env){
 async function createUser(env, { username, name, password, role, createdBy }){
   username = sanitizeUsername(username);
   if(!username) throw new Error('Invalid username');
-  if(!password || password.length < 4) throw new Error('Password must be 4+ chars');
+  if(!password || password.length < MIN_PASSWORD_LEN) throw new Error(`Password must be ${MIN_PASSWORD_LEN}+ chars`);
   if(!['owner','admin'].includes(role)) throw new Error('Invalid role');
   if(await getUser(env, username)) throw new Error('Username already exists');
   const salt = newSalt();
@@ -1216,7 +1218,7 @@ export default {
         const body = await req.json().catch(() => ({}));
         const cur = String(body.current || '');
         const next = String(body.next || '');
-        if(next.length < 4) return err(400, 'New password must be 4+ chars', env, req);
+        if(next.length < MIN_PASSWORD_LEN) return err(400, `New password must be ${MIN_PASSWORD_LEN}+ chars`, env, req);
         const u = await getUser(env, sess.username);
         if(!u) return err(404, 'User missing', env, req);
         const cand = await hashPw(cur, u.salt);
@@ -1645,8 +1647,15 @@ export default {
             csv += `"${p.id}","${(p.name||'').replace(/"/g,'""')}","${p.category||''}",${retail.toFixed(2)},${wholesale.toFixed(2)},${margin}%,${p.stock||0},"${(p.supplier||'').replace(/"/g,'""')}","${(p.bundle||'').replace(/"/g,'""')}"
 `;
           }
+        } else if(type === 'subscriptions'){
+          const idxRaw = await env.STORE.get('subscription:members');
+          const list = idxRaw ? JSON.parse(idxRaw) : [];
+          csv = 'Email,Name,Tier,Status,Joined,Next Ship,Notes\n';
+          for(const m of list){
+            csv += `"${(m.email||'').replace(/"/g,'""')}","${(m.name||'').replace(/"/g,'""')}","${(m.tier||'').replace(/"/g,'""')}","${m.status||''}","${m.created||''}","${m.nextShipDate||''}","${(m.notes||'').replace(/"/g,'""')}"\n`;
+          }
         } else {
-          return err(400, 'Unknown export type. Use: customers, orders, inventory', env, req);
+          return err(400, 'Unknown export type. Use: customers, orders, inventory, subscriptions', env, req);
         }
         return new Response(csv, {
           status: 200,
@@ -1768,7 +1777,8 @@ export default {
             // Only applies to admin role; owners always have full publish rights
             u.trusted = body.trusted;
           }
-          if(typeof body.password === 'string' && body.password.length >= 4){
+          if(typeof body.password === 'string' && body.password.length > 0){
+            if(body.password.length < MIN_PASSWORD_LEN) return err(400, `Password must be ${MIN_PASSWORD_LEN}+ chars`, env, req);
             u.salt = newSalt();
             u.hash = await hashPw(body.password, u.salt);
             u.mustChangePassword = true;
