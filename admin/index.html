@@ -397,22 +397,10 @@
 
     <!-- Forms pane -->
     <div class="pane" id="pane-forms">
-      <section class="panel owner-only" id="broadcast-panel" style="display:none;margin-bottom:14px">
-        <h3>Send a Newsletter</h3>
-        <p style="color:var(--text-dim);font-size:.82rem;margin:0 0 12px">One email is sent per recipient, so addresses stay private. Requires an email provider configured on the Worker (RESEND_API_KEY).</p>
-        <div class="toolbar" style="margin-bottom:10px">
-          <select id="bc-audience">
-            <option value="newsletter">Newsletter subscribers</option>
-            <option value="subscription">Subscription members</option>
-          </select>
-          <span id="bc-status" style="color:var(--text-dim);font-size:.82rem"></span>
-        </div>
-        <div class="field"><label for="bc-subject">Subject</label><input id="bc-subject" type="text" placeholder="A note from Minarealm…"></div>
-        <div class="field"><label for="bc-body">Message</label><textarea id="bc-body" rows="7" placeholder="Write your message…"></textarea></div>
-        <div class="toolbar">
-          <div class="spacer"></div>
-          <button class="btn primary" id="bc-send">Send Newsletter</button>
-        </div>
+      <section class="panel owner-only" id="csv-panel" style="margin-bottom:14px">
+        <h3 style="margin-bottom:6px">Subscriber Emails</h3>
+        <p style="color:var(--text-dim);font-size:.82rem;margin:0 0 10px">Active subscribers (toggled On) — click to select all, then copy (Ctrl+C / Cmd+C).</p>
+        <textarea id="csv-emails" readonly onclick="this.select();this.focus()" style="width:100%;height:100px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:var(--radius);font:inherit;font-size:.82rem;resize:vertical;white-space:pre;overflow:auto" placeholder="Loading subscribers…"></textarea>
       </section>
       <div class="toolbar">
         <select id="forms-filter">
@@ -1895,6 +1883,13 @@ function formTypeLabel(type){
 function renderForms(){
   const el = $('forms-list');
   const list = state.forms || [];
+
+  // Update CSV box for newsletter
+  const csvEl = $('csv-emails');
+  if(csvEl){
+    const subs = list.filter(e => e.type === 'newsletter' && e.subscribed !== false);
+    csvEl.value = subs.map(s => s.email).filter(Boolean).join(', ');
+  }
   if(list.length === 0){
     el.innerHTML = '<div class="empty-state">No submissions yet for this filter.</div>';
     return;
@@ -1978,24 +1973,7 @@ async function toggleSub(el){
   } catch(e){ toast('Toggle failed: ' + e.message, true); }
 }
 
-$('bc-send').onclick = async () => {
-  const subject = $('bc-subject').value.trim();
-  const text = $('bc-body').value.trim();
-  const audience = $('bc-audience').value;
-  if(!subject || !text){ toast('Subject and message are required', true); return; }
-  if(!confirm(`Send this to all ${audience} recipients? This cannot be undone.`)) return;
-  const btn = $('bc-send'); btn.disabled = true;
-  $('bc-status').textContent = 'Sending…';
-  try {
-    const r = await api('/api/admin/broadcast', { method: 'POST', body: JSON.stringify({ subject, text, audience }) });
-    $('bc-status').textContent = `Sent ${r.sent}/${r.recipients}${r.failed ? ' · ' + r.failed + ' failed' : ''}${r.truncated ? ' · capped at 500' : ''}`;
-    if(r.sent) toast(`Newsletter sent to ${r.sent} recipient(s)`);
-    if(r.failed && !r.sent) toast('All sends failed — is an email provider configured?', true);
-    if(r.recipients === 0) toast('No recipients in that audience yet', true);
-    $('bc-subject').value = ''; $('bc-body').value = '';
-  } catch(e){ $('bc-status').textContent = ''; toast('Send failed: ' + e.message, true); }
-  finally { btn.disabled = false; }
-};
+
 
 function toast(msg, err){
   const t = $('toast');
