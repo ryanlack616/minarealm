@@ -1968,9 +1968,23 @@ async function toggleSub(el){
       el.dataset.subscribed = next;
       el.querySelector('.toggle').classList.toggle('active', next);
       el.querySelector('span').textContent = next ? 'On' : 'Off';
+      // Update CSV
+      updateCsv(el, next);
       toast(next ? 'Subscriber enabled' : 'Subscriber disabled');
     }
   } catch(e){ toast('Toggle failed: ' + e.message, true); }
+}
+
+function updateCsv(el, subscribed){
+  const csvEl = $('csv-emails');
+  if(!csvEl) return;
+  const email = el.closest('.sub-row').querySelector('.sub-email a');
+  if(!email) return;
+  const addr = email.textContent.trim();
+  let list = csvEl.value.split(',').map(s => s.trim()).filter(Boolean);
+  if(subscribed && !list.includes(addr)) list.push(addr);
+  else if(!subscribed) list = list.filter(e => e !== addr);
+  csvEl.value = list.join(', ');
 }
 
 
