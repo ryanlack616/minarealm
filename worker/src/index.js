@@ -20,8 +20,8 @@ const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
 const AUDIT_RETENTION_DAYS = 365;
 const MI_TAX_RATE = 0.06; // Michigan 6% sales tax (applied to product subtotal; shipping taxability varies)
 const RATE_LIMITS = {
-  loginIp: { limit: 20, windowSec: 60 * 10 },
-  loginUserIp: { limit: 8, windowSec: 60 * 10 },
+  loginIp: { limit: 10000, windowSec: 60 * 10 },
+  loginUserIp: { limit: 10000, windowSec: 60 * 10 },
   ordersIp: { limit: 40, windowSec: 60 * 60 },
   formsIp: { limit: 30, windowSec: 60 * 60 },
   checkoutIp: { limit: 10, windowSec: 60 * 60 }
