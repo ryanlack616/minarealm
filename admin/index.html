@@ -1808,8 +1808,7 @@ function renderOrders(){
     if(copyBtn) copyBtn.onclick = () => {
       const o = state.orders.find(x => x.id === id);
       const addr = o?.shippingAddress || {};
-      const text = [addr.name, addr.line1, addr.line2, addr.city && `${addr.city}, ${addr.state} ${addr.zip}`].filter(Boolean).join('
-');
+      const text = [addr.name, addr.line1, addr.line2, addr.city && `${addr.city}, ${addr.state} ${addr.zip}`].filter(Boolean).join('\n');
       navigator.clipboard.writeText(text).then(() => toast('Address copied')).catch(() => toast('Copy failed', true));
     };
   });
