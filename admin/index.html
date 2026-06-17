@@ -187,6 +187,16 @@
     background:var(--good);color:#0c0b10;padding:10px 18px;border-radius:var(--radius);
     font-weight:700;z-index:300;opacity:0;transition:all .3s}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  /* Toggle switch */
+  .toggle-wrap{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+  .toggle{position:relative;width:36px;height:20px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .2s;flex-shrink:0}
+  .toggle.active{background:var(--good);border-color:var(--good)}
+  .toggle::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;background:var(--text-dim);border-radius:50%;transition:all .2s}
+  .toggle.active::after{background:#0c0b10;left:18px}
+  .sub-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;gap:10px}
+  .sub-row .sub-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .sub-row .sub-email{color:var(--gold);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sub-row .sub-meta{color:var(--text-dim);font-size:.78rem}
   .toast.err{background:var(--danger);color:#fff}
 
   details.help{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 18px;margin-top:24px}
@@ -1867,8 +1877,13 @@ $('refresh-orders').onclick = () => loadOrders();
 async function loadForms(){
   try {
     const type = state.formsFilter || 'all';
-    const r = await api('/api/forms?type=' + encodeURIComponent(type) + '&limit=300');
-    state.forms = r.entries || [];
+    if(type === 'newsletter'){
+      const r = await api('/api/admin/subscribers');
+      state.forms = (r.subscribers || []).map(s => ({ ...s, type: 'newsletter' }));
+    } else {
+      const r = await api('/api/forms?type=' + encodeURIComponent(type) + '&limit=300');
+      state.forms = r.entries || [];
+    }
     renderForms();
   } catch(e){ toast('Forms failed: ' + e.message, true); }
 }
@@ -1899,8 +1914,6 @@ function renderForms(){
         ${entry.notes ? `<div><strong>Notes:</strong> ${entry.notes}</div>` : ''}`;
     } else if(entry.type === 'contact'){
       detail = `<div><strong>Message:</strong> ${entry.message || ''}</div>`;
-    } else if(entry.type === 'newsletter'){
-      detail = `<div><strong>Source:</strong> ${entry.source || 'site-signup'}</div>`;
     } else if(entry.type === 'subscription'){
       detail = `
         <div><strong>Tier:</strong> ${entry.tier || '—'}</div>
@@ -1909,6 +1922,21 @@ function renderForms(){
         ${Array.isArray(entry.loves) && entry.loves.length ? `<div><strong>Loves:</strong> ${entry.loves.join(', ')}</div>` : ''}
         ${entry.avoid ? `<div><strong>Avoid:</strong> ${entry.avoid}</div>` : ''}
         ${entry.intent ? `<div><strong>Intent:</strong> ${entry.intent}</div>` : ''}`;
+    }
+
+    // Newsletter entries get a compact subscriber row with toggle
+    if(entry.type === 'newsletter'){
+      const sub = entry.subscribed !== false;
+      return `<div class="sub-row">
+        <div class="sub-info">
+          <div class="sub-email">${email}</div>
+          <div class="sub-meta">${created} · Source: ${entry.source || 'site-signup'}</div>
+        </div>
+        <div class="toggle-wrap" data-id="${entry.id}" data-subscribed="${sub}" onclick="toggleSub(this)">
+          <div class="toggle${sub ? ' active' : ''}"></div>
+          <span style="font-size:.78rem;color:var(--text-dim);min-width:44px">${sub ? 'On' : 'Off'}</span>
+        </div>
+      </div>`;
     }
 
     return `
@@ -1931,6 +1959,24 @@ function renderForms(){
 
 $('forms-filter').onchange = (e) => { state.formsFilter = e.target.value; loadForms(); };
 $('refresh-forms').onclick = () => loadForms();
+
+async function toggleSub(el){
+  const id = el.dataset.id;
+  const current = el.dataset.subscribed === 'true';
+  const next = !current;
+  try {
+    const r = await api('/api/forms/newsletter/' + encodeURIComponent(id), {
+      method: 'PATCH',
+      body: JSON.stringify({ subscribed: next })
+    });
+    if(r.ok){
+      el.dataset.subscribed = next;
+      el.querySelector('.toggle').classList.toggle('active', next);
+      el.querySelector('span').textContent = next ? 'On' : 'Off';
+      toast(next ? 'Subscriber enabled' : 'Subscriber disabled');
+    }
+  } catch(e){ toast('Toggle failed: ' + e.message, true); }
+}
 
 $('bc-send').onclick = async () => {
   const subject = $('bc-subject').value.trim();

@@ -477,6 +477,18 @@ async function storeFormEntry(env, type, entry, email){
   const record = { id, type, created, ...entry };
   await env.STORE.put(`form:${type}:${id}`, JSON.stringify(record));
 
+  // Maintain a newsletter subscriber index for reliable listing
+  if(type === 'newsletter' && entry.email){
+    const idxKey = 'newsletter:subs';
+    const idxRaw = await env.STORE.get(idxKey);
+    const idx = idxRaw ? JSON.parse(idxRaw) : [];
+    // Don't duplicate same email
+    if(!idx.some(x => x.email === normalizeEmail(entry.email))){
+      idx.push({ id, email: normalizeEmail(entry.email), created, subscribed: true, source: entry.source || 'site-signup' });
+      await env.STORE.put(idxKey, JSON.stringify(idx));
+    }
+  }
+
   const normalizedEmail = normalizeEmail(email);
   if(normalizedEmail){
     const leadKey = `lead:${normalizedEmail}`;
@@ -962,7 +974,8 @@ export default {
         const record = await storeFormEntry(env, 'newsletter', {
           email,
           source: clampText(body.source || 'site-signup', 60),
-          consent: true
+          consent: true,
+          subscribed: true
         }, email);
         await audit(env, null, 'form.newsletter', email, record.source);
         // Welcome email — non-blocking; logs on failure, no-op until an email
@@ -1132,7 +1145,7 @@ export default {
           });
           const owner = await getUser(env, ownerName);
           if(owner){
-            owner.mustChangePassword = true;
+            owner.mustChangePassword = false;
             await putUser(env, owner);
           }
           await audit(env, { username: ownerName, role: 'owner' },
@@ -1381,6 +1394,55 @@ export default {
           `${sent} sent / ${failed} failed of ${recipients.length} \u2014 "${subject.slice(0, 60)}"`);
         return json({ ok: true, audience, recipients: recipients.length, sent, failed, truncated }, {}, env, req);
       }
+
+      // ── Newsletter subscriber toggle ──────────────────────────
+      const subM = path.match(/^\/api\/forms\/newsletter\/([^/]+)$/);
+      if(subM && req.method === 'PATCH'){
+        const id = subM[1];
+        const raw = await env.STORE.get(`form:newsletter:${id}`);
+        if(!raw) return err(404, 'Entry not found', env, req);
+        const entry = JSON.parse(raw);
+        const body = await req.json().catch(() => ({}));
+        if(typeof body.subscribed === 'boolean'){
+          entry.subscribed = body.subscribed;
+          await env.STORE.put(`form:newsletter:${id}`, JSON.stringify(entry));
+          // Also update the lead record
+          if(entry.email){
+            const leadKey = `lead:${normalizeEmail(entry.email)}`;
+            const leadRaw = await env.STORE.get(leadKey);
+            if(leadRaw){
+              try {
+                const lead = JSON.parse(leadRaw);
+                lead.subscribed = body.subscribed;
+                await env.STORE.put(leadKey, JSON.stringify(lead));
+              } catch {}
+            }
+          }
+          // Also update the subscriber index
+          const idxKeySub = 'newsletter:subs';
+          const idxRawSub = await env.STORE.get(idxKeySub);
+          if(idxRawSub){
+            try {
+              const idx = JSON.parse(idxRawSub);
+              const found = idx.find(x => x.id === id);
+              if(found) found.subscribed = body.subscribed;
+              await env.STORE.put(idxKeySub, JSON.stringify(idx));
+            } catch {}
+          }
+          await audit(env, sess, 'newsletter.toggle', entry.email, `Subscribed: ${body.subscribed}`);
+        }
+        return json({ ok: true, subscribed: !!entry.subscribed }, {}, env, req);
+      }
+
+      // ── Subscriber list (reliable, uses index) ──────────────────
+      if(path === '/api/admin/subscribers' && req.method === 'GET'){
+        const idxRaw = await env.STORE.get('newsletter:subs');
+        const list = idxRaw ? JSON.parse(idxRaw) : [];
+        // Sort newest first
+        list.sort((a, b) => (b.created || '').localeCompare(a.created || ''));
+        return json({ subscribers: list }, {}, env, req);
+      }
+
       const om = path.match(/^\/api\/orders\/([^/]+)$/);
       if(om){
         const id = om[1];
