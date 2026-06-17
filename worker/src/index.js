@@ -482,9 +482,27 @@ async function storeFormEntry(env, type, entry, email){
     const idxKey = 'newsletter:subs';
     const idxRaw = await env.STORE.get(idxKey);
     const idx = idxRaw ? JSON.parse(idxRaw) : [];
-    // Don't duplicate same email
     if(!idx.some(x => x.email === normalizeEmail(entry.email))){
       idx.push({ id, email: normalizeEmail(entry.email), created, subscribed: true, source: entry.source || 'site-signup' });
+      await env.STORE.put(idxKey, JSON.stringify(idx));
+    }
+  }
+
+  // Maintain a subscription member index
+  if(type === 'subscription' && entry.email){
+    const idxKey = 'subscription:members';
+    const idxRaw = await env.STORE.get(idxKey);
+    const idx = idxRaw ? JSON.parse(idxRaw) : [];
+    if(!idx.some(x => x.email === normalizeEmail(entry.email))){
+      idx.push({
+        id, email: normalizeEmail(entry.email),
+        name: entry.name || '',
+        tier: entry.tier || '',
+        created,
+        status: 'active',
+        nextShipDate: null,
+        notes: ''
+      });
       await env.STORE.put(idxKey, JSON.stringify(idx));
     }
   }
@@ -1438,9 +1456,206 @@ export default {
       if(path === '/api/admin/subscribers' && req.method === 'GET'){
         const idxRaw = await env.STORE.get('newsletter:subs');
         const list = idxRaw ? JSON.parse(idxRaw) : [];
-        // Sort newest first
         list.sort((a, b) => (b.created || '').localeCompare(a.created || ''));
         return json({ subscribers: list }, {}, env, req);
+      }
+
+      // ── Customer directory ─────────────────────────────────────
+      if(path === '/api/admin/customers' && req.method === 'GET'){
+        // Build customer list from orders + lead records
+        const ordersRaw = await env.STORE.list({ prefix: 'order:' });
+        const customerMap = new Map();
+        for(const k of ordersRaw.keys){
+          const raw = await env.STORE.get(k.name);
+          if(!raw) continue;
+          try {
+            const o = JSON.parse(raw);
+            const email = normalizeEmail(o.customer?.email || '');
+            if(!email) continue;
+            const existing = customerMap.get(email) || { email, name: '', phone: '', orderCount: 0, totalSpent: 0, firstOrder: null, lastOrder: null, notes: '' };
+            existing.name = o.customer?.name || existing.name;
+            existing.phone = o.customer?.phone || existing.phone;
+            existing.orderCount++;
+            existing.totalSpent += o.financial?.total || o.total || 0;
+            const created = o.created || o.timeline?.createdAt;
+            if(created && (!existing.firstOrder || created < existing.firstOrder)) existing.firstOrder = created;
+            if(created && (!existing.lastOrder || created > existing.lastOrder)) existing.lastOrder = created;
+            customerMap.set(email, existing);
+          } catch {}
+        }
+        // Merge in lead records for notes/extra info
+        const leadsRaw = await env.STORE.list({ prefix: 'lead:' });
+        for(const k of leadsRaw.keys){
+          const raw = await env.STORE.get(k.name);
+          if(!raw) continue;
+          try {
+            const lead = JSON.parse(raw);
+            const email = normalizeEmail(lead.email || '');
+            if(!email) continue;
+            const existing = customerMap.get(email);
+            if(existing){
+              if(lead.notes) existing.notes = lead.notes;
+              if(!existing.name) existing.name = lead.name || '';
+              if(!existing.phone) existing.phone = lead.phone || '';
+            } else {
+              customerMap.set(email, {
+                email, name: lead.name || '', phone: lead.phone || '',
+                orderCount: 0, totalSpent: 0, firstOrder: null, lastOrder: null,
+                notes: lead.notes || ''
+              });
+            }
+          } catch {}
+        }
+        const customers = Array.from(customerMap.values());
+        customers.sort((a, b) => (b.lastOrder || '').localeCompare(a.lastOrder || ''));
+        return json({ customers }, {}, env, req);
+      }
+
+      // ── Customer detail + notes ────────────────────────────────
+      const custM = path.match(/^\/api\/admin\/customers\/([^/]+)$/);
+      if(custM){
+        const email = decodeURIComponent(custM[1]);
+        if(req.method === 'GET'){
+          // Get customer orders
+          const ordersRaw = await env.STORE.list({ prefix: 'order:' });
+          const customerOrders = [];
+          for(const k of ordersRaw.keys){
+            const raw = await env.STORE.get(k.name);
+            if(!raw) continue;
+            try {
+              const o = JSON.parse(raw);
+              if(normalizeEmail(o.customer?.email || '') === normalizeEmail(email)){
+                customerOrders.push({
+                  id: o.id, status: o.status, total: o.financial?.total || o.total || 0,
+                  created: o.created, fulfillment: o.fulfillment || '',
+                  paymentStatus: o.paymentStatus || '',
+                  lines: (o.lines || []).map(l => ({ name: l.name, qty: l.qty, price: l.price }))
+                });
+              }
+            } catch {}
+          }
+          customerOrders.sort((a, b) => (b.created || '').localeCompare(a.created || ''));
+          // Get lead record for notes
+          const leadKey = `lead:${normalizeEmail(email)}`;
+          const leadRaw = await env.STORE.get(leadKey);
+          const lead = leadRaw ? JSON.parse(leadRaw) : null;
+          return json({ email, orders: customerOrders, notes: lead?.notes || '' }, {}, env, req);
+        }
+        if(req.method === 'PATCH'){
+          const body = await req.json().catch(() => ({}));
+          const leadKey = `lead:${normalizeEmail(email)}`;
+          const leadRaw = await env.STORE.get(leadKey);
+          if(leadRaw){
+            try {
+              const lead = JSON.parse(leadRaw);
+              if(typeof body.notes === 'string') lead.notes = body.notes.slice(0, 2000);
+              await env.STORE.put(leadKey, JSON.stringify(lead));
+            } catch {}
+          } else {
+            // Create a lead record just for the notes
+            await env.STORE.put(leadKey, JSON.stringify({ email: normalizeEmail(email), notes: (body.notes || '').slice(0, 2000) }));
+          }
+          await audit(env, sess, 'customer.note', email, 'Notes updated');
+          return json({ ok: true }, {}, env, req);
+        }
+      }
+
+      // ── Subscription management ─────────────────────────────────
+      if(path === '/api/admin/subscriptions' && req.method === 'GET'){
+        const idxRaw = await env.STORE.get('subscription:members');
+        const list = idxRaw ? JSON.parse(idxRaw) : [];
+        list.sort((a, b) => (b.created || '').localeCompare(a.created || ''));
+        return json({ members: list }, {}, env, req);
+      }
+      const subM2 = path.match(/^\/api\/admin\/subscriptions\/([^/]+)$/);
+      if(subM2 && req.method === 'PATCH'){
+        const id = subM2[1];
+        const body = await req.json().catch(() => ({}));
+        const idxKey = 'subscription:members';
+        const idxRaw = await env.STORE.get(idxKey);
+        if(idxRaw){
+          try {
+            const idx = JSON.parse(idxRaw);
+            const found = idx.find(x => x.id === id);
+            if(found){
+              if(typeof body.status === 'string') found.status = body.status;
+              if(body.nextShipDate) found.nextShipDate = body.nextShipDate;
+              if(typeof body.notes === 'string') found.notes = body.notes.slice(0, 2000);
+              await env.STORE.put(idxKey, JSON.stringify(idx));
+              await audit(env, sess, 'subscription.update', found.email, `Status: ${found.status}`);
+              return json({ ok: true }, {}, env, req);
+            }
+          } catch {}
+        }
+        return err(404, 'Member not found', env, req);
+      }
+
+      // ── Export ──────────────────────────────────────────────────
+      const expM = path.match(/^\/api\/admin\/export\/([a-z]+)$/);
+      if(expM && req.method === 'GET'){
+        const type = expM[1];
+        let csv = '';
+        if(type === 'customers'){
+          // Fetch customers and build CSV inline
+          const ordersRaw2 = await env.STORE.list({ prefix: 'order:' });
+          const cmap = new Map();
+          for(const k of ordersRaw2.keys){
+            const raw = await env.STORE.get(k.name);
+            if(!raw) continue;
+            try {
+              const o = JSON.parse(raw);
+              const e = normalizeEmail(o.customer?.email || '');
+              if(!e) continue;
+              const existing = cmap.get(e) || { email: e, name: '', phone: '', orderCount: 0, totalSpent: 0, firstOrder: null, lastOrder: null };
+              existing.name = o.customer?.name || existing.name;
+              existing.phone = o.customer?.phone || existing.phone;
+              existing.orderCount++;
+              existing.totalSpent += o.financial?.total || o.total || 0;
+              const created = o.created || o.timeline?.createdAt;
+              if(created && (!existing.firstOrder || created < existing.firstOrder)) existing.firstOrder = created;
+              if(created && (!existing.lastOrder || created > existing.lastOrder)) existing.lastOrder = created;
+              cmap.set(e, existing);
+            } catch {}
+          }
+          const rows = Array.from(cmap.values());
+          csv = 'Email,Name,Phone,Orders,Total Spent,First Order,Last Order\n';
+          for(const r of rows){
+            csv += `"${r.email}","${(r.name||'').replace(/"/g,'""')}","${(r.phone||'').replace(/"/g,'""')}",${r.orderCount},${r.totalSpent.toFixed(2)},"${r.firstOrder||''}","${r.lastOrder||''}"
+`;
+          }
+        } else if(type === 'orders'){
+          const ordersRaw3 = await env.STORE.list({ prefix: 'order:' });
+          csv = 'Order ID,Customer Email,Customer Name,Status,Total,Fulfillment,Payment,Created\n';
+          for(const k of ordersRaw3.keys){
+            const raw = await env.STORE.get(k.name);
+            if(!raw) continue;
+            try {
+              const o = JSON.parse(raw);
+              csv += `"${o.id}","${(o.customer?.email||'').replace(/"/g,'""')}","${(o.customer?.name||'').replace(/"/g,'""')}",${o.status},${(o.financial?.total||o.total||0).toFixed(2)},"${o.fulfillment||''}","${o.paymentStatus||''}","${o.created||''}"
+`;
+            } catch {}
+          }
+        } else if(type === 'inventory'){
+          const cat = await getCatalog(env);
+          csv = 'ID,Name,Category,Retail,Wholesale,Margin,Stock,Supplier,Bundle\n';
+          for(const p of (cat.products || [])){
+            const retail = Number(p.price) || 0;
+            const wholesale = Number(p.wholesaleCost) || 0;
+            const margin = retail > 0 ? ((retail - wholesale) / retail * 100).toFixed(1) : '';
+            csv += `"${p.id}","${(p.name||'').replace(/"/g,'""')}","${p.category||''}",${retail.toFixed(2)},${wholesale.toFixed(2)},${margin}%,${p.stock||0},"${(p.supplier||'').replace(/"/g,'""')}","${(p.bundle||'').replace(/"/g,'""')}"
+`;
+          }
+        } else {
+          return err(400, 'Unknown export type. Use: customers, orders, inventory', env, req);
+        }
+        return new Response(csv, {
+          status: 200,
+          headers: {
+            ...corsHeaders(env, req),
+            'Content-Type': 'text/csv; charset=utf-8',
+            'Content-Disposition': `attachment; filename="${type}-export.csv"`
+          }
+        });
       }
 
       const om = path.match(/^\/api\/orders\/([^/]+)$/);

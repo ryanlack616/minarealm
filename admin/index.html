@@ -249,6 +249,8 @@
     <button class="tab" data-tab="inventory">Inventory</button>
     <button class="tab" data-tab="orders">Orders <span class="badge" id="orders-badge" style="display:none">0</span></button>
     <button class="tab" data-tab="forms">Forms</button>
+    <button class="tab owner-only" data-tab="customers" style="display:none">Customers</button>
+    <button class="tab owner-only" data-tab="subscriptions" style="display:none">Subscriptions</button>
     <button class="tab owner-only" data-tab="users" style="display:none">Users</button>
     <button class="tab owner-only" data-tab="activity" style="display:none">Activity</button>
   </nav>
@@ -317,6 +319,7 @@
         </select>
         <div class="spacer"></div>
         <span id="count" style="color:var(--text-dim);font-size:.85rem"></span>
+        <button class="btn ghost" id="export-inventory">Export CSV</button>
         <button class="btn primary" id="add-btn">+ Add Product</button>
       </div>
 
@@ -390,6 +393,7 @@
         </select>
         <input type="search" id="orders-search" placeholder="Search name / email / order #" style="flex:1;min-width:140px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 11px;border-radius:var(--radius);font:inherit;font-size:.85rem">
         <div class="spacer"></div>
+        <button class="btn ghost" id="export-orders">Export CSV</button>
         <button class="btn ghost" id="refresh-orders">Refresh</button>
       </div>
       <div id="orders-list"></div>
@@ -415,6 +419,53 @@
       </div>
       <div id="forms-list"></div>
       <p style="color:var(--text-dim);font-size:.78rem;margin-top:10px">These submissions are stored internally in the Worker KV, not sent through Formspree.</p>
+    </div>
+
+    <!-- Customers pane (owner-only) -->
+    <div class="pane" id="pane-customers">
+      <div class="toolbar">
+        <strong style="color:var(--gold-light);font-family:Georgia,serif;font-size:1.1rem;font-weight:400">Customer Directory</strong>
+        <input id="cust-search" type="search" placeholder="Search by name or email…" style="flex:1;min-width:140px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 11px;border-radius:var(--radius);font:inherit;font-size:.85rem">
+        <div class="spacer"></div>
+        <span id="cust-count" style="color:var(--text-dim);font-size:.85rem"></span>
+        <button class="btn ghost" id="refresh-customers">Refresh</button>
+        <button class="btn ghost" id="export-customers">Export CSV</button>
+      </div>
+      <div id="customers-list"></div>
+      <!-- Customer detail modal -->
+      <div class="scrim" id="cust-detail-scrim" style="display:none">
+        <div class="modal" style="max-width:600px">
+          <h2 id="cust-detail-name" style="margin-bottom:4px"></h2>
+          <p id="cust-detail-email" style="color:var(--text-dim);font-size:.85rem;margin-bottom:14px"></p>
+          <h3 style="font-size:.9rem;margin:0 0 8px;color:var(--gold-light)">Order History</h3>
+          <div id="cust-orders" style="max-height:250px;overflow-y:auto;margin-bottom:14px"></div>
+          <h3 style="font-size:.9rem;margin:0 0 8px;color:var(--gold-light)">Notes</h3>
+          <textarea id="cust-notes" rows="3" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px;border-radius:var(--radius);font:inherit;font-size:.85rem;resize:vertical" placeholder="Add notes about this customer…"></textarea>
+          <div class="toolbar" style="margin-top:8px">
+            <div class="spacer"></div>
+            <button class="btn primary" id="cust-notes-save">Save Notes</button>
+            <button class="btn ghost" id="cust-detail-close">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subscriptions pane (owner-only) -->
+    <div class="pane" id="pane-subscriptions">
+      <div class="toolbar">
+        <strong style="color:var(--gold-light);font-family:Georgia,serif;font-size:1.1rem;font-weight:400">Subscription Members</strong>
+        <select id="sub-status-filter">
+          <option value="all">All</option>
+          <option value="active">Active</option>
+          <option value="paused">Paused</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <div class="spacer"></div>
+        <span id="sub-count" style="color:var(--text-dim);font-size:.85rem"></span>
+        <button class="btn ghost" id="refresh-subs">Refresh</button>
+        <button class="btn ghost" id="export-subs">Export CSV</button>
+      </div>
+      <div id="subs-list"></div>
     </div>
 
     <!-- Users pane (owner-only) -->
@@ -711,7 +762,7 @@ document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
   $('pane-' + t.dataset.tab).classList.add('active');
   if(t.dataset.tab === 'dashboard') renderBusinessDashboard();
   if(t.dataset.tab === 'forms') loadForms();
-  if(t.dataset.tab === 'orders') loadOrders();  if(t.dataset.tab === 'users') loadUsers();
+  if(t.dataset.tab === 'orders') loadOrders();  if(t.dataset.tab === 'customers') loadCustomers();  if(t.dataset.tab === 'subscriptions') loadSubscriptions();  if(t.dataset.tab === 'users') loadUsers();
   if(t.dataset.tab === 'activity') loadAudit();});
 
 // ─── Data ────────────────────────────────────────────────────────────
@@ -1751,7 +1802,8 @@ function renderOrders(){
     if(copyBtn) copyBtn.onclick = () => {
       const o = state.orders.find(x => x.id === id);
       const addr = o?.shippingAddress || {};
-      const text = [addr.name, addr.line1, addr.line2, addr.city && `${addr.city}, ${addr.state} ${addr.zip}`].filter(Boolean).join('\n');
+      const text = [addr.name, addr.line1, addr.line2, addr.city && `${addr.city}, ${addr.state} ${addr.zip}`].filter(Boolean).join('
+');
       navigator.clipboard.writeText(text).then(() => toast('Address copied')).catch(() => toast('Copy failed', true));
     };
   });
@@ -2127,6 +2179,146 @@ $('user-form').onsubmit = async (e) => {
 };
 
 // ─── Activity log (owner-only) ───────────────────────────────────────
+// ─── Customers ────────────────────────────────────────────
+async function loadCustomers(){
+  try {
+    const r = await api('/api/admin/customers');
+    state.customers = r.customers || [];
+    renderCustomers();
+  } catch(e){ toast('Customers failed: ' + e.message, true); }
+}
+function renderCustomers(){
+  const q = (($('cust-search') && $('cust-search').value) || '').toLowerCase().trim();
+  let list = state.customers || [];
+  if(q) list = list.filter(c => c.email.toLowerCase().includes(q) || c.name.toLowerCase().includes(q));
+  const count = $('cust-count');
+  if(count) count.textContent = list.length + ' customer' + (list.length === 1 ? '' : 's');
+  const el = $('customers-list');
+  if(!el) return;
+  if(list.length === 0){
+    el.innerHTML = '<div class="empty-state">No customers found.</div>';
+    return;
+  }
+  el.innerHTML = list.map(c => {
+    const lastOrder = c.lastOrder ? new Date(c.lastOrder).toLocaleDateString() : '—';
+    return `<div class="order-card" style="cursor:pointer" onclick="showCustomer('${c.email}')">
+      <div class="order-head">
+        <div><strong>${escHtml(c.name || c.email)}</strong></div>
+        <div class="order-id">${c.orderCount} order${c.orderCount === 1 ? '' : 's'}</div>
+      </div>
+      <div class="order-cust">
+        <a href="mailto:${escHtml(c.email)}">${escHtml(c.email)}</a>
+        ${c.phone ? '· ' + escHtml(c.phone) : ''}
+        <br><span class="em">Total spent:</span> $${c.totalSpent.toFixed(2)} · <span class="em">Last order:</span> ${lastOrder}
+      </div>
+    </div>`;
+  }).join('');
+}
+async function showCustomer(email){
+  const scrim = $('cust-detail-scrim');
+  if(!scrim) return;
+  scrim.style.display = 'flex';
+  $('cust-detail-name').textContent = 'Loading…';
+  $('cust-detail-email').textContent = '';
+  $('cust-orders').innerHTML = '<div class="empty-state">Loading orders…</div>';
+  $('cust-notes').value = '';
+  try {
+    const r = await api('/api/admin/customers/' + encodeURIComponent(email));
+    $('cust-detail-name').textContent = email;
+    $('cust-detail-email').textContent = r.orders.length + ' order' + (r.orders.length === 1 ? '' : 's');
+    $('cust-detail-email').dataset.email = email;
+    if(r.orders.length === 0){
+      $('cust-orders').innerHTML = '<div class="empty-state">No orders yet.</div>';
+    } else {
+      $('cust-orders').innerHTML = r.orders.map(o => `
+        <div class="order-card" style="margin-bottom:6px;padding:10px 14px">
+          <div style="display:flex;justify-content:space-between">
+            <strong>${new Date(o.created).toLocaleDateString()}</strong>
+            <span class="order-status ${o.status}">${o.status}</span>
+          </div>
+          <div style="margin-top:4px;font-size:.85rem;color:var(--text-dim)">
+            $${o.total.toFixed(2)} · ${o.fulfillment || '—'} · ${o.paymentStatus}
+            ${o.lines ? '<br>' + o.lines.map(l => escHtml(l.qty) + '× ' + escHtml(l.name)).join(', ') : ''}
+          </div>
+        </div>`).join('');
+    }
+    $('cust-notes').value = r.notes || '';
+  } catch(e){
+    $('cust-orders').innerHTML = '<div class="empty-state">Error: ' + e.message + '</div>';
+  }
+}
+$('cust-detail-close').onclick = () => { $('cust-detail-scrim').style.display = 'none'; };
+$('cust-detail-scrim').onclick = (e) => { if(e.target === e.currentTarget) $('cust-detail-scrim').style.display = 'none'; };
+$('cust-notes-save').onclick = async () => {
+  const email = ($('cust-detail-email').dataset.email || '').trim();
+  if(!email) return;
+  const notes = $('cust-notes').value;
+  try {
+    await api('/api/admin/customers/' + encodeURIComponent(email), { method: 'PATCH', body: JSON.stringify({ notes }) });
+    toast('Notes saved');
+  } catch(e){ toast('Save failed: ' + e.message, true); }
+};
+$('refresh-customers').onclick = () => loadCustomers();
+$('cust-search').oninput = () => renderCustomers();
+$('export-customers').onclick = () => { window.open(API + '/api/admin/export/customers', '_blank'); };
+
+// ─── Subscriptions ──────────────────────────────────────────
+async function loadSubscriptions(){
+  try {
+    const r = await api('/api/admin/subscriptions');
+    state.subscriptions = r.members || [];
+    renderSubscriptions();
+  } catch(e){ toast('Subscriptions failed: ' + e.message, true); }
+}
+function renderSubscriptions(){
+  const f = $('sub-status-filter')?.value || 'all';
+  let list = (state.subscriptions || []).filter(m => f === 'all' || m.status === f);
+  const count = $('sub-count');
+  if(count) count.textContent = list.length + ' member' + (list.length === 1 ? '' : 's');
+  const el = $('subs-list');
+  if(!el) return;
+  if(list.length === 0){
+    el.innerHTML = '<div class="empty-state">No subscription members found.</div>';
+    return;
+  }
+  el.innerHTML = list.map(m => `
+    <div class="sub-row" style="flex-wrap:wrap">
+      <div class="sub-info" style="flex:1;min-width:180px">
+        <div class="sub-email"><a href="mailto:${escHtml(m.email)}">${escHtml(m.email)}</a></div>
+        <div class="sub-meta">${escHtml(m.name || '—')} · Tier: ${escHtml(m.tier || '—')}</div>
+        <div class="sub-meta">Joined: ${m.created ? new Date(m.created).toLocaleDateString() : '—'} · Next ship: ${m.nextShipDate || '—'}</div>
+        <div style="margin-top:4px"><textarea rows="1" placeholder="Notes…" data-sub-notes="${m.id}" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:4px;font:inherit;font-size:.78rem;resize:none">${escHtml(m.notes || '')}</textarea></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        <select data-sub-status="${m.id}" onchange="updateSub(this)" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:4px 8px;font-size:.82rem">
+          <option value="active" ${m.status === 'active' ? 'selected' : ''}>Active</option>
+          <option value="paused" ${m.status === 'paused' ? 'selected' : ''}>Paused</option>
+          <option value="cancelled" ${m.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+        </select>
+        <input type="text" placeholder="Next ship date" data-sub-date="${m.id}" value="${escHtml(m.nextShipDate || '')}" onchange="updateSub(this)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:4px;font:inherit;font-size:.78rem;max-width:130px">
+      </div>
+    </div>`).join('');
+}
+async function updateSub(el){
+  const id = el.dataset.subStatus || el.dataset.subDate;
+  const body = {};
+  if(el.dataset.subStatus) body.status = el.value;
+  if(el.dataset.subDate) body.nextShipDate = el.value;
+  // Also save notes from the textarea in the same row
+  const row = el.closest('.sub-row');
+  if(row){
+    const notesEl = row.querySelector('[data-sub-notes]');
+    if(notesEl) body.notes = notesEl.value;
+  }
+  try {
+    await api('/api/admin/subscriptions/' + encodeURIComponent(id), { method: 'PATCH', body: JSON.stringify(body) });
+    toast('Updated');
+  } catch(e){ toast('Update failed: ' + e.message, true); }
+}
+$('sub-status-filter').onchange = () => renderSubscriptions();
+$('refresh-subs').onclick = () => loadSubscriptions();
+$('export-subs').onclick = () => { window.open(API + '/api/admin/export/subscriptions', '_blank'); };
+
 async function loadAudit(){
   if(!state.user || state.user.role !== 'owner') return;
   try {
