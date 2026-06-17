@@ -723,6 +723,12 @@ $('login-form').onsubmit = async (e) => {
 };
 
 async function unlock(){
+  // If we have a stored user but no token, force re-login
+  const storedToken = localStorage.getItem('api_token');
+  if(state.user && !storedToken){
+    state.user = null;
+    localStorage.removeItem(USER_KEY);
+  }
   await initSessionUser();
   if(!state.user){
     $('login').style.display = 'grid';
@@ -2252,16 +2258,28 @@ async function showCustomer(email){
     $('cust-orders').innerHTML = '<div class="empty-state">Error: ' + e.message + '</div>';
   }
 }
-$('cust-detail-close').onclick = () => { $('cust-detail-scrim').style.display = 'none'; };
-$('cust-detail-scrim').onclick = (e) => { if(e.target === e.currentTarget) $('cust-detail-scrim').style.display = 'none'; };
+function closeCustModal(){
+  $('cust-detail-scrim').style.display = 'none';
+}
+$('cust-detail-close').onclick = closeCustModal;
+$('cust-detail-scrim').onclick = (e) => { if(e.target === e.currentTarget) closeCustModal(); };
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape' && $('cust-detail-scrim').style.display === 'flex') closeCustModal();
+});
 $('cust-notes-save').onclick = async () => {
+  const btn = $('cust-notes-save');
   const email = ($('cust-detail-email').dataset.email || '').trim();
-  if(!email) return;
+  if(!email || btn.disabled) return;
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
   const notes = $('cust-notes').value;
   try {
     await api('/api/admin/customers/' + encodeURIComponent(email), { method: 'PATCH', body: JSON.stringify({ notes }) });
     toast('Notes saved');
+    // Refresh the customer list to show updated notes
+    loadCustomers();
   } catch(e){ toast('Save failed: ' + e.message, true); }
+  finally { btn.disabled = false; btn.textContent = 'Save Notes'; }
 };
 $('refresh-customers').onclick = () => loadCustomers();
 $('cust-search').oninput = () => renderCustomers();
