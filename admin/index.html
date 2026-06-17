@@ -667,17 +667,21 @@ const isMissingWholesaleCost = (p) => !Number.isFinite(Number(p.wholesale_cost))
 
 async function api(path, opts = {}){
   const allow401 = !!opts.allow401;
+  const token = localStorage.getItem('api_token') || '';
+  const headers = {
+    ...(opts.body && !(opts.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
+    ...(opts.headers || {})
+  };
+  if(token) headers['Authorization'] = 'Bearer ' + token;
   const res = await fetch(API + path, {
     ...opts,
-    credentials: 'include',
-    headers: {
-      ...(opts.body && !(opts.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
-      ...(opts.headers || {})
-    }
+    credentials: 'omit',
+    headers
   });
   if(res.status === 401){
     if(allow401) return null;
     localStorage.removeItem(USER_KEY);
+    localStorage.removeItem('api_token');
     location.reload();
     throw new Error('Session expired');
   }
@@ -708,6 +712,7 @@ $('login-form').onsubmit = async (e) => {
       state.user = j.user;
       localStorage.setItem(USER_KEY, JSON.stringify(j.user));
     }
+    if(j.token) localStorage.setItem('api_token', j.token);
     unlock();
   } catch(err){
     $('login-err').textContent = err.message;
@@ -751,6 +756,7 @@ async function initSessionUser(){
 $('logout').onclick = async () => {
   try { await api('/api/logout', { method: 'POST' }); } catch {}
   localStorage.removeItem(USER_KEY);
+  localStorage.removeItem('api_token');
   location.reload();
 };
 
